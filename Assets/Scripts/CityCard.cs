@@ -9,7 +9,7 @@ public class CityCard : ScriptableObject
     public string cityName;
     public string population;
     public string countryName;
-    public VirusColor virusColor;
+    public VirusIcon virusIcon;
 
     public Sprite mainArtwork;
     public Sprite flagArtwork;

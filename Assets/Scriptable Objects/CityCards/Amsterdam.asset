@@ -15,6 +15,6 @@ MonoBehaviour:
   cityName: Amsterdam
   population: 860.000
   countryName: Netherlands
-  virusColor: 1
+  virusIcon: {fileID: 11400000, guid: 124bbd9c3c093494f8709abd22e318cb, type: 2}
   mainArtwork: {fileID: 21300000, guid: 863ecb2f99fff6e409f3c8d143eb6179, type: 3}
   flagArtwork: {fileID: 21300000, guid: b51c0d6bba602ec4cb888bdeb4eda8f2, type: 3}

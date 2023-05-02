@@ -15,6 +15,6 @@ MonoBehaviour:
   cityName: Madrid
   population: 3.300.000
   countryName: Spain
-  virusColor: 2
+  virusIcon: {fileID: 11400000, guid: f02309e6a1a1dba4a9c7e50a15c36d0e, type: 2}
   mainArtwork: {fileID: 21300000, guid: 57ba122435fd47d4e9c903cea190216c, type: 3}
   flagArtwork: {fileID: 21300000, guid: e66e36a4e4abddb48989c099f2209d53, type: 3}

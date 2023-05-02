@@ -15,6 +15,6 @@ MonoBehaviour:
   cityName: Berlin
   population: 3.700.000
   countryName: Germany
-  virusColor: 1
+  virusIcon: {fileID: 11400000, guid: 124bbd9c3c093494f8709abd22e318cb, type: 2}
   mainArtwork: {fileID: 21300000, guid: 3131152deb600c64792a5bab9110987f, type: 3}
   flagArtwork: {fileID: 21300000, guid: fba5fe5c299959e44a3060a6f04f22a0, type: 3}

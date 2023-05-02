@@ -14,9 +14,7 @@ public class CityCardDisplay : MonoBehaviour
     public Image backgroundWhite;
     public Image virusTop;
     public Image virusBottom;
-    public Sprite virusRed;
-    public Sprite virusYellow;
-    public Sprite virusBlue;
+
     public Image artwork;
     public Image flag;
     public TextMeshProUGUI population;
@@ -31,27 +29,9 @@ public class CityCardDisplay : MonoBehaviour
         countryName.text = cityCardData.countryName;
         artwork.sprite = cityCardData.mainArtwork;
         flag.sprite = cityCardData.flagArtwork;
-
-        switch (cityCardData.virusColor)
-        {
-            case VirusColor.Red:
-                virusTop.sprite = virusRed;
-                virusBottom.sprite = virusRed;
-                backgroundColor.color = new Color(1,0.2f,0.2f);
-                break;
-            case VirusColor.Yellow:
-                virusTop.sprite = virusYellow;
-                virusBottom.sprite = virusYellow;
-                backgroundColor.color = new Color(1,0.8f,0.2f);
-                break;
-            case VirusColor.Blue:
-                virusTop.sprite = virusBlue;
-                virusBottom.sprite = virusBlue;
-                backgroundColor.color = new Color(0,0.4f,1);
-                break;
-            default:
-                break;
-        }
+        virusTop.sprite = cityCardData.virusIcon.artwork;
+        virusBottom.sprite = cityCardData.virusIcon.artwork;
+        backgroundColor.color = cityCardData.virusIcon.virusColor;
 
     }
 }

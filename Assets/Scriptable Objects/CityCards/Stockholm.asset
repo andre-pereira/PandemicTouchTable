@@ -15,6 +15,6 @@ MonoBehaviour:
   cityName: Stockholm
   population: 1.000.000
   countryName: Sweden
-  virusColor: 0
+  virusIcon: {fileID: 11400000, guid: da69709b28dd74c44be7d4c05734fff8, type: 2}
   mainArtwork: {fileID: 21300000, guid: b156eb984c2012c48931bd7b6fbf473d, type: 3}
   flagArtwork: {fileID: 21300000, guid: 5c9cf831378251e479336b391b9e6e6d, type: 3}
