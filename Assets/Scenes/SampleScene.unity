@@ -137,6 +137,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 404730108}
+  - component: {fileID: 404730109}
   m_Layer: 5
   m_Name: EventCard
   m_TagString: Untagged
@@ -163,13 +164,29 @@ RectTransform:
   - {fileID: 968460107}
   - {fileID: 1875947865}
   m_Father: {fileID: 477650392}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &404730109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 404730107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662c3d7244e43b64f81fa57a7592a03f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventCardData: {fileID: 11400000, guid: c700fd32624fd5e43afafbb06318408d, type: 2}
+  artwork: {fileID: 1987632951}
+  eventName: {fileID: 1258366498}
+  eventText: {fileID: 1875947866}
 --- !u!1 &477650388
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,8 +279,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 246909548}
   - {fileID: 404730108}
+  - {fileID: 246909548}
   - {fileID: 1816942867}
   - {fileID: 663292158}
   m_Father: {fileID: 0}
@@ -373,7 +390,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &663292158
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1034,7 +1051,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1816942867
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1204,7 +1221,7 @@ GameObject:
   - component: {fileID: 1987632952}
   - component: {fileID: 1987632951}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Artwork
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1227,8 +1244,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 12}
-  m_SizeDelta: {x: 124.8, y: 81}
+  m_AnchoredPosition: {x: 0, y: 8.2421}
+  m_SizeDelta: {x: 124.8, y: 88.5157}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1987632951
 MonoBehaviour:
@@ -1293,7 +1310,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7863806904568637487, guid: 6c4b375740f4e8e45bea6c25af1e4fe5, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7863806904568637487, guid: 6c4b375740f4e8e45bea6c25af1e4fe5, type: 3}
       propertyPath: m_AnchorMax.x
