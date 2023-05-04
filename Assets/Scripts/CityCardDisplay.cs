@@ -21,6 +21,7 @@ public class CityCardDisplay : MonoBehaviour
     public TextMeshProUGUI cityName;
     public TextMeshProUGUI countryName;
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,6 +33,5 @@ public class CityCardDisplay : MonoBehaviour
         virusTop.sprite = cityCardData.virusIcon.artwork;
         virusBottom.sprite = cityCardData.virusIcon.artwork;
         backgroundColor.color = cityCardData.virusIcon.virusColor;
-
     }
 }
