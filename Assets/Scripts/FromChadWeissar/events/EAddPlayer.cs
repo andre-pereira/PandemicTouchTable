@@ -4,22 +4,22 @@ using UnityEngine;
 public class EAddPlayer : EngineEvent
 {
   public int TablePositionId;
-  public Player.PlayerColors PlayerColor;
+  public Player.Roles PlayerRole;
 
   EAddPlayer()
   {
     QUndoable = false;
   }
-  public EAddPlayer( int tableId, Player.PlayerColors color )
+  public EAddPlayer( int tableId, Player.Roles role )
   {
     TablePositionId = tableId;
-    PlayerColor = color;
+    PlayerRole = role;
   }
 
   public override void Do(Timeline c)
   {
     //Debug.Log("EAddPlayer::Do position="+myTablePositionId);
-    Player p = new Player() { Position = TablePositionId, Color = PlayerColor };
+    Player p = new Player() { Position = TablePositionId, Role = PlayerRole };
     PlayerList.Players.Add(p);
   }
 }

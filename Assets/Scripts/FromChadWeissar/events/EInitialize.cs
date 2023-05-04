@@ -47,12 +47,6 @@ public class EInitialize : EngineEvent
 
     foreach ( Player player in PlayerList.Players )
     {
-      if (PlayerList.Players.Count == 7)
-        player.NumChips = 7;
-      else if (PlayerList.Players.Count == 6)
-        player.NumChips = 9;
-      else
-        player.NumChips = 11;
     }
   }
 

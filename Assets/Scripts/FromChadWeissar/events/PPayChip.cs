@@ -10,8 +10,6 @@ public class PPayChip : PlayerEvent
 
   public override void Do(Timeline timeline)
   {
-    --_player.NumChips;
-    ++Game.theGame.NumCenterChips;
 
     Game.theGame.CurrentPlayer = PlayerList.nextPlayer(_player);
   }

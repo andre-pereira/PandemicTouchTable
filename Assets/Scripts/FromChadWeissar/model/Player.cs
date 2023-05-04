@@ -2,72 +2,50 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.ComponentModel;
 
-public class Player {
-  public enum PlayerColors
-  {
-    RED, GREEN, BLUE, YELLOW, CYAN, PURPLE, ORANGE
-  }
+public class Player
+{
 
-  public enum Statistic
-  {
-    NUM_TYPES
-  }
-  #region State
-  #endregion
-
-  #region Statistics
-  public float ActingTime = 0f;
-  public Dictionary<Statistic, int> Statistics = new Dictionary<Statistic, int>();
-  #endregion
-
-  public int Position;
-  public int Place;
-  public PlayerColors Color { get; set; }
-
-  public int NumChips = -1;
-  public List<int> AcceptedGifts = null;
-
-  public Player() {
-    NumChips = 0;
-    AcceptedGifts = new List<int>();
-
-    for (int i = 0; i < (int)Statistic.NUM_TYPES; ++i)
-      Statistics[(Statistic)i] = 0;
-  }
-
-  public void TakeGift(int num)
-  {
-    AcceptedGifts.Add(num);
-    AcceptedGifts.Sort();
-  }
-  public Color veryLightColor()
-  {
-    return GameGUI.VeryLightColors[(int)Color];
-  }
-  public Color lightColor()
-  {
-    return GameGUI.LightColors[(int)Color];
-  }
-  public Color solidColor()
-  {
-    return GameGUI.SolidColors[(int)Color];
-  }
-
-  public int totalScore()
-  {
-    int giftTotal = 0;
-    int priorGift = -1;
-    foreach ( int gift in AcceptedGifts )
+    public enum Roles
     {
-      if (gift != priorGift + 1)
-        giftTotal += gift;
-      priorGift = gift;
+        [Description("Containment Specialist")]
+        ContainmentSpecialist,
+
+        [Description("Pilot")]
+        Pilot,
+
+        [Description("Quarantine Specialist")]
+        QuarantineSpecialist,
+
+        [Description("Virologist")]
+        Virologist
+    };
+
+    public enum Statistic
+    {
+        NUM_TYPES
     }
-    return NumChips - giftTotal;
-  }
-  public float totalScoreWithTieBreakers()
-  {
-    return totalScore() + 0;
-  }
+
+
+    #region State
+    #endregion
+
+    #region Statistics
+    public float ActingTime = 0f;
+    public Dictionary<Statistic, int> Statistics = new Dictionary<Statistic, int>();
+    #endregion
+
+    public int Position;
+    public int Place;
+    public string Name;
+
+    public Roles Role { get; set; }
+
+    public Player()
+    {
+        for (int i = 0; i < (int)Statistic.NUM_TYPES; ++i)
+            Statistics[(Statistic)i] = 0;
+    }
+
 }

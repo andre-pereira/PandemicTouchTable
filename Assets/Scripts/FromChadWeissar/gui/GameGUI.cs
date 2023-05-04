@@ -20,7 +20,6 @@ public class GameGUI : MonoBehaviour {
   public List<PlayerGUI> PlayerPads;
 
   public Sprite[] Pieces;
-  public Sprite[] RibbonSprites;
 
   public TMPro.TextMeshProUGUI DeckSizeText;
   public GameObject OfferedChips;
@@ -80,15 +79,6 @@ public class GameGUI : MonoBehaviour {
       return null;
     }
     return theGameGUI.Pieces[(int)type];
-  }
-  public static Sprite ribbonSprite(int place)
-  {
-    if (place < 0 || place >= theGameGUI.RibbonSprites.Length)
-    {
-      Debug.LogError("Requesting ribbon sprite that doesn't exist: " + place);
-      return null;
-    }
-    return theGameGUI.RibbonSprites[place];
   }
 
   public static PlayerGUI currentPlayerPad()

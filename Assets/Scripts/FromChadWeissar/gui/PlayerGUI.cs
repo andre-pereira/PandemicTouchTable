@@ -64,33 +64,31 @@ public class PlayerGUI : MonoBehaviour {
     if (_isAnimating) return;
     if (Player == null) return;
 
-    GetComponent<Image>().color = Player.solidColor();
+    //GetComponent<Image>().color = Player.solidColor();
 
     foreach ( var text in Chips.GetComponentsInChildren<TMPro.TextMeshProUGUI>())
     {
-      text.text = Player.NumChips.ToString();
     }
 
-    TotalScore.text = "= " + Player.totalScore();
 
-    if ( Player.AcceptedGifts.Count != _drawnCards.Count)
-    {
-      CardContainer.gameObject.DestroyChildrenImmediate();
-      _drawnCards = new List<int>(Player.AcceptedGifts);
-      int priorGift = -1;
-      foreach (int gift in _drawnCards )
-      {
-        if ( priorGift != -1 && gift > priorGift+1 )
-        {
-          GameObject spacer = Instantiate(SpacerPrefab);
-          spacer.transform.SetParent(CardContainer, false);
-        }
-        GameObject card = Instantiate(CardPrefab, CardContainer, false);
-        card.GetComponent<CardGUI>().draw(gift, gift > priorGift + 1);
+    //if ( Player.AcceptedGifts.Count != _drawnCards.Count)
+    //{
+    //  CardContainer.gameObject.DestroyChildrenImmediate();
+    //  _drawnCards = new List<int>(Player.AcceptedGifts);
+    //  int priorGift = -1;
+    //  foreach (int gift in _drawnCards )
+    //  {
+    //    if ( priorGift != -1 && gift > priorGift+1 )
+    //    {
+    //      GameObject spacer = Instantiate(SpacerPrefab);
+    //      spacer.transform.SetParent(CardContainer, false);
+    //    }
+    //    GameObject card = Instantiate(CardPrefab, CardContainer, false);
+    //    card.GetComponent<CardGUI>().draw(gift, gift > priorGift + 1);
 
-        priorGift = gift;
-      }
-    }
+    //    priorGift = gift;
+    //  }
+    //}
 
     DialogGUI.draw();
   }
@@ -110,12 +108,5 @@ public class PlayerGUI : MonoBehaviour {
   }
   public void OnPayChipClick()
   {
-    if ( Player == Game.theGame.CurrentPlayer )
-    {
-      if (Player.NumChips > 0)
-        Timeline.theTimeline.addEvent(new PPayChip());
-      else
-        WindowsVoice.speak("Out of chips");
-    }
   }
 }

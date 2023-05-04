@@ -11,8 +11,8 @@ public class PlayerList : MonoBehaviour {
 
   List<Player> _players = new List<Player>();
 
-  public const int MIN_PLAYERS = 3;
-  public const int MAX_PLAYERS = 7;
+  public const int MIN_PLAYERS = 2;
+  public const int MAX_PLAYERS = 4;
   
   void OnEnable()
   {
@@ -54,20 +54,5 @@ public class PlayerList : MonoBehaviour {
   }
   public static void setScoreOrder()
   {
-    float prevScore = float.MaxValue;
-    int currPlace = 0;
-    int realPlace = 0;
-    foreach (Player p in thePlayerList._players
-      .OrderByDescending(p => p.totalScoreWithTieBreakers()))
-    {
-      if (p.totalScoreWithTieBreakers() != prevScore)
-      {
-        // First player will always trigger this code.
-        prevScore = p.totalScoreWithTieBreakers();
-        currPlace = realPlace;
-      }
-      p.Place = currPlace;
-      ++realPlace;
-    }
   }
 }

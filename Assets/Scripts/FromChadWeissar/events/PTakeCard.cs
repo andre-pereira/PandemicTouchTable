@@ -11,9 +11,7 @@ public class PTakeCard : PlayerEvent {
   public override void Do(Timeline timeline)
   {
     _numChips = Game.theGame.NumCenterChips;
-    _player.NumChips += Game.theGame.NumCenterChips;
     Game.theGame.NumCenterChips = 0;
-    _player.TakeGift(Game.theGame.GiftDeck.Pop(0));
 
     if (Game.theGame.GiftDeck.Count == 0)
       timeline.addEvent(new EEndGame());

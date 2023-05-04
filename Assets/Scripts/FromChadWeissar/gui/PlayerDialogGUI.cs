@@ -28,7 +28,6 @@ public class PlayerDialogGUI : MonoBehaviour {
   {
     gameObject.SetActive(true);
     Ribbon.gameObject.SetActive(Game.theGame.CurrentGameState == Game.GameState.GAME_OVER);
-    Ribbon.sprite = GameGUI.ribbonSprite(ParentGUI.Player.Place);
 
     GiftIcon.SetActive(Game.theGame.CurrentGameState == Game.GameState.PLAY &&
                        Game.theGame.CurrentPlayer == ParentGUI.Player);
