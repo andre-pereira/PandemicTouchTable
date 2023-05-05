@@ -14,7 +14,6 @@ public class EInitialize : EngineEvent
 
   public override void Do(Timeline c)
   {
-    //Debug.Log("Einitialize::Do");
     initializeSeeds();
     initializeModel();
 

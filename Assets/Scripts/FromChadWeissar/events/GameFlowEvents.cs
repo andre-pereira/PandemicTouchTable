@@ -18,7 +18,7 @@ public class EStartRound : EngineEvent
   public override float Act(bool qUndo = false)
   {
     // clear the load overlay
-    GameGUI.theGameGUI.LoadOverlay.SetActive(false);
+    //GameGUI.theGameGUI.LoadOverlay.SetActive(false);
     GameGUI.theGameGUI.GameCanvas.SetActive(true);
 
     return 0;
@@ -29,7 +29,6 @@ public class EEndGame : EngineEvent
 {
   public override void Do(Timeline timeline)
   {
-    PlayerList.setScoreOrder();
     Game.theGame.CurrentGameState = Game.GameState.GAME_OVER;
   }
   public override float Act(bool qUndo = false)

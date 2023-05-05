@@ -46,10 +46,16 @@ public class PlayerLoginArea : MonoBehaviour
     public void resetPlayerLoginArea()
     {
         Role = null;
-        playerNameText.text = MainMenu.PlayerNames[Position] + "'s Play Area";
+        playerNameText.text = MainMenu.PlayerNames[Position];
         ChooseRoleText.text = ChooseRoleTextContent;
+        changePlayerAreaColor(Color.gray, 0.5f);
     }
 
+    public void changePlayerAreaColor(Color color, float alpha)
+    {
+        color.a = alpha;
+        this.gameObject.GetComponent<UnityEngine.UI.Image>().color = color;
+    }
 
 
     public void OnRoleClicked(int role)
@@ -62,6 +68,7 @@ public class PlayerLoginArea : MonoBehaviour
             MainMenu.FreeRoles.Add(roleToChangeTo);
             ChooseRoleText.text = ChooseRoleTextContent;
             MainMenu.UpdateRoles();
+            changePlayerAreaColor(Color.gray, 0.5f);
         }
         else
         if (MainMenu.FreeRoles.Contains(roleToChangeTo))
@@ -72,6 +79,7 @@ public class PlayerLoginArea : MonoBehaviour
                 MainMenu.FreeRoles.Add(Role.Value);
             }
             Role = (Player.Roles)role;
+            changePlayerAreaColor(roleCards[role].roleCardData.roleColor, 0.5f);
             MainMenu.UpdateRoles();
         }
     }
