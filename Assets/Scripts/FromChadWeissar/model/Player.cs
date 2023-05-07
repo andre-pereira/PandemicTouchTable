@@ -27,10 +27,6 @@ public class Player
         NUM_TYPES
     }
 
-
-    #region State
-    #endregion
-
     #region Statistics
     public float ActingTime = 0f;
     public Dictionary<Statistic, int> Statistics = new Dictionary<Statistic, int>();
