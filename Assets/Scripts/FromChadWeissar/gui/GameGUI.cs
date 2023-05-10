@@ -20,6 +20,11 @@ public class GameGUI : MonoBehaviour
     public RoleCard[] roleCards;
     public float playerUIOpacity;
 
+    public GameObject OutbreakMarker;
+    public Transform[] OutbreakMarkerTransforms;
+
+
+
     public static GameObject cloneOnCanvas(GameObject source)
     {
         GameObject movingResource = Instantiate(source);

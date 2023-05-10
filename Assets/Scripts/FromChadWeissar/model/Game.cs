@@ -21,6 +21,9 @@ public class Game : MonoBehaviour
         GAME_OVER
     }
 
+    public int InfectionRate = 0;
+    public int OutbreakCounter = 0;
+
     public static Game theGame = null;
 
     public Player CurrentPlayer = null;
@@ -34,6 +37,11 @@ public class Game : MonoBehaviour
         // Reset any state here. When we undo, all the events are re-executed and the first event will
         // call this function to cleanup the old game state.
 
+    }
+
+    public void test ()
+    {
+        Timeline.theTimeline.addEvent(new EIncreaseOutbreak());
     }
 
     public void OnEnable()
