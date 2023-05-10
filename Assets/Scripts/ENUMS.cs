@@ -19,4 +19,17 @@ public static class EnumExtensions
 
         return descriptionAttributes.Length > 0 ? descriptionAttributes[0].Description : value.ToString();
     }
+
+    public static T GetEnumValueFromDescription<T>(string description) where T : Enum
+    {
+        foreach (T value in Enum.GetValues(typeof(T)))
+        {
+            DescriptionAttribute[] attributes = (DescriptionAttribute[])value.GetType().GetField(value.ToString()).GetCustomAttributes(typeof(DescriptionAttribute), false);
+            if (attributes.Length > 0 && attributes[0].Description == description)
+            {
+                return value;
+            }
+        }
+        throw new ArgumentException("Enum value not found for description: " + description);
+    }
 }

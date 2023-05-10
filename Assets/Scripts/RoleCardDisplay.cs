@@ -7,7 +7,17 @@ using static ENUMS;
 
 public class RoleCardDisplay : MonoBehaviour
 {
-    public RoleCard roleCardData;
+
+    private RoleCard roleCardData;
+
+    public RoleCard RoleCardData
+    {
+        get { return roleCardData; }
+        set { 
+            roleCardData = value;
+            updateRole();
+        }
+    }
 
     public Image background;
 
@@ -16,6 +26,11 @@ public class RoleCardDisplay : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
+    {
+
+    }
+
+    private void updateRole()
     {
         roleName.text = roleCardData.roleName;
         roleText.text = roleCardData.roleText;

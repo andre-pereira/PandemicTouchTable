@@ -11,17 +11,16 @@ public class EAddPlayer : EngineEvent
     {
         QUndoable = false;
     }
-    public EAddPlayer(int tableId, Player.Roles role, string playerName)
+    public EAddPlayer(int tableId, Player.Roles role, string name)
     {
         TablePositionId = tableId;
         PlayerRole = role;
-        PlayerName = playerName;
+        PlayerName = name;
     }
 
     public override void Do(Timeline c)
     {
-        //Debug.Log("EAddPlayer::Do position="+myTablePositionId);
-        Player p = new Player() { Position = TablePositionId, Role = PlayerRole, Name = PlayerName};
+        Player p = new Player() { Position = TablePositionId, Role = PlayerRole, Name = PlayerName };
         PlayerList.Players.Add(p);
     }
 }

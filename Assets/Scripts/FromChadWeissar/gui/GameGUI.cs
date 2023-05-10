@@ -17,6 +17,8 @@ public class GameGUI : MonoBehaviour
     public GameObject AnimationCanvas;
 
     public List<PlayerGUI> PlayerPads;
+    public RoleCard[] roleCards;
+    public float playerUIOpacity;
 
     public static GameObject cloneOnCanvas(GameObject source)
     {

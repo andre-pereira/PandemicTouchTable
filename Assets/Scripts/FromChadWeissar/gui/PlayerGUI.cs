@@ -10,6 +10,10 @@ public class PlayerGUI : MonoBehaviour
 {
 
     Player _player = null;
+    public TMPro.TextMeshProUGUI CurrentInstructionText;
+    public TMPro.TextMeshProUGUI playerNameText;
+    public RoleCardDisplay roleCard;
+
     public Player Player
     {
         get { if (_player == null) _player = PlayerList.playerAtPosition(Position); return _player; }
@@ -18,13 +22,23 @@ public class PlayerGUI : MonoBehaviour
 
     public int Position;
 
-    void OnEnable()
-    {
-    }
-
     public void init()
     {
         _player = null;
+        roleCard.RoleCardData = GameGUI.theGameGUI.roleCards[(int)Player.Role];
+        Color targeColor = roleCard.RoleCardData.roleColor;
+        targeColor.a = GameGUI.theGameGUI.playerUIOpacity;
+        GetComponent<Image>().color = targeColor;
+
+        if (Game.theGame.CurrentPlayer == Player)
+        {
+            CurrentInstructionText.text += "Your turn. You have " + "";
+        }
+        else
+        {
+            CurrentInstructionText.text += "It is currently not your turn";
+        }
+        playerNameText.text = Player.Name;
     }
 
     bool _isAnimating = false;

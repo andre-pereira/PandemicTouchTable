@@ -6,7 +6,6 @@ using System.ComponentModel;
 
 public class Player
 {
-
     public enum Roles
     {
         [Description("Containment Specialist")]
@@ -26,6 +25,10 @@ public class Player
     {
         NUM_TYPES
     }
+
+
+    #region State
+    #endregion
 
     #region Statistics
     public float ActingTime = 0f;

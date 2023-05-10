@@ -13,8 +13,24 @@ public class PlayerLoginArea : MonoBehaviour
     public MainMenu MainMenu;
     public TMPro.TextMeshProUGUI ChooseRoleText;
     public TMPro.TextMeshProUGUI playerNameText;
+    public GameObject prefabRolecard;
+    public GameObject horizontalLayoutRoles;
     public int Position;
-    public RoleCardDisplay [] roleCards;
+
+    private GameObject[] roleCards;
+    private RoleCardDisplay[] roleCardsDisplay;
+
+    private string playerName;
+
+    public string PlayerName
+    {
+        get { return playerName; }
+        set {
+            playerName = value;
+            playerNameText.text = playerName;
+        }
+    }
+
 
     Player.Roles? _role;
 
@@ -25,11 +41,11 @@ public class PlayerLoginArea : MonoBehaviour
         {
             if(_role != null)
             {
-                roleCards[(int)_role].background.GetComponent<Outline>().enabled = false;
+                roleCardsDisplay[(int)_role].background.GetComponent<Outline>().enabled = false;
             }
             if(value != null)
             {
-                roleCards[(int)value].background.GetComponent<Outline>().enabled = true;
+                roleCardsDisplay[(int)value].background.GetComponent<Outline>().enabled = true;
                 ChooseRoleText.text = "You have chosen " + (value.GetDescription()) + " as your role for this game.";
             }
             _role = value;
@@ -40,35 +56,58 @@ public class PlayerLoginArea : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        resetPlayerLoginArea();
+        //resetPlayerLoginArea();
     }
 
     public void resetPlayerLoginArea()
     {
         Role = null;
-        playerNameText.text = MainMenu.PlayerNames[Position];
+        PlayerName = MainMenu.PlayerNames[Position];
         ChooseRoleText.text = ChooseRoleTextContent;
-        changePlayerAreaColor(Color.gray, 0.5f);
+        changePlayerAreaColor(null, GameGUI.theGameGUI.playerUIOpacity);
+        roleCards = new GameObject[Enum.GetValues(typeof(Player.Roles)).Length];
+        roleCardsDisplay = new RoleCardDisplay[roleCards.Length];
+        for (int i = 0; i < roleCards.Length; i++)
+        {
+            int currentValue = i;
+            roleCards[i] = Instantiate(prefabRolecard, horizontalLayoutRoles.transform);
+            roleCardsDisplay[i] = roleCards[i].GetComponent<RoleCardDisplay>();
+            roleCardsDisplay[i].RoleCardData = GameGUI.theGameGUI.roleCards[i];
+            roleCards[i].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() =>
+            {
+                OnRoleClicked((Player.Roles)currentValue);
+            });
+        }
     }
 
-    public void changePlayerAreaColor(Color color, float alpha)
+    public void changePlayerAreaColor(Player.Roles? role, float alpha)
     {
+        Color color = Color.gray;
+        if (role != null)
+        {
+            foreach (var roleCard in roleCardsDisplay)
+            {
+                if (roleCard.RoleCardData.roleName == role.GetDescription())
+                {
+                    color = roleCard.RoleCardData.roleColor;
+                }
+            }
+        }
         color.a = alpha;
-        this.gameObject.GetComponent<UnityEngine.UI.Image>().color = color;
+        gameObject.GetComponent<UnityEngine.UI.Image>().color = color;
     }
 
 
-    public void OnRoleClicked(int role)
+    public void OnRoleClicked(Player.Roles roleToChangeTo)
     {
         AudioPlayer.PlayClip(AudioPlayer.AudioClipEnum.CLICK);
-        Player.Roles roleToChangeTo = (Player.Roles)role;
         if (Role == roleToChangeTo)
         {
             Role = null;
             MainMenu.FreeRoles.Add(roleToChangeTo);
             ChooseRoleText.text = ChooseRoleTextContent;
             MainMenu.UpdateRoles();
-            changePlayerAreaColor(Color.gray, 0.5f);
+            changePlayerAreaColor(null, GameGUI.theGameGUI.playerUIOpacity);
         }
         else
         if (MainMenu.FreeRoles.Contains(roleToChangeTo))
@@ -78,8 +117,8 @@ public class PlayerLoginArea : MonoBehaviour
             {
                 MainMenu.FreeRoles.Add(Role.Value);
             }
-            Role = (Player.Roles)role;
-            changePlayerAreaColor(roleCards[role].roleCardData.roleColor, 0.5f);
+            Role = roleToChangeTo;
+            changePlayerAreaColor(roleToChangeTo, GameGUI.theGameGUI.playerUIOpacity);
             MainMenu.UpdateRoles();
         }
     }

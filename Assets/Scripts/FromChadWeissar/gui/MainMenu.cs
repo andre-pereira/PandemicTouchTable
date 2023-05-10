@@ -64,11 +64,10 @@ public class MainMenu : MonoBehaviour
         // Init the timeline with initial events
         Timeline.theTimeline.resetTimeline();
         Timeline.theTimeline.addEvent(new EResetGame());
-
         foreach (PlayerLoginArea area in PlayerLoginAreas)
         {
             if (area.isPlaying())
-                Timeline.theTimeline.addEvent(new EAddPlayer(area.Position, area.Role.Value, area.playerNameText.text));
+                Timeline.theTimeline.addEvent(new EAddPlayer(area.Position, area.Role.Value, area.PlayerName));
         }
 
         EInitialize initEvt = new EInitialize();
