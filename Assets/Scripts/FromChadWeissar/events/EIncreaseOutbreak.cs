@@ -19,6 +19,9 @@ public class EIncreaseOutbreak : EngineEvent
     public override float Act(bool qUndo = false)
     {
         gui.OutbreakMarker.transform.DOMove(gui.OutbreakMarkerTransforms[Game.theGame.OutbreakCounter-1].position, 1f);
-        return 0;
+
+        return 0f;
     }
+
+
 }
