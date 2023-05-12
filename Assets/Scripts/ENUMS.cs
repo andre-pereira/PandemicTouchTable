@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class ENUMS 
 {
-    public enum VirusColor { Red, Blue, Yellow};
+    public enum VirusColor { Red, Yellow, Blue};
 
 }
 

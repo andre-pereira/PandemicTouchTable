@@ -20,9 +20,27 @@ public class GameGUI : MonoBehaviour
     public RoleCard[] roleCards;
     public float playerUIOpacity;
 
+    public GameObject PlayerDeck;
+
+    public GameObject InfectionDeck;
+    public GameObject InfectionDiscard;
+
     public GameObject OutbreakMarker;
     public Transform[] OutbreakMarkerTransforms;
 
+    public GameObject InfectionRateMarker;
+    public Transform[] InfectionRateMarkerTransforms;
+
+    public GameObject[] VialTokens;
+    public Transform[] VialTokensTransforms;
+
+    public GameObject[] Pawns;
+
+    public GameObject[] Cities;
+
+    public GameObject[] RedCubes;
+    public GameObject[] YellowCubes;
+    public GameObject[] BlueCubes;
 
 
     public static GameObject cloneOnCanvas(GameObject source)
