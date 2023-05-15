@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 using System;
+using TMPro;
 
 public class GameGUI : MonoBehaviour
 {
@@ -24,9 +25,11 @@ public class GameGUI : MonoBehaviour
     public float playerUIOpacity;
 
     public GameObject PlayerDeck;
+    public TextMeshProUGUI PlayerDeckCount;
 
     public GameObject InfectionDeck;
     public GameObject InfectionDiscard;
+    public TextMeshProUGUI InfectionDeckCount;
 
     public GameObject OutbreakMarker;
     public Transform[] OutbreakMarkerTransforms;

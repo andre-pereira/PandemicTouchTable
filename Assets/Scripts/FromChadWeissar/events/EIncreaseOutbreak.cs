@@ -16,13 +16,11 @@ public class EIncreaseOutbreak : EngineEvent
         {
             timeline.addEvent(new EGameOver());
         }
-        Debug.Log("DoEIncreaseOutbreak");
     }
 
     public override float Act(bool qUndo = false)
     {
         gui.OutbreakMarker.transform.DOMove(gui.OutbreakMarkerTransforms[game.OutbreakCounter].position, 1f);
-        Debug.Log("ActEIncreaseOutbreak");
         return 0f;
     }
 

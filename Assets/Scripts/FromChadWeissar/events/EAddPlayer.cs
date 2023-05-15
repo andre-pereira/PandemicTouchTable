@@ -37,30 +37,14 @@ public class EAddPlayer : EngineEvent
         Image currentPawnImage = currentPawn.GetComponent<Image>();
         City initialCity = gui.Cities[game.InitialCityID].GetComponent<City>();
         Vector3 pawnPosition = initialCity.getPawnPosition(PlayerRole);
-        Debug.Log(pawnPosition);
 
-        CreateDebugRect(pawnPosition);
-
-        //Sequence sequence = DOTween.Sequence();
-        //sequence.Append(currentPawnImage.DOFade(0f, 0f));
-        //sequence.Append(currentPawnImage.DOFade(1f, 1f));
-        //sequence.Append(currentPawn.transform.DOMove(new Vector3(20,20,0),1f));
-        //sequence.Play();
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(currentPawnImage.DOFade(0f, 0f));
+        sequence.Append(currentPawnImage.DOFade(1f, 1f));
+        sequence.Append(currentPawn.transform.DOMove(pawnPosition,1f));
+        sequence.Play();
         
         return base.Act(qUndo);
     }
 
-    public void CreateDebugRect(Vector3 position)
-    {
-        GameObject rectObject = new GameObject("DebugRect");
-        rectObject.transform.SetParent(gui.TokenCanvas.transform, false);
-        Canvas canvas = gui.TokenCanvas.GetComponent<Canvas>();
-
-        RectTransform rectTransform = rectObject.AddComponent<RectTransform>();
-        rectTransform.sizeDelta = new Vector2(10,10);
-        rectTransform.position = position - new Vector3(canvas.pixelRect.width / 2, canvas.pixelRect.height / 2);
-
-        Image image = rectObject.AddComponent<Image>();
-        image.color = Color.white;
-    }
 }

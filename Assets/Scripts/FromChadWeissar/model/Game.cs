@@ -33,13 +33,14 @@ public class Game : MonoBehaviour
     public Player CurrentPlayer = null;
     public GameState CurrentGameState = GameState.INVALID;
 
-    public List<int> GiftDeck = null;
-    public int NumCenterChips = -1;
+    public List<int> PlayerCards = null;
+
 
     public void init()
     {
         // Reset any state here. When we undo, all the events are re-executed and the first event will
         // call this function to cleanup the old game state.
+        PlayerCards = new List<int>();
         InfectionRate = -1;
         OutbreakCounter = -1;
         Timeline.theTimeline.addEvent(new EIncreaseOutbreak());

@@ -11592,7 +11592,7 @@ GameObject:
   - component: {fileID: 1399361630}
   - component: {fileID: 1399361629}
   m_Layer: 5
-  m_Name: NumberCardsLeftText (1)
+  m_Name: NumberCardsLeftPlayerCards
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15432,8 +15432,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c8488fb8fa308784db6c4516ecc8d9a3, type: 2}
   playerUIOpacity: 0.5
   PlayerDeck: {fileID: 1886627272}
+  PlayerDeckCount: {fileID: 1399361629}
   InfectionDeck: {fileID: 1054620219}
   InfectionDiscard: {fileID: 1479927026}
+  InfectionDeckCount: {fileID: 1887312027}
   OutbreakMarker: {fileID: 1677104895}
   OutbreakMarkerTransforms:
   - {fileID: 230772226}
@@ -15461,10 +15463,10 @@ MonoBehaviour:
   - {fileID: 993691618}
   - {fileID: 1074668738}
   PawnPositionInCityOffset:
-  - {x: 55, y: 15}
-  - {x: 55, y: -15}
-  - {x: 40, y: 35}
-  - {x: 40, y: -35}
+  - {x: 30, y: 7.5}
+  - {x: 30, y: -7.5}
+  - {x: 20, y: 22.5}
+  - {x: 20, y: -22.5}
   Cities:
   - {fileID: 697448069}
   - {fileID: 1643045733}
@@ -16289,7 +16291,7 @@ GameObject:
   - component: {fileID: 1887312028}
   - component: {fileID: 1887312027}
   m_Layer: 5
-  m_Name: NumberCardsLeftText
+  m_Name: NumberCardsLeftInfection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

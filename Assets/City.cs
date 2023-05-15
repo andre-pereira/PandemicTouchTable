@@ -9,9 +9,15 @@ public class City : MonoBehaviour
 
     private Player.Roles?[] availablePawnSlotsInCity = new Player.Roles?[4];
 
+    private RectTransform rectTransform;
+    private RectTransform canvasRectTransform;
+
+
     // Start is called before the first frame update
     void Start()
     {
+        rectTransform = GetComponent<RectTransform>();
+        canvasRectTransform = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
     }
 
     // Update is called once per frame
@@ -46,19 +52,18 @@ public class City : MonoBehaviour
 
     public Vector3 getPawnPosition(Player.Roles role)
     {
-        Vector3 toReturn = new Vector3(0, 0, 0);
+        Vector3 worldPoint = new Vector3(0,0,0);
+
         for (int i = 0; i < availablePawnSlotsInCity.Length; i++)
         {
             if (availablePawnSlotsInCity[i] == role)
             {
-                
-                toReturn.x = gameObject.transform.position.x + GameGUI.theGameGUI.PawnPositionInCityOffset[i].x;
-                //Debug.Log("x... city:" + this.name+ " Role:" + role + " City position:"+ gameObject.transform.localPosition.x +  " PawnPositionInCityOffset: " + GameGUI.theGameGUI.PawnPositionInCityOffset[i].x);
-
-                toReturn.y = gameObject.transform.position.y + GameGUI.theGameGUI.PawnPositionInCityOffset[i].y;
-                //Debug.Log("y... city:" + this.name + " Role:" + role + " City position:" + gameObject.transform.position.y + " PawnPositionInCityOffset: " + GameGUI.theGameGUI.PawnPositionInCityOffset[i].y);
+                Vector2 offset = GameGUI.theGameGUI.PawnPositionInCityOffset[i];
+                Vector3 newLocalPosition = rectTransform.localPosition + new Vector3(offset.x, offset.y, 0);
+                worldPoint = rectTransform.parent.TransformPoint(newLocalPosition);
             }
         }
-        return toReturn;
+        return worldPoint;
     }
+
 }
