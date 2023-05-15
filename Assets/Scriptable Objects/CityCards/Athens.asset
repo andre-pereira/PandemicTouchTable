@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a468f77e7098a184480c9a3f3d77263f, type: 3}
   m_Name: Athens
   m_EditorClassIdentifier: 
+  cityID: 8
+  neighbors: 03000000090000000b0000000c000000
   cityName: Athens
   population: 650.000
   countryName: Greece

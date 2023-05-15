@@ -19,7 +19,9 @@ public class EStartRound : EngineEvent
   {
     // clear the load overlay
     //GameGUI.theGameGUI.LoadOverlay.SetActive(false);
-    GameGUI.theGameGUI.GameCanvas.SetActive(true);
+    //GameGUI.theGameGUI.GameCanvas.SetActive(true);
+
+
 
     return 0;
   }

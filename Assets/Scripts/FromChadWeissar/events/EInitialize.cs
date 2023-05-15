@@ -36,6 +36,7 @@ public class EInitialize : EngineEvent
     Game.theGame.CurrentGameState = Game.GameState.PLAY;
     Game.theGame.CurrentPlayer = startPlayer;
 
+    
     List<int> allCards = Enumerable.Range(3, 33).ToList();
     allCards.Shuffle();
     Game.theGame.GiftDeck = allCards.Take(24).ToList();

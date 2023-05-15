@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a468f77e7098a184480c9a3f3d77263f, type: 3}
   m_Name: Kiev
   m_EditorClassIdentifier: 
-  cityID: 0
+  cityID: 1
+  neighbors: 000000000200000003000000
   cityName: Kiev
   population: 3.000.000
   countryName: Ukraine

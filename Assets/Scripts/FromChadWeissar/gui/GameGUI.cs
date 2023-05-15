@@ -13,8 +13,11 @@ public class GameGUI : MonoBehaviour
     public static GameGUI theGameGUI = null;
 
     //public GameObject LoadOverlay;
-    public GameObject GameCanvas;
-    public GameObject AnimationCanvas;
+    public GameObject BackgroundCanvas;
+    public GameObject LinesCanvas;
+    public GameObject CityCanvas;
+    public GameObject TokenCanvas;
+    public GameObject PlayerCanvas;
 
     public List<PlayerGUI> PlayerPads;
     public RoleCard[] roleCards;
@@ -35,28 +38,30 @@ public class GameGUI : MonoBehaviour
     public Transform[] VialTokensTransforms;
 
     public GameObject[] Pawns;
+    public Vector2[] PawnPositionInCityOffset;
 
     public GameObject[] Cities;
+    public Material lineMaterial;
 
     public GameObject[] RedCubes;
     public GameObject[] YellowCubes;
     public GameObject[] BlueCubes;
 
 
-    public static GameObject cloneOnCanvas(GameObject source)
-    {
-        GameObject movingResource = Instantiate(source);
-        movingResource.SetActive(true);
-        movingResource.transform.SetParent(GameGUI.theGameGUI.AnimationCanvas.transform, false);
-        movingResource.transform.rotation = source.transform.rotation;
-        movingResource.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-        movingResource.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-        movingResource.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
-        movingResource.transform.position = source.transform.position;
-        movingResource.GetComponent<RectTransform>().sizeDelta = source.GetComponent<RectTransform>().rect.size;
-        movingResource.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-        return movingResource;
-    }
+    //public static GameObject cloneOnCanvas(GameObject source)
+    //{
+    //    GameObject movingResource = Instantiate(source);
+    //    movingResource.SetActive(true);
+    //    movingResource.transform.SetParent(GameGUI.theGameGUI.AnimationCanvas.transform, false);
+    //    movingResource.transform.rotation = source.transform.rotation;
+    //    movingResource.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+    //    movingResource.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+    //    movingResource.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+    //    movingResource.transform.position = source.transform.position;
+    //    movingResource.GetComponent<RectTransform>().sizeDelta = source.GetComponent<RectTransform>().rect.size;
+    //    movingResource.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+    //    return movingResource;
+    //}
 
     void Awake()
     {
@@ -65,6 +70,30 @@ public class GameGUI : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        //go through all Cities and connect them together graphically using a line based on their neighbors, don't repeat connections
+        foreach (GameObject city in Cities)
+        {
+            City cityScript = city.GetComponent<City>();
+            foreach (int neighbor in cityScript.city.neighbors)
+            {
+                if (neighbor > cityScript.city.cityID)
+                {
+                    GameObject line = new GameObject("Line - " + cityScript.transform.name + "_"+ Cities[neighbor].transform.name);
+                    line.transform.SetParent(LinesCanvas.transform, false);
+                    line.transform.position = cityScript.transform.position;
+                    line.AddComponent<LineRenderer>();
+                    LineRenderer lr = line.GetComponent<LineRenderer>();
+                    lr.sortingLayerName = "Lines";
+                    lr.material = lineMaterial;
+                    lr.startColor = Color.white;
+                    lr.endColor = Color.white;
+                    lr.startWidth = 0.025f;
+                    lr.endWidth = 0.025f;
+                    lr.SetPosition(0, cityScript.transform.position);
+                    lr.SetPosition(1, Cities[neighbor].transform.position);
+                }
+            }
+        }   
 
     }
 
@@ -96,10 +125,12 @@ public class GameGUI : MonoBehaviour
         return retVal;
     }
 
+
+
     public void draw()
     {
         //LoadOverlay.SetActive(Game.theGame.CurrentGameState == Game.GameState.LOGIN);
-        GameCanvas.SetActive(Game.theGame.CurrentGameState != Game.GameState.LOGIN);
+        //GameCanvas.SetActive(Game.theGame.CurrentGameState != Game.GameState.LOGIN);
 
         drawCenter();
 

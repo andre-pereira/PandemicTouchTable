@@ -7,19 +7,22 @@ using UnityEngine;
 public class EIncreaseOutbreak : EngineEvent
 {
     GameGUI gui = GameGUI.theGameGUI;
+    Game game = Game.theGame;
+
     public override void Do(Timeline timeline)
     {
-        Game.theGame.OutbreakCounter++;
-        if(Game.theGame.OutbreakCounter == 4)
+        game.OutbreakCounter++;
+        if(game.OutbreakCounter == 4)
         {
             timeline.addEvent(new EGameOver());
         }
+        Debug.Log("DoEIncreaseOutbreak");
     }
 
     public override float Act(bool qUndo = false)
     {
-        gui.OutbreakMarker.transform.DOMove(gui.OutbreakMarkerTransforms[Game.theGame.OutbreakCounter-1].position, 1f);
-
+        gui.OutbreakMarker.transform.DOMove(gui.OutbreakMarkerTransforms[game.OutbreakCounter].position, 1f);
+        Debug.Log("ActEIncreaseOutbreak");
         return 0f;
     }
 

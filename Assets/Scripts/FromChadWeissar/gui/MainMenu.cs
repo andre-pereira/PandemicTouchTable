@@ -12,7 +12,7 @@ public class MainMenu : MonoBehaviour
 
     //public GameObject LoadCanvas;
     public GameObject MainMenuCanvas;
-    public GameObject GameCanvas;
+    public GameObject[] GameCanvases;
 
     public Button PlayButton;
     public Button ResumeButton;
@@ -26,7 +26,10 @@ public class MainMenu : MonoBehaviour
 
     private void Awake()
     {
-        GameCanvas.SetActive(false);
+        foreach (var canvas in GameCanvases) 
+        {
+            canvas.SetActive(false);
+        }
         MainMenuCanvas.SetActive(true);
         //LoadCanvas.SetActive(false);
     }
@@ -59,8 +62,11 @@ public class MainMenu : MonoBehaviour
 
         // Turn off the main menu and start the game
         MainMenuCanvas.SetActive(false);
-        GameCanvas.SetActive(true);
-
+        foreach (var canvas in GameCanvases)
+        {
+            canvas.SetActive(true);
+        }
+        
         // Init the timeline with initial events
         Timeline.theTimeline.resetTimeline();
         Timeline.theTimeline.addEvent(new EResetGame());
@@ -194,7 +200,10 @@ public class MainMenu : MonoBehaviour
         // Startup the game
         MainMenuCanvas.SetActive(false);
         //LoadCanvas.SetActive(false);
-        GameCanvas.SetActive(true);
+        foreach (var canvas in GameCanvases)
+        {
+            canvas.SetActive(true);
+        }
         // Init the timeline with the saved game
         Timeline.theTimeline.resetTimeline();
         Timeline.theTimeline.reprocessEvents(Timeline.load(name));

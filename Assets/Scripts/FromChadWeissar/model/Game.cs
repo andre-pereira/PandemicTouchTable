@@ -21,8 +21,12 @@ public class Game : MonoBehaviour
         GAME_OVER
     }
 
-    public int InfectionRate = 0;
-    public int OutbreakCounter = 0;
+    public int InfectionRate = -1;
+    public int[] InfectionRateValues = new int[] { 2, 2, 3, 4 };
+
+    public int OutbreakCounter = -1;
+
+    public int InitialCityID = 13;
 
     public static Game theGame = null;
 
@@ -36,10 +40,19 @@ public class Game : MonoBehaviour
     {
         // Reset any state here. When we undo, all the events are re-executed and the first event will
         // call this function to cleanup the old game state.
+        InfectionRate = -1;
+        OutbreakCounter = -1;
+        Timeline.theTimeline.addEvent(new EIncreaseOutbreak());
+        Timeline.theTimeline.addEvent(new EIncreaseInfectionRate());
 
     }
 
-    public void test ()
+    public int GetCurrentInfectionRate()
+    {
+        return InfectionRateValues[InfectionRate];
+    }
+
+    public void test()
     {
         Timeline.theTimeline.addEvent(new EIncreaseOutbreak());
     }

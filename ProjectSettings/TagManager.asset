@@ -11,8 +11,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Lines
+  - Cities
   - 
   - 
   - 
@@ -40,4 +40,19 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 2930519923
+    locked: 0
+  - name: Lines
+    uniqueID: 3559002001
+    locked: 0
+  - name: Cities
+    uniqueID: 2765169871
+    locked: 0
+  - name: Tokens
+    uniqueID: 1319721339
+    locked: 0
+  - name: Player
+    uniqueID: 2801150255
     locked: 0
