@@ -26,6 +26,8 @@ public class Player
         NUM_TYPES
     }
 
+    public List<int> CardsInHand;
+
 
     #region State
     #endregion
@@ -43,6 +45,7 @@ public class Player
 
     public Player()
     {
+        CardsInHand = new List<int>();
         for (int i = 0; i < (int)Statistic.NUM_TYPES; ++i)
             Statistics[(Statistic)i] = 0;
     }

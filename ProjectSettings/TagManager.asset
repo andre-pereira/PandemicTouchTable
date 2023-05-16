@@ -56,3 +56,6 @@ TagManager:
   - name: Player
     uniqueID: 2801150255
     locked: 0
+  - name: Animation
+    uniqueID: 3819727115
+    locked: 0

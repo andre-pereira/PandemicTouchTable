@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -42,10 +43,26 @@ public class EInitialize : EngineEvent
         game.PlayerCards = Enumerable.Range(0, 28).ToList();
         game.PlayerCards.Shuffle();
 
+        game.InfectionCards = Enumerable.Range(0, 24).ToList();
+        game.InfectionCards.Shuffle();
+
+        Timeline.theTimeline.addEvent(new EIncreaseOutbreak());
+        Timeline.theTimeline.addEvent(new EIncreaseInfectionRate());
+
+        int numCardsToDeal = PlayerList.Players.Count == 2 ? 3 : 2;
         foreach (Player player in PlayerList.Players)
         {
+            for (int i = 0; i < numCardsToDeal; ++i)
+            {
+                Timeline.theTimeline.addEvent(new EDealCardToPlayer(player));
+            }
         }
+
+        Timeline.theTimeline.addEvent(new EAddEpidemicCards());
+
     }
+
+
 
     public void initializeGUI()
     {
@@ -59,8 +76,9 @@ public class EInitialize : EngineEvent
                 playerGUI.gameObject.SetActive(false);
         }
        gui.PlayerPads = gui.PlayerPads.Where(p => p.gameObject.activeSelf).ToList();
-       gui.PlayerDeckCount.text = game.PlayerCards.Count.ToString();
+       gui.draw();
     }
+
     public override float Act(bool qUndo)
     {
         AudioPlayer.PlayClip(AudioPlayer.AudioClipEnum.SHUFFLE);

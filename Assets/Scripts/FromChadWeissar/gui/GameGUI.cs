@@ -7,11 +7,24 @@ using DG.Tweening;
 using UnityEngine.SceneManagement;
 using System;
 using TMPro;
+using UnityEditor;
 
 public class GameGUI : MonoBehaviour
 {
-
+    private Game game = null;
     public static GameGUI theGameGUI = null;
+
+    public Texture PlayerCardBack;
+    public GameObject CityCardPrefab;
+    public GameObject[] Cities;
+    public Material lineMaterial;
+    public GameObject EventCardPrefab;
+    public EventCard[] Events;
+
+    public GameObject InfectionCardPrefab;
+    public Texture InfectionCardBack;
+
+    public GameObject EpidemicCardPrefab;
 
     //public GameObject LoadOverlay;
     public GameObject BackgroundCanvas;
@@ -19,12 +32,14 @@ public class GameGUI : MonoBehaviour
     public GameObject CityCanvas;
     public GameObject TokenCanvas;
     public GameObject PlayerCanvas;
+    public GameObject AnimationCanvas;
 
     public List<PlayerGUI> PlayerPads;
     public RoleCard[] roleCards;
     public float playerUIOpacity;
 
     public GameObject PlayerDeck;
+    public GameObject PlayerDeckDiscard;
     public TextMeshProUGUI PlayerDeckCount;
 
     public GameObject InfectionDeck;
@@ -43,28 +58,26 @@ public class GameGUI : MonoBehaviour
     public GameObject[] Pawns;
     public Vector2[] PawnPositionInCityOffset;
 
-    public GameObject[] Cities;
-    public Material lineMaterial;
-
     public GameObject[] RedCubes;
     public GameObject[] YellowCubes;
     public GameObject[] BlueCubes;
 
+    public TextMeshProUGUI DebugText;
 
-    //public static GameObject cloneOnCanvas(GameObject source)
-    //{
-    //    GameObject movingResource = Instantiate(source);
-    //    movingResource.SetActive(true);
-    //    movingResource.transform.SetParent(GameGUI.theGameGUI.AnimationCanvas.transform, false);
-    //    movingResource.transform.rotation = source.transform.rotation;
-    //    movingResource.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-    //    movingResource.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-    //    movingResource.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
-    //    movingResource.transform.position = source.transform.position;
-    //    movingResource.GetComponent<RectTransform>().sizeDelta = source.GetComponent<RectTransform>().rect.size;
-    //    movingResource.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-    //    return movingResource;
-    //}
+    public static GameObject cloneOnCanvas(GameObject source, GameObject targetCanvas)
+    {
+        GameObject movingResource = Instantiate(source);
+        movingResource.SetActive(true);
+        movingResource.transform.SetParent(targetCanvas.transform, false);
+        movingResource.transform.rotation = source.transform.rotation;
+        movingResource.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+        movingResource.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+        movingResource.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+        movingResource.transform.position = source.transform.position;
+        movingResource.GetComponent<RectTransform>().sizeDelta = source.GetComponent<RectTransform>().rect.size;
+        movingResource.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+        return movingResource;
+    }
 
     void Awake()
     {
@@ -72,6 +85,12 @@ public class GameGUI : MonoBehaviour
     }
     // Use this for initialization
     void Start()
+    {
+        game = Game.theGame;
+        CreateNeighborLines();
+    }
+
+    private void CreateNeighborLines()
     {
         //go through all Cities and connect them together graphically using a line based on their neighbors, don't repeat connections
         foreach (GameObject city in Cities)
@@ -81,7 +100,7 @@ public class GameGUI : MonoBehaviour
             {
                 if (neighbor > cityScript.city.cityID)
                 {
-                    GameObject line = new GameObject("Line - " + cityScript.transform.name + "_"+ Cities[neighbor].transform.name);
+                    GameObject line = new GameObject("Line - " + cityScript.transform.name + "_" + Cities[neighbor].transform.name);
                     line.transform.SetParent(LinesCanvas.transform, false);
                     line.transform.position = cityScript.transform.position;
                     line.AddComponent<LineRenderer>();
@@ -96,8 +115,15 @@ public class GameGUI : MonoBehaviour
                     lr.SetPosition(1, Cities[neighbor].transform.position);
                 }
             }
-        }   
+        }
+    }
 
+    private void Update()
+    {
+        DebugText.text = "Current Player: " + Game.theGame.CurrentPlayer + "\n";
+        DebugText.text += "Pending event?: " + Timeline.theTimeline.hasPendingEvent() + "\n";
+        //add debug text to check if an animation is running
+        //DebugText.text += "Animation running?: " + Timeline.theTimeline.isAnimationRunning() + "\n";
     }
 
     void OnDestroy()
@@ -129,21 +155,24 @@ public class GameGUI : MonoBehaviour
     }
 
 
-
     public void draw()
     {
-        //LoadOverlay.SetActive(Game.theGame.CurrentGameState == Game.GameState.LOGIN);
-        //GameCanvas.SetActive(Game.theGame.CurrentGameState != Game.GameState.LOGIN);
+        drawBoard();
+        drawPlayerAreas();
+    }
 
-        drawCenter();
+    public void drawBoard()
+    {
+        PlayerDeckCount.text = game.PlayerCards.Count.ToString();
+        InfectionDeckCount.text = game.InfectionCards.Count.ToString();
+    }
 
+    public void drawPlayerAreas()
+    {
         foreach (PlayerGUI pad in theGameGUI.PlayerPads)
         {
             pad.draw();
         }
-    }
-    public void drawCenter()
-    {
     }
 
     public void saveAndExit()

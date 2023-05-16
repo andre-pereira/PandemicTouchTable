@@ -34,18 +34,22 @@ public class Game : MonoBehaviour
     public GameState CurrentGameState = GameState.INVALID;
 
     public List<int> PlayerCards = null;
+    public List<int> PlayerCardsDiscard = null;
 
+    public List<int> InfectionCards = null;
+    public List<int> InfectionCardsDiscard = null;
 
     public void init()
     {
         // Reset any state here. When we undo, all the events are re-executed and the first event will
         // call this function to cleanup the old game state.
         PlayerCards = new List<int>();
+        PlayerCardsDiscard = new List<int>();
+        InfectionCards = new List<int>();
+        InfectionCardsDiscard = new List<int>();
+
         InfectionRate = -1;
         OutbreakCounter = -1;
-        Timeline.theTimeline.addEvent(new EIncreaseOutbreak());
-        Timeline.theTimeline.addEvent(new EIncreaseInfectionRate());
-
     }
 
     public int GetCurrentInfectionRate()
@@ -58,7 +62,7 @@ public class Game : MonoBehaviour
         Timeline.theTimeline.addEvent(new EIncreaseOutbreak());
     }
 
-    public void OnEnable()
+    public void Awake()
     {
         theGame = this;
     }

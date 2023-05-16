@@ -7,8 +7,14 @@ using static ENUMS;
 
 public class CityCardDisplay : MonoBehaviour
 {
-    public CityCard cityCardData;
 
+    private CityCard cityCardData;
+
+    public CityCard CityCardData
+    {
+        get { return cityCardData; }
+        set { cityCardData = value; UpdateData(); }
+    }
 
     public Image backgroundColor;
     public Image backgroundWhite;
@@ -24,6 +30,11 @@ public class CityCardDisplay : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
+    {
+        UpdateData();
+    }
+
+    private void UpdateData()
     {
         population.text = cityCardData.population;
         cityName.text = cityCardData.cityName;

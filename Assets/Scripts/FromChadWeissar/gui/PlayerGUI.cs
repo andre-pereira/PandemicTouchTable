@@ -5,14 +5,18 @@ using System.Collections.Generic;
 using UnityEngine.Events;
 using DG.Tweening;
 using System;
+using UnityEditor;
 
 public class PlayerGUI : MonoBehaviour
 {
+    GameGUI gui;
+    Game game;
 
     Player _player = null;
     public TMPro.TextMeshProUGUI CurrentInstructionText;
     public TMPro.TextMeshProUGUI playerNameText;
     public RoleCardDisplay roleCard;
+    public GameObject PlayerCards;
 
     public Player Player
     {
@@ -24,6 +28,8 @@ public class PlayerGUI : MonoBehaviour
 
     public void init()
     {
+        gui = GameGUI.theGameGUI;
+        game = Game.theGame;
         _player = null;
         roleCard.RoleCardData = GameGUI.theGameGUI.roleCards[(int)Player.Role];
         Color targeColor = roleCard.RoleCardData.roleColor;
@@ -48,7 +54,33 @@ public class PlayerGUI : MonoBehaviour
     {
         if (_isAnimating) return;
         if (Player == null) return;
+
+        PlayerCards.DestroyChildrenImmediate();
+
+        foreach (int cardToAdd in _player.CardsInHand)
+        {
+            AddPlayerCardToTransform(cardToAdd, PlayerCards.transform);
+        }
+
+
     }
+
+    public GameObject AddPlayerCardToTransform(int cardToAdd, Transform transform)
+    {
+        GameObject cardToAddObject;
+        if (cardToAdd > 23)
+        {
+            cardToAddObject = Instantiate(gui.EventCardPrefab, transform);
+            cardToAddObject.GetComponent<EventCardDisplay>().EventCardData = gui.Events[cardToAdd - 24];
+        }
+        else
+        {
+            cardToAddObject = Instantiate(gui.CityCardPrefab, transform);
+            cardToAddObject.GetComponent<CityCardDisplay>().CityCardData = gui.Cities[cardToAdd].GetComponent<City>().city;
+        }
+        return cardToAddObject;
+    }
+
     public void drawLater(float time)
     {
         _isAnimating = true;

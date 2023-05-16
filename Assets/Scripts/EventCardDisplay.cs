@@ -7,19 +7,29 @@ using static ENUMS;
 
 public class EventCardDisplay : MonoBehaviour
 {
-    public EventCard eventCardData;
+
+    private EventCard eventCardData;
+
+    public EventCard EventCardData
+    {
+        get { return eventCardData; }
+        set { eventCardData = value; UpdateData();}
+    }
 
     public Image artwork;
     public TextMeshProUGUI eventName;
     public TextMeshProUGUI eventText;
 
-
     // Start is called before the first frame update
     void Start()
     {
-        eventName.text = eventCardData.eventName;
-        eventText.text = eventCardData.eventText;
-        artwork.sprite = eventCardData.mainArtwork;
+        UpdateData();
+    }
 
+    private void UpdateData()
+    {
+        eventName.text = EventCardData.eventName;
+        eventText.text = EventCardData.eventText;
+        artwork.sprite = EventCardData.mainArtwork;
     }
 }
