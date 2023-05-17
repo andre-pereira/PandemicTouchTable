@@ -14,7 +14,7 @@ public class EDealCardToPlayer : EngineEvent
     Game game = Game.theGame;
     Player player = null;
     PlayerGUI playerGui = null;
-
+    private bool waitForEnd;
     int cardToAdd = -1;
 
 
@@ -22,11 +22,12 @@ public class EDealCardToPlayer : EngineEvent
 
 
 
-    public EDealCardToPlayer(Player player)
+    public EDealCardToPlayer(Player player, bool waitForEnd)
     {
         QUndoable = false;
         this.player = player;
         playerGui = GameGUI.playerPadForPlayer(player);
+        this.waitForEnd = waitForEnd;
     }
 
     public override void Do(Timeline timeline)
@@ -74,8 +75,9 @@ public class EDealCardToPlayer : EngineEvent
         //        cardToAddObject.transform.DOMove(playerGui.PlayerCards.transform.position, flipDuration)
         //            .SetEase(Ease.InOutQuad);
         //    });
-
-        return sequence.Duration();
+        if(waitForEnd)
+            return sequence.Duration();
+        else return 0f;
     }
 
 }

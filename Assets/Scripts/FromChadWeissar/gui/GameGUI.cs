@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using System;
 using TMPro;
 using UnityEditor;
+using static ENUMS;
 
 public class GameGUI : MonoBehaviour
 {
@@ -65,6 +66,10 @@ public class GameGUI : MonoBehaviour
 
     public TextMeshProUGUI DebugText;
 
+    private Vector3[] redCubePositions;
+    private Vector3[] yellowCubePositions;
+    private Vector3[] blueCubePositions;
+
     public static GameObject cloneOnCanvas(GameObject source, GameObject targetCanvas)
     {
         GameObject movingResource = Instantiate(source);
@@ -88,7 +93,23 @@ public class GameGUI : MonoBehaviour
     void Start()
     {
         game = Game.theGame;
+
+        saveCubesInitialPositions();
+
         CreateNeighborLines();
+    }
+
+    private void saveCubesInitialPositions()
+    {
+        redCubePositions = new Vector3[RedCubes.Count];
+        yellowCubePositions = new Vector3[YellowCubes.Count];
+        blueCubePositions = new Vector3[BlueCubes.Count];
+        for (int i = 0; i < RedCubes.Count; i++)
+        {
+            redCubePositions[i] = RedCubes[i].transform.position;
+            yellowCubePositions[i] = YellowCubes[i].transform.position;
+            blueCubePositions[i] = BlueCubes[i].transform.position;
+        }
     }
 
     private void CreateNeighborLines()
@@ -121,8 +142,9 @@ public class GameGUI : MonoBehaviour
 
     private void Update()
     {
-        DebugText.text = "Current Player: " + Game.theGame.CurrentPlayer + "\n";
-        DebugText.text += "Pending event?: " + Timeline.theTimeline.hasPendingEvent() + "\n";
+        DebugText.text = "Pending event?: " + Timeline.theTimeline.hasPendingEvent() + "\n";
+        if (Game.theGame.CurrentPlayer != null)
+            DebugText.text += "Current Player: " + Game.theGame.CurrentPlayer.Role + "\n";
         //add debug text to check if an animation is running
         //DebugText.text += "Animation running?: " + Timeline.theTimeline.isAnimationRunning() + "\n";
     }
@@ -213,4 +235,19 @@ public class GameGUI : MonoBehaviour
         */
     }
 
+    public List<GameObject> GetCubesList(VirusInfo virusInfo)
+    {
+        switch (virusInfo.virusName)
+        {
+            case VirusName.Red:
+                return RedCubes;
+            case VirusName.Yellow:
+                return YellowCubes;
+            case VirusName.Blue:
+                return BlueCubes;
+            default:
+                Debug.LogError("Unknown virus name: " + virusInfo.virusName);
+                return null;
+        }
+    }
 }

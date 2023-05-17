@@ -6,12 +6,12 @@ using UnityEngine.UI;
 
 public class City : MonoBehaviour
 {
-    private static readonly float[][] offsetCubes = new float[][]
+    public static readonly float[][] offsetCubes = new float[][]
     {
-        new float[] { -0.2f, 0f },
-        new float[] { 0.2f, 0f },
-        new float[] { -0.4f, 0.1f },
-        new float[] { 0.4f, 0.1f }
+        new float[] { 0.28f, -0.48f },
+        new float[] { 0.48f, -0.48f },
+        new float[] { 0.08f, -0.38f },
+        new float[] { 0.58f, -0.38f }
     };
 
     private Game game;

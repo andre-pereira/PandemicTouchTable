@@ -33,11 +33,9 @@ public class EInitialize : EngineEvent
 
     public void initializeModel()
     {
-        Player startPlayer = PlayerList.Players.GetRandom();
-        PlayerList.setOrderToClockwiseWithStartAt(startPlayer);
+        
 
         game.CurrentGameState = Game.GameState.PLAY;
-        game.CurrentPlayer = startPlayer;
 
         //0 to 23 are city cards and 24 to 27 are event cards
         game.PlayerCards = Enumerable.Range(0, 28).ToList();
@@ -54,7 +52,7 @@ public class EInitialize : EngineEvent
         {
             for (int i = 0; i < numCardsToDeal; ++i)
             {
-                Timeline.theTimeline.addEvent(new EDealCardToPlayer(player));
+                Timeline.theTimeline.addEvent(new EDealCardToPlayer(player,true));
             }
         }
 
@@ -65,7 +63,7 @@ public class EInitialize : EngineEvent
         Timeline.theTimeline.addEvent(new EFlipCardAddCubes(2));
         Timeline.theTimeline.addEvent(new EFlipCardAddCubes(1));
         Timeline.theTimeline.addEvent(new EFlipCardAddCubes(1));
-
+        Timeline.theTimeline.addEvent(new EInitializeFirstPlayer());
     }
 
 

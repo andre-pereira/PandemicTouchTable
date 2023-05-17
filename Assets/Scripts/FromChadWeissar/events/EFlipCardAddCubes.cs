@@ -1,14 +1,15 @@
 ﻿using DG.Tweening;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static ENUMS;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 internal class EFlipCardAddCubes : EngineEvent
 {
-    private const float OffsetCubes = 2.5f;
-    private const float DurationMove = 1f;
+    private const float durationMove = 0.2f;
+    private const float scaleToCenterScale = 3f;
+
     GameGUI gui = GameGUI.theGameGUI;
     Game game = Game.theGame;
     private int numberOfCubes;
@@ -84,29 +85,43 @@ internal class EFlipCardAddCubes : EngineEvent
 
     public override float Act(bool qUndo = false)
     {
-        //GameObject cardToAddObject = playerGui.AddPlayerCardToTransform(cardToAdd, gui.AnimationCanvas.transform);
+        GameObject cardToAddObject = Object.Instantiate(gui.InfectionCardPrefab, gui.InfectionDeck.transform.position, gui.PlayerDeck.transform.rotation, gui.InfectionDiscard.transform);
+        cardToAddObject.GetComponent<InfectionCardDisplay>().cityCardData = cityToInfect.city;
         //cardToAddObject.transform.position = gui.PlayerDeck.transform.position;
         //cardToAddObject.transform.rotation = gui.PlayerDeck.transform.rotation;
 
-        //gui.drawBoard();
+        gui.drawBoard();
+
         Sequence sequence = DOTween.Sequence();
-        //sequence.Append(cardToAddObject.transform.DOShakeRotation(scaleToCenterDuration / 2, new Vector3(0f, 0f, scaleToCenterScale), 10, 90, false));
-        //sequence.Append(cardToAddObject.transform.DOScale(new Vector3(scaleToCenterScale, scaleToCenterScale, 1f), scaleToCenterDuration)).
-        //    Join(cardToAddObject.transform.DOMove(new Vector3(0, 0, 0), scaleToCenterDuration));
-        //sequence.AppendInterval(scaleToCenterDuration);
-        //sequence.Append(cardToAddObject.transform.DOScale(new Vector3(1f, 1f, 1f), scaleToCenterDuration)).
-        //    Join(cardToAddObject.transform.DORotate(playerGui.transform.rotation.eulerAngles, scaleToCenterDuration)).
-        //    Join(cardToAddObject.transform.DOMove(playerGui.PlayerCards.transform.position, scaleToCenterDuration)).
-        //    OnComplete(() => {
-        //        Object.Destroy(cardToAddObject);
-        //        playerGui.draw();
-        //    });
-        //sequence.Play();
+        sequence.Append(cardToAddObject.transform.DOShakeRotation(durationMove / 2, new Vector3(0f, 0f, scaleToCenterScale), 10, 90, false));
+        sequence.Append(cardToAddObject.transform.DOScale(new Vector3(scaleToCenterScale, scaleToCenterScale, 1f), durationMove)).
+            Join(cardToAddObject.transform.DOMove(new Vector3(0, 0, 0), durationMove));
+        sequence.AppendInterval(durationMove);
+        sequence.Append(cardToAddObject.transform.DOScale(new Vector3(1f, 1f, 1f), durationMove)).
+            Join(cardToAddObject.transform.DOMove(gui.InfectionDiscard.transform.position, durationMove));
 
+        sequence.Append(cardToAddObject.transform.DOShakeRotation(durationMove * 2, new Vector3(0f, 0f, scaleToCenterScale), 10, 90, false));
+        List<GameObject> cubes = new List<GameObject>();
+        for (int i = 0; i < numberOfCubes; i++)
+        {
+            cubes.Add(gui.GetCubesList(cityToInfect.GetComponent<City>().city.virusInfo).Pop());
+            Vector3 positionToMove = new Vector3(cityToInfect.cubesGameObject.transform.position.x, cityToInfect.cubesGameObject.transform.position.y, 0);
+            sequence.Join(cubes[i].transform.DOMove(positionToMove, durationMove * 2));
+            if (i == numberOfCubes - 1)
+                sequence.AppendCallback(() =>
+                {
+                    foreach (GameObject cube in cubes)
+                        Object.Destroy(cube);
+                });
+        }
 
-        //return sequence.Duration();
-        cityToInfect.draw();
-        return 0f;
+        sequence.Play().OnComplete(() =>
+        {
+            //Object.Destroy(cardToAddObject);
+            cityToInfect.draw();
+        });
+
+        return sequence.Duration();
     }
 
 }
