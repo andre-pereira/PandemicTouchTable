@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Budapest
   population: 1.700.000
   countryName: Hungary
-  virusIcon: {fileID: 11400000, guid: f02309e6a1a1dba4a9c7e50a15c36d0e, type: 2}
+  virusInfo: {fileID: 11400000, guid: f02309e6a1a1dba4a9c7e50a15c36d0e, type: 2}
   mainArtwork: {fileID: 21300000, guid: ee7bf3f9b1ab2b042b641de3903c5adb, type: 3}
   flagArtwork: {fileID: 21300000, guid: d5017ee6e51a0754ebb6b9df6ed9a734, type: 3}

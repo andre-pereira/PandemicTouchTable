@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: London
   population: 8.910.000
   countryName: United Kingdom
-  virusIcon: {fileID: 11400000, guid: 124bbd9c3c093494f8709abd22e318cb, type: 2}
+  virusInfo: {fileID: 11400000, guid: 124bbd9c3c093494f8709abd22e318cb, type: 2}
   mainArtwork: {fileID: 21300000, guid: f4744b408b63fb848af9f6852512d886, type: 3}
   flagArtwork: {fileID: 21300000, guid: e24bb5c642c5dd94c9b8acf3b3549bf0, type: 3}

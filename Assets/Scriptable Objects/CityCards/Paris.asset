@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Paris
   population: 2150000
   countryName: France
-  virusIcon: {fileID: 11400000, guid: 124bbd9c3c093494f8709abd22e318cb, type: 2}
+  virusInfo: {fileID: 11400000, guid: 124bbd9c3c093494f8709abd22e318cb, type: 2}
   mainArtwork: {fileID: 21300000, guid: 6ef8420e279b27c429d78515b0a41042, type: 3}
   flagArtwork: {fileID: 21300000, guid: 094664d27270502479ecf24bb37bab6e, type: 3}

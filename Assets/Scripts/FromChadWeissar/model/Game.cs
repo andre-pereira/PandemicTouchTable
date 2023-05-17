@@ -39,6 +39,10 @@ public class Game : MonoBehaviour
     public List<int> InfectionCards = null;
     public List<int> InfectionCardsDiscard = null;
 
+    public int RedCubes = 16;
+    public int YellowCubes = 16;
+    public int BlueCubes = 16;
+
     public void init()
     {
         // Reset any state here. When we undo, all the events are re-executed and the first event will

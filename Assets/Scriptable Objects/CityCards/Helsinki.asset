@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Helsinki
   population: 650.000
   countryName: Finland
-  virusIcon: {fileID: 11400000, guid: da69709b28dd74c44be7d4c05734fff8, type: 2}
+  virusInfo: {fileID: 11400000, guid: da69709b28dd74c44be7d4c05734fff8, type: 2}
   mainArtwork: {fileID: 21300000, guid: 6853f3efbe01c634ea29de5a533cf673, type: 3}
   flagArtwork: {fileID: 21300000, guid: fcb1de9f9e9839847b24f321674bd01f, type: 3}

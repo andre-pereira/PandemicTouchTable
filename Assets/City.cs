@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,21 @@ using UnityEngine.UI;
 
 public class City : MonoBehaviour
 {
+    private static readonly float[][] offsetCubes = new float[][]
+    {
+        new float[] { -0.2f, 0f },
+        new float[] { 0.2f, 0f },
+        new float[] { -0.4f, 0.1f },
+        new float[] { 0.4f, 0.1f }
+    };
+
+    private Game game;
+    private GameGUI gui;
+
     public CityCard city;
+
+    public int numberOfInfectionCubes = 0;
+    public GameObject cubesGameObject;
 
     private Player.Roles?[] availablePawnSlotsInCity = new Player.Roles?[4];
 
@@ -16,6 +31,8 @@ public class City : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        game = Game.theGame;
+        gui = GameGUI.theGameGUI;
         rectTransform = GetComponent<RectTransform>();
         canvasRectTransform = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
     }
@@ -66,4 +83,17 @@ public class City : MonoBehaviour
         return worldPoint;
     }
 
+    internal void draw()
+    {
+        cubesGameObject.DestroyChildrenImmediate();
+        if (numberOfInfectionCubes > 0)
+        {
+            for (int i = 0; i < numberOfInfectionCubes; i++)
+            {
+                GameObject cube = Instantiate(gui.cubePrefab, cubesGameObject.transform);
+                cube.transform.Translate(offsetCubes[i][0], offsetCubes[i][1],0);
+                cube.GetComponent<Cube>().virusInfo = city.virusInfo;
+            }
+        }
+    }
 }

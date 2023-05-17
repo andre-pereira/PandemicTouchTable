@@ -23,6 +23,7 @@ public class GameGUI : MonoBehaviour
 
     public GameObject InfectionCardPrefab;
     public Texture InfectionCardBack;
+    public GameObject cubePrefab;
 
     public GameObject EpidemicCardPrefab;
 
@@ -58,9 +59,9 @@ public class GameGUI : MonoBehaviour
     public GameObject[] Pawns;
     public Vector2[] PawnPositionInCityOffset;
 
-    public GameObject[] RedCubes;
-    public GameObject[] YellowCubes;
-    public GameObject[] BlueCubes;
+    public List<GameObject> RedCubes;
+    public List<GameObject> YellowCubes;
+    public List<GameObject> BlueCubes;
 
     public TextMeshProUGUI DebugText;
 

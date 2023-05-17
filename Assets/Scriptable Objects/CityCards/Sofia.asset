@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Sofia
   population: 1.300.000
   countryName: Bulgaria
-  virusIcon: {fileID: 11400000, guid: f02309e6a1a1dba4a9c7e50a15c36d0e, type: 2}
+  virusInfo: {fileID: 11400000, guid: f02309e6a1a1dba4a9c7e50a15c36d0e, type: 2}
   mainArtwork: {fileID: 21300000, guid: 9c571f5b7cff95f44b70f6be2d39f44c, type: 3}
   flagArtwork: {fileID: 21300000, guid: 25b082102e2d9bf418050417ae581b3d, type: 3}

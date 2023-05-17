@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Bucharest
   population: 1.800.000
   countryName: Romania
-  virusIcon: {fileID: 11400000, guid: da69709b28dd74c44be7d4c05734fff8, type: 2}
+  virusInfo: {fileID: 11400000, guid: da69709b28dd74c44be7d4c05734fff8, type: 2}
   mainArtwork: {fileID: 21300000, guid: 5db5518ff5b13be4b81498fb8b44f2f0, type: 3}
   flagArtwork: {fileID: 21300000, guid: 009e8658dd78bf640a00a7da5a47d3d1, type: 3}

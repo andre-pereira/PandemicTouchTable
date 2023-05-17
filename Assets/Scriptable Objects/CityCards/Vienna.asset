@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Vienna
   population: Austria
   countryName: 2.000.000
-  virusIcon: {fileID: 11400000, guid: f02309e6a1a1dba4a9c7e50a15c36d0e, type: 2}
+  virusInfo: {fileID: 11400000, guid: f02309e6a1a1dba4a9c7e50a15c36d0e, type: 2}
   mainArtwork: {fileID: 21300000, guid: c5ba1fbf0a1fb494c8f970b2be420e8c, type: 3}
   flagArtwork: {fileID: 21300000, guid: 71c7bb4ad77e8df4c9db664b85274a77, type: 3}

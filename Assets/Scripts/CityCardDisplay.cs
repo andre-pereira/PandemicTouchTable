@@ -41,8 +41,8 @@ public class CityCardDisplay : MonoBehaviour
         countryName.text = cityCardData.countryName;
         artwork.sprite = cityCardData.mainArtwork;
         flag.sprite = cityCardData.flagArtwork;
-        virusTop.sprite = cityCardData.virusIcon.artwork;
-        virusBottom.sprite = cityCardData.virusIcon.artwork;
-        backgroundColor.color = cityCardData.virusIcon.virusColor;
+        virusTop.sprite = cityCardData.virusInfo.artwork;
+        virusBottom.sprite = cityCardData.virusInfo.artwork;
+        backgroundColor.color = cityCardData.virusInfo.virusColor;
     }
 }

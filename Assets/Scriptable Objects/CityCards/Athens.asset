@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Athens
   population: 650.000
   countryName: Greece
-  virusIcon: {fileID: 11400000, guid: f02309e6a1a1dba4a9c7e50a15c36d0e, type: 2}
+  virusInfo: {fileID: 11400000, guid: f02309e6a1a1dba4a9c7e50a15c36d0e, type: 2}
   mainArtwork: {fileID: 21300000, guid: 08a671c088eb1684795b36231cf3ff7c, type: 3}
   flagArtwork: {fileID: 21300000, guid: 9b9ba651ed84b56459a5131a3cb2f331, type: 3}

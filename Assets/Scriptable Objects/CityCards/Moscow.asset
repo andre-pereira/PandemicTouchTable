@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Moscow
   population: 13.000.000
   countryName: Russia
-  virusIcon: {fileID: 11400000, guid: da69709b28dd74c44be7d4c05734fff8, type: 2}
+  virusInfo: {fileID: 11400000, guid: da69709b28dd74c44be7d4c05734fff8, type: 2}
   mainArtwork: {fileID: 21300000, guid: fda7cd1d075839c48b553a3fe73c350b, type: 3}
   flagArtwork: {fileID: 21300000, guid: 465bbe2b6e348f74a96e356ba6eea868, type: 3}

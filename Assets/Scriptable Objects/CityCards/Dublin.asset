@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Dublin
   population: 550.000
   countryName: Republic of Ireland
-  virusIcon: {fileID: 11400000, guid: 124bbd9c3c093494f8709abd22e318cb, type: 2}
+  virusInfo: {fileID: 11400000, guid: 124bbd9c3c093494f8709abd22e318cb, type: 2}
   mainArtwork: {fileID: 21300000, guid: 2009efc9d63f6e34fb3ff5e7750b580a, type: 3}
   flagArtwork: {fileID: 21300000, guid: 688ef44e2527200438356163675ee169, type: 3}

@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class ENUMS 
 {
-    public enum VirusColor { Red, Yellow, Blue};
-
+    public enum VirusName { Red, Yellow, Blue};
+    public enum GameOverReasons { PlayersWon, TooManyOutbreaks, NoMoreCubesOfAColor};
 }
 
 public static class EnumExtensions

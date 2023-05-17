@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Kiev
   population: 3.000.000
   countryName: Ukraine
-  virusIcon: {fileID: 11400000, guid: da69709b28dd74c44be7d4c05734fff8, type: 2}
+  virusInfo: {fileID: 11400000, guid: da69709b28dd74c44be7d4c05734fff8, type: 2}
   mainArtwork: {fileID: 21300000, guid: cdaa22e6651985448981ea67b3ac2444, type: 3}
   flagArtwork: {fileID: 21300000, guid: 3ba1aa59bcaa98f49afda9a6ac32c65c, type: 3}

@@ -21,8 +21,8 @@ public class InfectionCardDisplay : MonoBehaviour
     {
         cityName.text = cityCardData.cityName;
         artwork.sprite = cityCardData.mainArtwork;
-        virus.sprite = cityCardData.virusIcon.artwork;
-        background.color = cityCardData.virusIcon.virusColor;
+        virus.sprite = cityCardData.virusInfo.artwork;
+        background.color = cityCardData.virusInfo.virusColor;
 
     }
 }

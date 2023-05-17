@@ -4,9 +4,9 @@ using UnityEngine;
 using static ENUMS;
 
 [CreateAssetMenu(fileName = "New Virus Icon", menuName = "Icons/Virus Icon")]
-public class VirusIcon : ScriptableObject
+public class VirusInfo : ScriptableObject
 {
-    public string virusName;
+    public VirusName virusName;
     public Color virusColor;
 
     public Sprite artwork;

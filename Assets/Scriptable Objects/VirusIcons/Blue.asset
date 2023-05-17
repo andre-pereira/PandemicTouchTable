@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 638f395f1a6f36549a6018b869f755cf, type: 3}
   m_Name: Blue
   m_EditorClassIdentifier: 
-  virusName: Blue
+  virusName: 2
   virusColor: {r: 0.13725491, g: 0.4392157, b: 0.7254902, a: 1}
   artwork: {fileID: 21300000, guid: 96c6c5224368a424faf76c31b2c11cd9, type: 3}

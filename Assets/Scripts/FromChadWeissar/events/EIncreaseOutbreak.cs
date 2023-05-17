@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
+using static ENUMS;
 
 public class EIncreaseOutbreak : EngineEvent
 {
@@ -14,7 +15,7 @@ public class EIncreaseOutbreak : EngineEvent
         game.OutbreakCounter++;
         if(game.OutbreakCounter == 4)
         {
-            timeline.addEvent(new EGameOver());
+            timeline.addEvent(new EGameOver(GameOverReasons.TooManyOutbreaks));
         }
     }
 

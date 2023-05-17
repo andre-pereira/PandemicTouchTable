@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Rome
   population: 2.900.000
   countryName: Italy
-  virusIcon: {fileID: 11400000, guid: f02309e6a1a1dba4a9c7e50a15c36d0e, type: 2}
+  virusInfo: {fileID: 11400000, guid: f02309e6a1a1dba4a9c7e50a15c36d0e, type: 2}
   mainArtwork: {fileID: 21300000, guid: 60328a1cd34d19e4a92589dfa3c7fcaa, type: 3}
   flagArtwork: {fileID: 21300000, guid: d6f61af785c79a6418bb150322b4100c, type: 3}

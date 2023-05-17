@@ -23,7 +23,6 @@ internal class EAddEpidemicCards : EngineEvent
     public override float Act(bool qUndo = false)
     {
         float offset = 0;
-        float duration = 0;
         for (int i = 0; i < 3; i++)
         {
             GameObject epidemicCard = Object.Instantiate(gui.EpidemicCardPrefab, gui.AnimationCanvas.transform);

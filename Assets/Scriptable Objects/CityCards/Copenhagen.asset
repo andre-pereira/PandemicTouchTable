@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Copenhagen
   population: 650.000
   countryName: Denmark
-  virusIcon: {fileID: 11400000, guid: da69709b28dd74c44be7d4c05734fff8, type: 2}
+  virusInfo: {fileID: 11400000, guid: da69709b28dd74c44be7d4c05734fff8, type: 2}
   mainArtwork: {fileID: 21300000, guid: d7e4a74938cab534898245cf6a3285a2, type: 3}
   flagArtwork: {fileID: 21300000, guid: 770330284ed567043b57cb5ad937a2d7, type: 3}

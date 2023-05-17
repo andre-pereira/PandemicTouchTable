@@ -11,7 +11,7 @@ public class CityCard : ScriptableObject
     public string cityName;
     public string population;
     public string countryName;
-    public VirusIcon virusIcon;
+    public VirusInfo virusInfo;
 
     public Sprite mainArtwork;
     public Sprite flagArtwork;

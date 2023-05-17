@@ -17,6 +17,6 @@ MonoBehaviour:
   cityName: Prague
   population: 1.280.000
   countryName: Czech Republic
-  virusIcon: {fileID: 11400000, guid: 124bbd9c3c093494f8709abd22e318cb, type: 2}
+  virusInfo: {fileID: 11400000, guid: 124bbd9c3c093494f8709abd22e318cb, type: 2}
   mainArtwork: {fileID: 21300000, guid: 1da0ac5c9bed17d46a695decf85b9ae9, type: 3}
   flagArtwork: {fileID: 21300000, guid: 808f1d8b5d4bd2a43b213e03b75a8ded, type: 3}
