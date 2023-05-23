@@ -43,6 +43,8 @@ public class Game : MonoBehaviour
     public int YellowCubes = 16;
     public int BlueCubes = 16;
 
+    public City[] Cities { get; internal set; }
+
     public void init()
     {
         // Reset any state here. When we undo, all the events are re-executed and the first event will

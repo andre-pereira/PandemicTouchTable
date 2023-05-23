@@ -27,7 +27,7 @@ public class EAddPlayer : EngineEvent
     {
         Player p = new Player() { Position = TablePositionId, Role = PlayerRole, Name = PlayerName };
         PlayerList.Players.Add(p);
-        gui.Cities[game.InitialCityID].GetComponent<City>().addPawn(PlayerRole);
+        game.Cities[game.InitialCityID].addPawn(PlayerRole);
     }
 
     public override float Act(bool qUndo = false)
@@ -35,7 +35,7 @@ public class EAddPlayer : EngineEvent
         GameObject currentPawn = gui.Pawns[(int)PlayerRole];
         currentPawn.SetActive(true);
         Image currentPawnImage = currentPawn.GetComponent<Image>();
-        City initialCity = gui.Cities[game.InitialCityID].GetComponent<City>();
+        City initialCity = game.Cities[game.InitialCityID];
         Vector3 pawnPosition = initialCity.getPawnPosition(PlayerRole);
 
         Sequence sequence = DOTween.Sequence();

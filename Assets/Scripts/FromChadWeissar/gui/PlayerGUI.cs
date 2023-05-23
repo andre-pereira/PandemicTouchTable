@@ -6,9 +6,11 @@ using UnityEngine.Events;
 using DG.Tweening;
 using System;
 using UnityEditor;
+using Unity.VisualScripting;
 
 public class PlayerGUI : MonoBehaviour
 {
+    private const string WaitForYourTurnText = "Wait for your turn.";
     GameGUI gui;
     Game game;
 
@@ -17,6 +19,13 @@ public class PlayerGUI : MonoBehaviour
     public TMPro.TextMeshProUGUI playerNameText;
     public RoleCardDisplay roleCard;
     public GameObject PlayerCards;
+
+    public GameObject MoveAction;
+    public GameObject FlyAction;
+    public GameObject CharterAction;
+    public GameObject TreatAction;
+    public GameObject ShareAction;
+    public GameObject FindCureAction;
 
     public Player Player
     {
@@ -42,7 +51,7 @@ public class PlayerGUI : MonoBehaviour
         }
         else
         {
-            CurrentInstructionText.text += "It is currently not your turn";
+            CurrentInstructionText.text += WaitForYourTurnText;
         }
         playerNameText.text = Player.Name;
     }
@@ -62,7 +71,40 @@ public class PlayerGUI : MonoBehaviour
             AddPlayerCardToTransform(cardToAdd, PlayerCards.transform);
         }
 
+        if(Player == game.CurrentPlayer)
+        {
+            CurrentInstructionText.text = "Your turn. You have " + Player.ActionsRemaining + " actions remaining.";
+            if (Player.ActionsRemaining > 0)
+            {
+                MoveAction.SetActive(true);
 
+
+                FlyAction.SetActive(true);
+                CharterAction.SetActive(true);
+
+                TreatAction.SetActive(true);
+                ShareAction.SetActive(true);
+
+                
+                FindCureAction.SetActive(true);
+            }
+        }
+        else
+        {
+            CurrentInstructionText.text = WaitForYourTurnText;
+            disableAllActions();
+        }
+
+    }
+
+    private void disableAllActions()
+    {
+        MoveAction.SetActive(false);
+        FlyAction.SetActive(false);
+        CharterAction.SetActive(false);
+        TreatAction.SetActive(false);
+        ShareAction.SetActive(false);
+        FindCureAction.SetActive(false);
     }
 
     public GameObject AddPlayerCardToTransform(int cardToAdd, Transform transform)
@@ -76,7 +118,7 @@ public class PlayerGUI : MonoBehaviour
         else
         {
             cardToAddObject = Instantiate(gui.CityCardPrefab, transform);
-            cardToAddObject.GetComponent<CityCardDisplay>().CityCardData = gui.Cities[cardToAdd].GetComponent<City>().city;
+            cardToAddObject.GetComponent<CityCardDisplay>().CityCardData = game.Cities[cardToAdd].city;
         }
         return cardToAddObject;
     }

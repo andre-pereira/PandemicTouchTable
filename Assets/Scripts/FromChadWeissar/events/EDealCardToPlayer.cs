@@ -8,7 +8,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class EDealCardToPlayer : EngineEvent
 {
     private const float scaleToCenterScale = 3f;
-    private const float scaleToCenterDuration = 0.2f;
+    private const float scaleToCenterDuration = 0.1f;
 
     GameGUI gui = GameGUI.theGameGUI;
     Game game = Game.theGame;

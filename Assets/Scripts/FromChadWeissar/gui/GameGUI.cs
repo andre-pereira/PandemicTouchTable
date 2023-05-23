@@ -94,9 +94,20 @@ public class GameGUI : MonoBehaviour
     {
         game = Game.theGame;
 
+        moveCityInfoToGame();
+
         saveCubesInitialPositions();
 
         CreateNeighborLines();
+    }
+
+    private void moveCityInfoToGame()
+    {
+        game.Cities = new City[Cities.Length];
+        for (int i = 0; i < Cities.Length; i++)
+        {
+            game.Cities[i] = Cities[i].GetComponent<City>();
+        }
     }
 
     private void saveCubesInitialPositions()
@@ -198,6 +209,15 @@ public class GameGUI : MonoBehaviour
         }
     }
 
+    internal void drawCurrentPlayerArea()
+    {
+        foreach (PlayerGUI pad in theGameGUI.PlayerPads)
+        {
+            if (game.CurrentPlayer == pad.Player)
+                pad.draw();
+        }
+    }
+
     public void saveAndExit()
     {
         AudioPlayer.PlayClip(AudioPlayer.AudioClipEnum.CLICK);
@@ -250,4 +270,6 @@ public class GameGUI : MonoBehaviour
                 return null;
         }
     }
+
+
 }

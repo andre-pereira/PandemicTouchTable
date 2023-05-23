@@ -7,7 +7,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 internal class EFlipCardAddCubes : EngineEvent
 {
-    private const float durationMove = 0.2f;
+    private const float durationMove = 0.1f;
     private const float scaleToCenterScale = 3f;
 
     GameGUI gui = GameGUI.theGameGUI;
@@ -32,7 +32,7 @@ internal class EFlipCardAddCubes : EngineEvent
             game.InfectionCardsDiscard = new List<int>();
             game.InfectionCards.Shuffle();
         }
-        cityToInfect = gui.Cities[numberOfCityToInfect].GetComponent<City>();
+        cityToInfect = game.Cities[numberOfCityToInfect];
 
         if(checkIfNoMoreCubesExist(cityToInfect))
         {

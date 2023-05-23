@@ -42,6 +42,7 @@ public class Player
     public string Name;
 
     public Roles Role { get; set; }
+    public int ActionsRemaining { get; internal set; }
 
     public Player()
     {
