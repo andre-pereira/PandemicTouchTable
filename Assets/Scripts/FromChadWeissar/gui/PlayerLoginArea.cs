@@ -64,7 +64,7 @@ public class PlayerLoginArea : MonoBehaviour
         Role = null;
         PlayerName = MainMenu.PlayerNames[Position];
         ChooseRoleText.text = ChooseRoleTextContent;
-        changePlayerAreaColor(null, GameGUI.theGameGUI.playerUIOpacity);
+        changePlayerAreaColor(null, GameGUI.gui.playerUIOpacity);
         roleCards = new GameObject[Enum.GetValues(typeof(Player.Roles)).Length];
         roleCardsDisplay = new RoleCardDisplay[roleCards.Length];
         for (int i = 0; i < roleCards.Length; i++)
@@ -72,7 +72,7 @@ public class PlayerLoginArea : MonoBehaviour
             int currentValue = i;
             roleCards[i] = Instantiate(prefabRolecard, horizontalLayoutRoles.transform);
             roleCardsDisplay[i] = roleCards[i].GetComponent<RoleCardDisplay>();
-            roleCardsDisplay[i].RoleCardData = GameGUI.theGameGUI.roleCards[i];
+            roleCardsDisplay[i].RoleCardData = GameGUI.gui.roleCards[i];
             roleCards[i].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() =>
             {
                 OnRoleClicked((Player.Roles)currentValue);
@@ -107,7 +107,7 @@ public class PlayerLoginArea : MonoBehaviour
             MainMenu.FreeRoles.Add(roleToChangeTo);
             ChooseRoleText.text = ChooseRoleTextContent;
             MainMenu.UpdateRoles();
-            changePlayerAreaColor(null, GameGUI.theGameGUI.playerUIOpacity);
+            changePlayerAreaColor(null, GameGUI.gui.playerUIOpacity);
         }
         else
         if (MainMenu.FreeRoles.Contains(roleToChangeTo))
@@ -118,7 +118,7 @@ public class PlayerLoginArea : MonoBehaviour
                 MainMenu.FreeRoles.Add(Role.Value);
             }
             Role = roleToChangeTo;
-            changePlayerAreaColor(roleToChangeTo, GameGUI.theGameGUI.playerUIOpacity);
+            changePlayerAreaColor(roleToChangeTo, GameGUI.gui.playerUIOpacity);
             MainMenu.UpdateRoles();
         }
     }

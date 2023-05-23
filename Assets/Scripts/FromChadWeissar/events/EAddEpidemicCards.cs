@@ -7,7 +7,7 @@ internal class EAddEpidemicCards : EngineEvent
 {
     private const float OffsetEpidemicCards = 2.5f;
     private const float DurationEpidemicMove = 0.1f;
-    GameGUI gui = GameGUI.theGameGUI;
+    GameGUI gui = GameGUI.gui;
     Game game = Game.theGame;
 
     public EAddEpidemicCards()

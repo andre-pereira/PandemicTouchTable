@@ -10,7 +10,7 @@ internal class EFlipCardAddCubes : EngineEvent
     private const float durationMove = 0.1f;
     private const float scaleToCenterScale = 3f;
 
-    GameGUI gui = GameGUI.theGameGUI;
+    GameGUI gui = GameGUI.gui;
     Game game = Game.theGame;
     private int numberOfCubes;
     private int numberOfCityToInfect;
@@ -105,7 +105,7 @@ internal class EFlipCardAddCubes : EngineEvent
         for (int i = 0; i < numberOfCubes; i++)
         {
             cubes.Add(gui.GetCubesList(cityToInfect.GetComponent<City>().city.virusInfo).Pop());
-            Vector3 positionToMove = new Vector3(cityToInfect.cubesGameObject.transform.position.x, cityToInfect.cubesGameObject.transform.position.y, 0);
+            Vector3 positionToMove = new Vector3(cityToInfect.CubesGameObject.transform.position.x, cityToInfect.CubesGameObject.transform.position.y, 0);
             sequence.Join(cubes[i].transform.DOMove(positionToMove, durationMove * 2));
             if (i == numberOfCubes - 1)
                 sequence.AppendCallback(() =>

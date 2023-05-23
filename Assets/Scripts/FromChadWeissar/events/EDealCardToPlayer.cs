@@ -10,17 +10,12 @@ public class EDealCardToPlayer : EngineEvent
     private const float scaleToCenterScale = 3f;
     private const float scaleToCenterDuration = 0.1f;
 
-    GameGUI gui = GameGUI.theGameGUI;
+    GameGUI gui = GameGUI.gui;
     Game game = Game.theGame;
     Player player = null;
     PlayerGUI playerGui = null;
     private bool waitForEnd;
     int cardToAdd = -1;
-
-
-    private bool isShowingFront = false;
-
-
 
     public EDealCardToPlayer(Player player, bool waitForEnd)
     {
@@ -33,7 +28,7 @@ public class EDealCardToPlayer : EngineEvent
     public override void Do(Timeline timeline)
     {
         cardToAdd = game.PlayerCards.Pop();
-        player.CardsInHand.Add(cardToAdd);
+        player.AddCardToHand(cardToAdd);
 
     }
 

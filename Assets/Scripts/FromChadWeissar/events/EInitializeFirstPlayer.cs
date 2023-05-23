@@ -6,7 +6,7 @@ using UnityEngine;
 internal class EInitializeFirstPlayer : EngineEvent
 {
     Game game = Game.theGame;
-    GameGUI gui = GameGUI.theGameGUI;
+    GameGUI gui = GameGUI.gui;
 
     public EInitializeFirstPlayer()
     {

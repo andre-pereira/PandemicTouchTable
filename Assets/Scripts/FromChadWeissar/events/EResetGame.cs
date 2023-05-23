@@ -13,8 +13,8 @@ public class EResetGame : EngineEvent
         Game.theGame.init();
         Game.theGame.CurrentPlayer = null;
         PlayerList.Players.Clear();
-        foreach (PlayerGUI pad in GameGUI.theGameGUI.PlayerPads)
-            pad.Player = null;
+        foreach (PlayerGUI pad in GameGUI.gui.PlayerPads)
+            pad.PlayerModel = null;
     }
     
 }

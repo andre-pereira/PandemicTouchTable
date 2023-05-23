@@ -7,7 +7,8 @@ using static ENUMS;
 
 public class EIncreaseOutbreak : EngineEvent
 {
-    GameGUI gui = GameGUI.theGameGUI;
+    private const float ANIMATIONDURATION = 1f;
+    GameGUI gui = GameGUI.gui;
     Game game = Game.theGame;
 
     public override void Do(Timeline timeline)
@@ -21,8 +22,17 @@ public class EIncreaseOutbreak : EngineEvent
 
     public override float Act(bool qUndo = false)
     {
-        gui.OutbreakMarker.transform.DOMove(gui.OutbreakMarkerTransforms[game.OutbreakCounter].position, 1f);
-        return 0f;
+        Transform moveFrom = gui.OutbreakMarkerTransforms[game.OutbreakCounter - 1];
+        Transform moveTo = gui.OutbreakMarkerTransforms[game.OutbreakCounter];
+        moveFrom.gameObject.DestroyChildrenImmediate();
+        GameObject marker = Object.Instantiate(gui.OutbreakMarkerPrefab, moveFrom.position, moveFrom.rotation, gui.AnimationCanvas.transform);
+        marker.transform.DOMove(moveTo.transform.position, ANIMATIONDURATION).OnComplete(() => 
+        {
+            Object.Destroy(marker);
+            gui.drawBoard();
+        });
+        
+        return ANIMATIONDURATION;
     }
 
 

@@ -7,7 +7,7 @@ using UnityEngine;
 public class EInitialize : EngineEvent
 {
     public int? Seed;
-    private GameGUI gui = GameGUI.theGameGUI;
+    private GameGUI gui = GameGUI.gui;
     private Game game = Game.theGame;
 
     public EInitialize()
@@ -43,9 +43,6 @@ public class EInitialize : EngineEvent
 
         game.InfectionCards = Enumerable.Range(0, 24).ToList();
         game.InfectionCards.Shuffle();
-
-        Timeline.theTimeline.addEvent(new EIncreaseOutbreak());
-        Timeline.theTimeline.addEvent(new EIncreaseInfectionRate());
 
         int numCardsToDeal = PlayerList.Players.Count == 2 ? 3 : 2;
         foreach (Player player in PlayerList.Players)

@@ -21,10 +21,10 @@ public class Game : MonoBehaviour
         GAME_OVER
     }
 
-    public int InfectionRate = -1;
+    public int InfectionRate = 0;
     public int[] InfectionRateValues = new int[] { 2, 2, 3, 4 };
 
-    public int OutbreakCounter = -1;
+    public int OutbreakCounter = 0;
 
     public int InitialCityID = 13;
 
@@ -43,6 +43,10 @@ public class Game : MonoBehaviour
     public int YellowCubes = 16;
     public int BlueCubes = 16;
 
+    public bool RedCure = false;
+    public bool YellowCure = false;
+    public bool BlueCure = false;
+
     public City[] Cities { get; internal set; }
 
     public void init()
@@ -54,8 +58,8 @@ public class Game : MonoBehaviour
         InfectionCards = new List<int>();
         InfectionCardsDiscard = new List<int>();
 
-        InfectionRate = -1;
-        OutbreakCounter = -1;
+        InfectionRate = 0;
+        OutbreakCounter = 0;
     }
 
     public int GetCurrentInfectionRate()
@@ -65,7 +69,7 @@ public class Game : MonoBehaviour
 
     public void test()
     {
-        Timeline.theTimeline.addEvent(new EIncreaseOutbreak());
+        GameGUI.gui.draw();
     }
 
     public void Awake()

@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.ComponentModel;
+using JetBrains.Annotations;
 
 public class Player
 {
+    public Game game = Game.theGame;
+    public GameGUI gui = GameGUI.gui;
+
     public enum Roles
     {
         [Description("Containment Specialist")]
@@ -21,25 +25,10 @@ public class Player
         Virologist
     };
 
-    public enum Statistic
-    {
-        NUM_TYPES
-    }
-
-    public List<int> CardsInHand;
-
-
-    #region State
-    #endregion
-
-    #region Statistics
-    public float ActingTime = 0f;
-    public Dictionary<Statistic, int> Statistics = new Dictionary<Statistic, int>();
-    #endregion
-
     public int Position;
     public int Place;
     public string Name;
+    public int CurrentCity;
 
     public Roles Role { get; set; }
     public int ActionsRemaining { get; internal set; }
@@ -47,8 +36,49 @@ public class Player
     public Player()
     {
         CardsInHand = new List<int>();
-        for (int i = 0; i < (int)Statistic.NUM_TYPES; ++i)
-            Statistics[(Statistic)i] = 0;
+        RedCardsInHand = new List<int>();
+        YellowCardsInHand = new List<int>();
+        BlueCardsInHand = new List<int>();
+        EventCardsInHand = new List<int>();
     }
+
+    public void AddCardToHand(int card)
+    {
+        CardsInHand.Add(card);
+        if(card <24)
+            switch (game.Cities[card].city.virusInfo.virusName)
+            {
+                case ENUMS.VirusName.Red:
+                    RedCardsInHand.Add(card);
+                    break;
+                case ENUMS.VirusName.Yellow:
+                    YellowCardsInHand.Add(card);
+                    break;
+                case ENUMS.VirusName.Blue:
+                    BlueCardsInHand.Add(card);
+                    break;
+                default:
+                    break;
+            }
+        else
+            EventCardsInHand.Add(card);
+    }
+
+    public List<int> CardsInHand;
+    public List<int> RedCardsInHand;
+    public List<int> YellowCardsInHand;
+    public List<int> BlueCardsInHand;
+    public List<int> EventCardsInHand;
+
+    public City CurrentCityScript()
+    {
+        return Game.theGame.Cities[CurrentCity];
+    }
+
+
+    #region State
+    #endregion
+
+
 
 }

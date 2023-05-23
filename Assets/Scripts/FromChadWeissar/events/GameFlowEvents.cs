@@ -36,7 +36,7 @@ public class EEndGame : EngineEvent
   public override float Act(bool qUndo = false)
   {
     //WindowsVoice.speak("Game Over.");
-    GameGUI.theGameGUI.draw();
+    GameGUI.gui.draw();
     return 0;
   }
 }

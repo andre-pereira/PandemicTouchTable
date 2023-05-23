@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class EIncreaseInfectionRate : EngineEvent
 {
-    GameGUI gui = GameGUI.theGameGUI;
+    private const float ANIMATIONDURATION = 1f;
+    GameGUI gui = GameGUI.gui;
     Game game = Game.theGame;
 
     public override void Do(Timeline timeline)
@@ -16,7 +17,15 @@ public class EIncreaseInfectionRate : EngineEvent
 
     public override float Act(bool qUndo = false)
     {
-        gui.InfectionRateMarker.transform.DOMove(gui.InfectionRateMarkerTransforms[game.InfectionRate].position, 1f);
-        return 0f;
+        GameObject moveFrom = gui.getInfectionRateMarker(game.InfectionRate - 1);
+        GameObject moveTo = gui.getInfectionRateMarker(game.InfectionRate);
+        moveFrom.DestroyChildrenImmediate();
+        GameObject marker = Object.Instantiate(gui.InfectionRateMarkerPrefab, moveFrom.transform.position, moveFrom.transform.rotation, gui.AnimationCanvas.transform);
+        marker.transform.DOMove(moveTo.transform.position, ANIMATIONDURATION).OnComplete(() =>
+        {
+            Object.Destroy(marker);
+            gui.drawBoard();
+        });
+        return ANIMATIONDURATION;
     }
 }

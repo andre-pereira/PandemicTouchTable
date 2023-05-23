@@ -14,15 +14,24 @@ public class City : MonoBehaviour
         new float[] { 0.58f, -0.38f }
     };
 
+    public static readonly float[][] offsetPawns = new float[][]
+{
+        new float[] { -0.1f, 0.55f },
+        new float[] { 0.1f, 0.55f },
+        new float[] { 0.3f, 0.45f },
+        new float[] { -0.3f, 0.45f }
+};
+
     private Game game;
     private GameGUI gui;
 
     public CityCard city;
 
     public int numberOfInfectionCubes = 0;
-    public GameObject cubesGameObject;
+    public GameObject CubesGameObject;
+    public GameObject PawnsGameObject;
 
-    private Player.Roles?[] availablePawnSlotsInCity = new Player.Roles?[4];
+    public List<Player> PawnsInCity = new List<Player>();
 
     private RectTransform rectTransform;
     private RectTransform canvasRectTransform;
@@ -32,7 +41,7 @@ public class City : MonoBehaviour
     void Start()
     {
         game = Game.theGame;
-        gui = GameGUI.theGameGUI;
+        gui = GameGUI.gui;
         rectTransform = GetComponent<RectTransform>();
         canvasRectTransform = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
     }
@@ -43,57 +52,45 @@ public class City : MonoBehaviour
         
     }
 
-    public void addPawn(Player.Roles role)
+    public void addPawn(Player player)
     {
-        for (int i = 0; i < availablePawnSlotsInCity.Length; i++)
-        {
-            if (availablePawnSlotsInCity[i] == null)
-            {
-                availablePawnSlotsInCity[i] = role;
-                return;
-            }
-        }
+        PawnsInCity.Add(player);
     }
 
-    public void removePawn(Player.Roles role)
+    public void removePawn(Player player)
     {
-        for (int i = 0; i < availablePawnSlotsInCity.Length; i++)
-        {
-            if (availablePawnSlotsInCity[i] == role)
-            {
-                availablePawnSlotsInCity[i] = null;
-                return;
-            }
-        }
-    }
-
-    public Vector3 getPawnPosition(Player.Roles role)
-    {
-        Vector3 worldPoint = new Vector3(0,0,0);
-
-        for (int i = 0; i < availablePawnSlotsInCity.Length; i++)
-        {
-            if (availablePawnSlotsInCity[i] == role)
-            {
-                Vector2 offset = GameGUI.theGameGUI.PawnPositionInCityOffset[i];
-                Vector3 newLocalPosition = rectTransform.localPosition + new Vector3(offset.x, offset.y, 0);
-                worldPoint = rectTransform.parent.TransformPoint(newLocalPosition);
-            }
-        }
-        return worldPoint;
+        PawnsInCity.Remove(player);
     }
 
     internal void draw()
     {
-        cubesGameObject.DestroyChildrenImmediate();
+        Vector3 worldPoint = new Vector3(0, 0, 0);
+        CubesGameObject.DestroyChildrenImmediate();
+        PawnsGameObject.DestroyChildrenImmediate();
+
         if (numberOfInfectionCubes > 0)
         {
             for (int i = 0; i < numberOfInfectionCubes; i++)
             {
-                GameObject cube = Instantiate(gui.cubePrefab, cubesGameObject.transform);
+                GameObject cube = Instantiate(gui.cubePrefab, CubesGameObject.transform);
                 cube.transform.Translate(offsetCubes[i][0], offsetCubes[i][1],0);
                 cube.GetComponent<Cube>().virusInfo = city.virusInfo;
             }
         }
+
+        if (PawnsInCity.Count > 0)
+        {
+            for (int i = 0; i < PawnsInCity.Count; i++)
+            {
+                GameObject pawn = Instantiate(gui.PawnPrefab, PawnsGameObject.transform.position , PawnsGameObject.transform.rotation, PawnsGameObject.transform);
+                pawn.transform.Translate(offsetPawns[i][0], offsetPawns[i][1], 0);
+                pawn.GetComponent<Image>().color = gui.roleCards[(int)PawnsInCity[i].Role].roleColor;
+            }
+        }
+        //GameObject currentPawn = gui.Pawns[(int)PlayerRole];
+        //currentPawn.SetActive(true);
+        //Image currentPawnImage = currentPawn.GetComponent<Image>();
+        //City initialCity = game.Cities[game.InitialCityID];
+        //Vector3 pawnPosition = initialCity.getPawnPosition(PlayerRole);
     }
 }

@@ -27,7 +27,7 @@ public class PlayerGUI : MonoBehaviour
     public GameObject ShareAction;
     public GameObject FindCureAction;
 
-    public Player Player
+    public Player PlayerModel
     {
         get { if (_player == null) _player = PlayerList.playerAtPosition(Position); return _player; }
         set { _player = value; }
@@ -37,15 +37,15 @@ public class PlayerGUI : MonoBehaviour
 
     public void init()
     {
-        gui = GameGUI.theGameGUI;
+        gui = GameGUI.gui;
         game = Game.theGame;
         _player = null;
-        roleCard.RoleCardData = GameGUI.theGameGUI.roleCards[(int)Player.Role];
+        roleCard.RoleCardData = GameGUI.gui.roleCards[(int)PlayerModel.Role];
         Color targeColor = roleCard.RoleCardData.roleColor;
-        targeColor.a = GameGUI.theGameGUI.playerUIOpacity;
+        targeColor.a = GameGUI.gui.playerUIOpacity;
         GetComponent<Image>().color = targeColor;
 
-        if (Game.theGame.CurrentPlayer == Player)
+        if (Game.theGame.CurrentPlayer == PlayerModel)
         {
             CurrentInstructionText.text += "Your turn. You have " + "";
         }
@@ -53,7 +53,7 @@ public class PlayerGUI : MonoBehaviour
         {
             CurrentInstructionText.text += WaitForYourTurnText;
         }
-        playerNameText.text = Player.Name;
+        playerNameText.text = PlayerModel.Name;
     }
 
     bool _isAnimating = false;
@@ -62,7 +62,7 @@ public class PlayerGUI : MonoBehaviour
     public void draw()
     {
         if (_isAnimating) return;
-        if (Player == null) return;
+        if (PlayerModel == null) return;
 
         PlayerCards.DestroyChildrenImmediate();
 
@@ -71,22 +71,49 @@ public class PlayerGUI : MonoBehaviour
             AddPlayerCardToTransform(cardToAdd, PlayerCards.transform);
         }
 
-        if(Player == game.CurrentPlayer)
+        if(PlayerModel == game.CurrentPlayer)
         {
-            CurrentInstructionText.text = "Your turn. You have " + Player.ActionsRemaining + " actions remaining.";
-            if (Player.ActionsRemaining > 0)
+            CurrentInstructionText.text = "Your turn. You have " + PlayerModel.ActionsRemaining + " actions remaining.";
+            if (PlayerModel.ActionsRemaining > 0)
             {
                 MoveAction.SetActive(true);
 
+                bool flyAction = false;
+                bool charterAction = false;
+                bool findCureAction = false;
+                bool shareAction = false;
+                List<int>[] cardsOfEachColor = new List<int>[3]; 
+                foreach (int card in PlayerModel.CardsInHand)
+                {
+                    if (card < 24)
+                    {
+                        if(card != PlayerModel.CurrentCity)
+                            flyAction = true;
+                        else
+                            charterAction = true;
+                    }
+                }
+                FlyAction.SetActive(flyAction);
+                CharterAction.SetActive(charterAction);
+                FindCureAction.SetActive(findCureAction);
 
-                FlyAction.SetActive(true);
-                CharterAction.SetActive(true);
+                bool treatAction = false;
+                if(PlayerModel.CurrentCityScript().numberOfInfectionCubes > 0)
+                    treatAction = true;
+                TreatAction.SetActive(treatAction);
 
-                TreatAction.SetActive(true);
-                ShareAction.SetActive(true);
+                if(!game.RedCure && PlayerModel.RedCardsInHand.Count>3 || !game.YellowCure && PlayerModel.YellowCardsInHand.Count > 3 || !game.BlueCure && PlayerModel.BlueCardsInHand.Count > 3)
+                    FindCureAction.SetActive(treatAction);
 
-                
-                FindCureAction.SetActive(true);
+                foreach (Player player in PlayerModel.CurrentCityScript().PawnsInCity)
+                {
+                    if(player != _player)
+                    {
+                        if(player.CardsInHand.Contains(_player.CurrentCity) || _player.CardsInHand.Contains(_player.CurrentCity))
+                            shareAction = true;
+                    }
+                }
+                ShareAction.SetActive(shareAction);
             }
         }
         else

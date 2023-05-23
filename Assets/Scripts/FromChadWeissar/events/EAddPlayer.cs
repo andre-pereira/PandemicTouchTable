@@ -9,7 +9,7 @@ public class EAddPlayer : EngineEvent
     public Player.Roles PlayerRole;
     public string PlayerName;
 
-    GameGUI gui = GameGUI.theGameGUI;
+    GameGUI gui = GameGUI.gui;
     Game game = Game.theGame;
 
     EAddPlayer()
@@ -27,24 +27,20 @@ public class EAddPlayer : EngineEvent
     {
         Player p = new Player() { Position = TablePositionId, Role = PlayerRole, Name = PlayerName };
         PlayerList.Players.Add(p);
-        game.Cities[game.InitialCityID].addPawn(PlayerRole);
+        p.CurrentCity = game.InitialCityID;
+        game.Cities[game.InitialCityID].addPawn(p);
     }
 
     public override float Act(bool qUndo = false)
     {
-        GameObject currentPawn = gui.Pawns[(int)PlayerRole];
-        currentPawn.SetActive(true);
-        Image currentPawnImage = currentPawn.GetComponent<Image>();
-        City initialCity = game.Cities[game.InitialCityID];
-        Vector3 pawnPosition = initialCity.getPawnPosition(PlayerRole);
 
-        Sequence sequence = DOTween.Sequence();
-        sequence.Append(currentPawnImage.DOFade(0f, 0f));
-        sequence.Append(currentPawnImage.DOFade(1f, 1f));
-        sequence.Append(currentPawn.transform.DOMove(pawnPosition,1f));
-        sequence.Play();
-        
-        return base.Act(qUndo);
+        //Sequence sequence = DOTween.Sequence();
+        //sequence.Append(currentPawnImage.DOFade(0f, 0f));
+        //sequence.Append(currentPawnImage.DOFade(1f, 1f));
+        //sequence.Append(currentPawn.transform.DOMove(pawnPosition,1f));
+        //sequence.Play();
+        game.Cities[game.InitialCityID].draw();
+        return 0f;
     }
 
 }

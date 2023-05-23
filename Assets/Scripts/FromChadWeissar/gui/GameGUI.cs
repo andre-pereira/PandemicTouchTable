@@ -13,7 +13,7 @@ using static ENUMS;
 public class GameGUI : MonoBehaviour
 {
     private Game game = null;
-    public static GameGUI theGameGUI = null;
+    public static GameGUI gui = null;
 
     public Texture PlayerCardBack;
     public GameObject CityCardPrefab;
@@ -27,6 +27,8 @@ public class GameGUI : MonoBehaviour
     public GameObject cubePrefab;
 
     public GameObject EpidemicCardPrefab;
+
+    public GameObject CureVialPrefab;
 
     //public GameObject LoadOverlay;
     public GameObject BackgroundCanvas;
@@ -48,21 +50,22 @@ public class GameGUI : MonoBehaviour
     public GameObject InfectionDiscard;
     public TextMeshProUGUI InfectionDeckCount;
 
-    public GameObject OutbreakMarker;
+    public GameObject OutbreakMarkerPrefab;
     public Transform[] OutbreakMarkerTransforms;
 
-    public GameObject InfectionRateMarker;
+    public GameObject InfectionRateMarkerPrefab;
     public Transform[] InfectionRateMarkerTransforms;
 
     public GameObject[] VialTokens;
     public Transform[] VialTokensTransforms;
 
-    public GameObject[] Pawns;
-    public Vector2[] PawnPositionInCityOffset;
+    public GameObject Pawns;
+    public GameObject PawnPrefab;
 
     public List<GameObject> RedCubes;
     public List<GameObject> YellowCubes;
     public List<GameObject> BlueCubes;
+    public VirusInfo[] VirusInfos;
 
     public TextMeshProUGUI DebugText;
 
@@ -87,7 +90,7 @@ public class GameGUI : MonoBehaviour
 
     void Awake()
     {
-        theGameGUI = this;
+        gui = this;
     }
     // Use this for initialization
     void Start()
@@ -162,7 +165,7 @@ public class GameGUI : MonoBehaviour
 
     void OnDestroy()
     {
-        theGameGUI = null;
+        gui = null;
     }
 
     public static PlayerGUI currentPlayerPad()
@@ -182,7 +185,7 @@ public class GameGUI : MonoBehaviour
 
     public static PlayerGUI playerPadForPosition(int position)
     {
-        PlayerGUI retVal = theGameGUI.PlayerPads.FirstOrDefault(p => p.Position == position);
+        PlayerGUI retVal = gui.PlayerPads.FirstOrDefault(p => p.Position == position);
         if (retVal == null)
             Debug.LogError("Requesting playerGUI for player at position " + position + " which doesn't exist.");
         return retVal;
@@ -199,11 +202,54 @@ public class GameGUI : MonoBehaviour
     {
         PlayerDeckCount.text = game.PlayerCards.Count.ToString();
         InfectionDeckCount.text = game.InfectionCards.Count.ToString();
+
+        foreach (Transform item in OutbreakMarkerTransforms)
+        {
+            item.gameObject.DestroyChildrenImmediate();
+        }
+
+        foreach (Transform item in InfectionRateMarkerTransforms)
+        {
+            item.gameObject.DestroyChildrenImmediate();
+        }
+
+        Instantiate(InfectionRateMarkerPrefab, InfectionRateMarkerTransforms[game.InfectionRate].position, InfectionRateMarkerTransforms[game.InfectionRate].rotation, InfectionRateMarkerTransforms[game.InfectionRate]);
+        Instantiate(OutbreakMarkerPrefab, OutbreakMarkerTransforms[game.OutbreakCounter].position, OutbreakMarkerTransforms[game.OutbreakCounter].rotation, OutbreakMarkerTransforms[game.OutbreakCounter]);
+
+        drawCureVialsOnBoard();
+
+    }
+
+    private void drawCureVialsOnBoard()
+    {
+        for (int i = 0; i < VialTokensTransforms.Length; i++)
+        {
+            VialTokensTransforms[i].gameObject.DestroyChildrenImmediate();
+        }
+
+        if (game.RedCure)
+        {
+            GameObject vial = Instantiate(CureVialPrefab, VialTokensTransforms[0].position, VialTokensTransforms[0].rotation, VialTokensTransforms[0]);
+            vial.GetComponent<Image>().color = gui.VirusInfos[0].virusColor; 
+        }
+
+        if (game.YellowCure)
+        {
+            GameObject vial = Instantiate(CureVialPrefab, VialTokensTransforms[1].position, VialTokensTransforms[1].rotation, VialTokensTransforms[1]);
+            vial.GetComponent<Image>().color = gui.VirusInfos[1].virusColor;
+        }
+
+        if (game.BlueCure)
+        { 
+            GameObject vial = Instantiate(CureVialPrefab, VialTokensTransforms[2].position, VialTokensTransforms[2].rotation, VialTokensTransforms[2]);
+            vial.GetComponent<Image>().color = gui.VirusInfos[2].virusColor;
+        }
+
     }
 
     public void drawPlayerAreas()
     {
-        foreach (PlayerGUI pad in theGameGUI.PlayerPads)
+        foreach (PlayerGUI pad in gui.PlayerPads)
         {
             pad.draw();
         }
@@ -211,9 +257,9 @@ public class GameGUI : MonoBehaviour
 
     internal void drawCurrentPlayerArea()
     {
-        foreach (PlayerGUI pad in theGameGUI.PlayerPads)
+        foreach (PlayerGUI pad in gui.PlayerPads)
         {
-            if (game.CurrentPlayer == pad.Player)
+            if (game.CurrentPlayer == pad.PlayerModel)
                 pad.draw();
         }
     }
@@ -232,12 +278,7 @@ public class GameGUI : MonoBehaviour
         StopAllCoroutines();
         AudioPlayer.PlayClip(AudioPlayer.AudioClipEnum.CLICK);
         DOTween.CompleteAll(true);
-        Dictionary<int, float> times = new Dictionary<int, float>();
-        foreach (Player p in PlayerList.Players)
-            times[p.Position] = p.ActingTime;
         Timeline.theTimeline.undo();
-        foreach (var kvp in times)
-            PlayerList.playerAtPosition(kvp.Key).ActingTime = kvp.Value;
     }
 
     // During development, I'll often add a save/load button to the screen so that I can quickly
@@ -271,5 +312,13 @@ public class GameGUI : MonoBehaviour
         }
     }
 
+    public GameObject getInfectionRateMarker(int targetInfectionRate)
+    {
+        return InfectionRateMarkerTransforms[targetInfectionRate].gameObject;
+    }
 
+    public GameObject getOutbreakMarker(int targetOutbreak)
+    {
+        return OutbreakMarkerTransforms[targetOutbreak].gameObject;
+    }
 }

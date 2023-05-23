@@ -122,7 +122,7 @@ public class Timeline : MonoBehaviour
     virtual public void OnEventsReprocessed()
     {
         // Draw GUI
-        GameGUI.theGameGUI.draw();
+        GameGUI.gui.draw();
         //this.ExecuteLater(0.2f, () => GameGUI.theGameGUI.LoadOverlay.gameObject.SetActive(false));
     }
 
