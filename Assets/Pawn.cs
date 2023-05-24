@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Pawn : MonoBehaviour, IDragHandler, IEndDragHandler
+public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandler
 {
     public Canvas citiesCanvas;
     private Canvas canvas;
@@ -12,6 +12,7 @@ public class Pawn : MonoBehaviour, IDragHandler, IEndDragHandler
     private RectTransform rectTransform;
     private GraphicRaycaster graphicRaycaster;
     public bool canMove = false;
+    private Vector2 initialPosition;
     
     private City endedInCity = null;
 
@@ -57,7 +58,66 @@ public class Pawn : MonoBehaviour, IDragHandler, IEndDragHandler
     {
         if(endedInCity != null)
         {
-            Debug.Log("Ended in city: " + endedInCity.name);
+            int numberOfActionsLeft = Game.theGame.CurrentPlayer.ActionsRemaining;
+            List<int> citiesToVisit = new List<int>();
+            List<int> citiesVisited = new List<int>();
+            bool foundConnection = false;
+
+            rectTransform.localPosition = initialPosition;
+            List<int> newCitiesToVisit = new List<int>();
+
+            foreach (int city in endedInCity.city.neighbors)
+            {
+                newCitiesToVisit.Add(city);
+            }
+
+            for (int i = 0; i < Game.theGame.CurrentPlayer.ActionsRemaining; i++)
+            {
+                citiesToVisit = new List<int>(newCitiesToVisit);
+                newCitiesToVisit.Clear();
+                foreach (int city in citiesToVisit)
+                {
+                    numberOfActionsLeft--;
+                    if(citiesVisited.Contains(city))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        if (Game.theGame.CurrentPlayer.CurrentCity == city)
+                        {
+                            foundConnection = true;
+                            break;
+                        }
+                        else
+                        {
+                            foreach (int neighbor in Game.theGame.Cities[city].city.neighbors)
+                            {
+                                newCitiesToVisit.Add(neighbor);
+                            }
+                            citiesVisited.Add(city);
+                        }
+                    }
+                }
+                if(foundConnection)
+                {
+                    break;
+                }
+            }
+
+            if(foundConnection && numberOfActionsLeft >= 0)
+            {
+                Game.theGame.CurrentPlayer.CurrentCity = endedInCity.city.cityID;
+                endedInCity.draw();
+                Game.theGame.CurrentPlayer.ActionsRemaining = numberOfActionsLeft;
+                Debug.Log("Ended in city: " + endedInCity.name);
+                
+            }
         }
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, eventData.position, canvas.worldCamera, out initialPosition);
     }
 }

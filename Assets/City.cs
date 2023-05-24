@@ -62,7 +62,7 @@ public class City : MonoBehaviour
         PawnsInCity.Remove(player);
     }
 
-    internal void draw()
+    public void draw()
     {
         Vector3 worldPoint = new Vector3(0, 0, 0);
         CubesGameObject.DestroyChildrenImmediate();
