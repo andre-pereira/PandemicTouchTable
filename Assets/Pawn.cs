@@ -13,6 +13,7 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
     private GraphicRaycaster graphicRaycaster;
     public bool canMove = false;
     private Vector2 initialPosition;
+    private int initialCityID;
     
     private City endedInCity = null;
 
@@ -97,7 +98,9 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
                 Game.theGame.CurrentPlayer.UpdateCurrentCity(endedInCity.city.cityID);
                 Game.theGame.CurrentPlayer.ActionsRemaining -= numberOfActionsSpent;
                 Debug.Log("Ended in city: " + endedInCity.name);
+                
                 endedInCity.draw();
+                Game.theGame.Cities[initialCityID].draw();
                 GameGUI.gui.draw();
 
             }
@@ -109,5 +112,6 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
     public void OnBeginDrag(PointerEventData eventData)
     {
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, eventData.position, canvas.worldCamera, out initialPosition);
+        initialCityID = Game.theGame.CurrentPlayer.GetCurrentCity();
     }
 }

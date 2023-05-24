@@ -84,6 +84,7 @@ public class Player
 
     internal void UpdateCurrentCity(int cityID)
     {
+        game.Cities[currentCity].removePawn(this);
         currentCity = cityID;
         game.Cities[cityID].addPawn(this);
     }
