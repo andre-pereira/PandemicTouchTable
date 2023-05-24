@@ -135,7 +135,7 @@ public class PlayerGUI : MonoBehaviour
                     {
                         if (card < 24)
                         {
-                            if (card != PlayerModel.CurrentCity)
+                            if (card != PlayerModel.GetCurrentCity())
                                 flyAction = true;
                             else
                                 charterAction = true;
@@ -152,7 +152,7 @@ public class PlayerGUI : MonoBehaviour
                     {
                         if (player != _player)
                         {
-                            if (player.CardsInHand.Contains(_player.CurrentCity) || _player.CardsInHand.Contains(_player.CurrentCity))
+                            if (player.CardsInHand.Contains(_player.GetCurrentCity()) || _player.CardsInHand.Contains(_player.GetCurrentCity()))
                                 shareAction = true;
                         }
                     }

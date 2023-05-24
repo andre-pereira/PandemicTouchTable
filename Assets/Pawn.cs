@@ -56,65 +56,55 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if(endedInCity != null)
+        if (endedInCity != null)
         {
-            int numberOfActionsLeft = Game.theGame.CurrentPlayer.ActionsRemaining;
-            List<int> citiesToVisit = new List<int>();
-            List<int> citiesVisited = new List<int>();
+            if (endedInCity.city.cityID == Game.theGame.CurrentPlayer.GetCurrentCity())
+                return;
+
+            int numberOfActionsSpent = 0;
+            HashSet<int> citiesToVisit = new HashSet<int>();
+            HashSet<int> citiesVisited = new HashSet<int>();
             bool foundConnection = false;
 
-            rectTransform.localPosition = initialPosition;
-            List<int> newCitiesToVisit = new List<int>();
+            HashSet<int> newCitiesToVisit = new HashSet<int>();
 
-            foreach (int city in endedInCity.city.neighbors)
-            {
-                newCitiesToVisit.Add(city);
-            }
+            newCitiesToVisit.UnionWith(endedInCity.city.neighbors);
 
             for (int i = 0; i < Game.theGame.CurrentPlayer.ActionsRemaining; i++)
             {
-                citiesToVisit = new List<int>(newCitiesToVisit);
-                newCitiesToVisit.Clear();
+                numberOfActionsSpent++;
+                citiesToVisit = new HashSet<int>(newCitiesToVisit);
+                newCitiesToVisit.RemoveWhere(citiesVisited.Contains);
+                citiesVisited.UnionWith(citiesToVisit);
+
+                if (citiesVisited.Contains(Game.theGame.CurrentPlayer.GetCurrentCity()))
+                {
+                    foundConnection = true;
+                    break;
+                }
+
                 foreach (int city in citiesToVisit)
                 {
-                    numberOfActionsLeft--;
-                    if(citiesVisited.Contains(city))
+                    foreach (int neighbor in Game.theGame.Cities[city].city.neighbors)
                     {
-                        continue;
+                        newCitiesToVisit.Add(neighbor);
                     }
-                    else
-                    {
-                        if (Game.theGame.CurrentPlayer.CurrentCity == city)
-                        {
-                            foundConnection = true;
-                            break;
-                        }
-                        else
-                        {
-                            foreach (int neighbor in Game.theGame.Cities[city].city.neighbors)
-                            {
-                                newCitiesToVisit.Add(neighbor);
-                            }
-                            citiesVisited.Add(city);
-                        }
-                    }
-                }
-                if(foundConnection)
-                {
-                    break;
                 }
             }
 
-            if(foundConnection && numberOfActionsLeft >= 0)
+            if (foundConnection)
             {
-                Game.theGame.CurrentPlayer.CurrentCity = endedInCity.city.cityID;
-                endedInCity.draw();
-                Game.theGame.CurrentPlayer.ActionsRemaining = numberOfActionsLeft;
+                Game.theGame.CurrentPlayer.UpdateCurrentCity(endedInCity.city.cityID);
+                Game.theGame.CurrentPlayer.ActionsRemaining -= numberOfActionsSpent;
                 Debug.Log("Ended in city: " + endedInCity.name);
-                
+                endedInCity.draw();
+                GameGUI.gui.draw();
+
             }
+            else rectTransform.localPosition = initialPosition;
         }
     }
+
 
     public void OnBeginDrag(PointerEventData eventData)
     {

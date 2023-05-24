@@ -28,7 +28,8 @@ public class Player
     public int Position;
     public int Place;
     public string Name;
-    public int CurrentCity;
+    private int currentCity;
+    
 
     public Roles Role { get; set; }
     public int ActionsRemaining { get; internal set; }
@@ -73,7 +74,18 @@ public class Player
 
     public City CurrentCityScript()
     {
-        return Game.theGame.Cities[CurrentCity];
+        return Game.theGame.Cities[currentCity];
+    }
+
+    internal int GetCurrentCity()
+    {
+        return currentCity;
+    }
+
+    internal void UpdateCurrentCity(int cityID)
+    {
+        currentCity = cityID;
+        game.Cities[cityID].addPawn(this);
     }
 
 

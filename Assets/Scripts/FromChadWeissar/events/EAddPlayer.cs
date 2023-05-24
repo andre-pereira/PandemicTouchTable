@@ -27,8 +27,7 @@ public class EAddPlayer : EngineEvent
     {
         Player p = new Player() { Position = TablePositionId, Role = PlayerRole, Name = PlayerName };
         PlayerList.Players.Add(p);
-        p.CurrentCity = game.InitialCityID;
-        game.Cities[game.InitialCityID].addPawn(p);
+        p.UpdateCurrentCity(game.InitialCityID);
     }
 
     public override float Act(bool qUndo = false)
