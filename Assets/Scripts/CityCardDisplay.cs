@@ -23,6 +23,8 @@ public class CityCardDisplay : MonoBehaviour
 
     public Image artwork;
     public Image flag;
+    public Image border;
+
     public TextMeshProUGUI population;
     public TextMeshProUGUI cityName;
     public TextMeshProUGUI countryName;

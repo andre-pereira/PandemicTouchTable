@@ -62,6 +62,7 @@ public class Player
             }
         else
             EventCardsInHand.Add(card);
+        CardsInHand.Sort();
     }
 
     public List<int> CardsInHand;

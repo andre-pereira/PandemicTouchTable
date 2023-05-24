@@ -12,6 +12,7 @@ using static ENUMS;
 
 public class GameGUI : MonoBehaviour
 {
+    public PlayerGUIStates _state = PlayerGUIStates.None;
     private Game game = null;
     public static GameGUI gui = null;
 
@@ -321,4 +322,14 @@ public class GameGUI : MonoBehaviour
     {
         return OutbreakMarkerTransforms[targetOutbreak].gameObject;
     }
+}
+
+public enum PlayerGUIStates
+{
+    None,
+    CardsExpanded,
+    CardsExpandedFlyAction,
+    CardsExpandedCharterAction,
+    CardsExpandedShareAction,
+    CardsExpandedCureAction
 }

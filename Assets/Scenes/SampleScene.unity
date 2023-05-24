@@ -20196,6 +20196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bae47974ec1bff44b256317b1ed4168, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _state: 0
   PlayerCardBack: {fileID: 2800000, guid: 6273cd4669cdf2a4b9536a92bbf8d638, type: 3}
   CityCardPrefab: {fileID: 7863806904568637480, guid: 6c4b375740f4e8e45bea6c25af1e4fe5, type: 3}
   Cities:
@@ -20281,11 +20282,6 @@ MonoBehaviour:
   - {fileID: 1369685201}
   Pawns: {fileID: 1988174598}
   PawnPrefab: {fileID: 7680423514386549737, guid: 192875a961f8fe544835bcc057c8610a, type: 3}
-  PawnPositionInCityOffset:
-  - {x: 30, y: 7.5}
-  - {x: 30, y: -7.5}
-  - {x: 20, y: 22.5}
-  - {x: 20, y: -22.5}
   RedCubes:
   - {fileID: 935122468}
   - {fileID: 1920257854}

@@ -25,8 +25,6 @@ internal class EInitializeFirstPlayer : EngineEvent
             {
                 if (card < 24)
                 {
-                    if(game.Cities[card].city.name == "Vienna")
-                        Debug.Log("Vienna");
                     int population = int.Parse(game.Cities[card].city.population.Replace(".",""));
                     if (population > highestPopulation)
                     {

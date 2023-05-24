@@ -8,17 +8,21 @@ using System;
 using UnityEditor;
 using Unity.VisualScripting;
 
+
 public class PlayerGUI : MonoBehaviour
 {
     private const string WaitForYourTurnText = "Wait for your turn.";
     GameGUI gui;
     Game game;
 
+    public Image ContextButton;
+
     Player _player = null;
     public TMPro.TextMeshProUGUI CurrentInstructionText;
     public TMPro.TextMeshProUGUI playerNameText;
     public RoleCardDisplay roleCard;
     public GameObject PlayerCards;
+    private List<GameObject> cardsInHand;
 
     public GameObject MoveAction;
     public GameObject FlyAction;
@@ -40,6 +44,7 @@ public class PlayerGUI : MonoBehaviour
         gui = GameGUI.gui;
         game = Game.theGame;
         _player = null;
+        cardsInHand = new List<GameObject>();
         roleCard.RoleCardData = GameGUI.gui.roleCards[(int)PlayerModel.Role];
         Color targeColor = roleCard.RoleCardData.roleColor;
         targeColor.a = GameGUI.gui.playerUIOpacity;
@@ -59,62 +64,87 @@ public class PlayerGUI : MonoBehaviour
     bool _isAnimating = false;
     List<int> _drawnCards = new List<int>();
 
+
     public void draw()
     {
         if (_isAnimating) return;
         if (PlayerModel == null) return;
 
+        bool cardsExpanded = false;
+        if ((int)gui._state >= 1)
+            cardsExpanded = true;
+
+        cardsInHand.Clear();
         PlayerCards.DestroyChildrenImmediate();
+
+        HorizontalLayoutGroup layout = PlayerCards.GetComponent<HorizontalLayoutGroup>();
+        if (cardsExpanded)
+        {
+            layout.spacing = 130;
+            layout.padding.left = -530;
+        }
+        else
+        {
+            layout.spacing = 23.6f;
+            layout.padding.left = 0;
+        }
 
         foreach (int cardToAdd in _player.CardsInHand)
         {
-            AddPlayerCardToTransform(cardToAdd, PlayerCards.transform);
+            cardsInHand.Add(AddPlayerCardToTransform(cardToAdd, PlayerCards.transform));
         }
 
         if(PlayerModel == game.CurrentPlayer)
         {
-            CurrentInstructionText.text = "Your turn. You have " + PlayerModel.ActionsRemaining + " actions remaining.";
+            bool moveAction = false;
+            bool flyAction = false;
+            bool charterAction = false;
+            bool findCureAction = false;
+            bool treatAction = false;
+            bool shareAction = false;
+
+            CurrentInstructionText.text = PlayerModel.ActionsRemaining + " actions left.";
             if (PlayerModel.ActionsRemaining > 0)
             {
-                MoveAction.SetActive(true);
-
-                bool flyAction = false;
-                bool charterAction = false;
-                bool findCureAction = false;
-                bool shareAction = false;
-                List<int>[] cardsOfEachColor = new List<int>[3]; 
-                foreach (int card in PlayerModel.CardsInHand)
+                if (!cardsExpanded)
                 {
-                    if (card < 24)
+                    CurrentInstructionText.text = PlayerModel.ActionsRemaining + " actions left.";
+                    List<int>[] cardsOfEachColor = new List<int>[3];
+                    foreach (int card in PlayerModel.CardsInHand)
                     {
-                        if(card != PlayerModel.CurrentCity)
-                            flyAction = true;
-                        else
-                            charterAction = true;
+                        if (card < 24)
+                        {
+                            if (card != PlayerModel.CurrentCity)
+                                flyAction = true;
+                            else
+                                charterAction = true;
+                        }
+                    }
+
+                    if (PlayerModel.CurrentCityScript().numberOfInfectionCubes > 0)
+                        treatAction = true;
+
+                    if (!game.RedCure && PlayerModel.RedCardsInHand.Count > 3 || !game.YellowCure && PlayerModel.YellowCardsInHand.Count > 3 || !game.BlueCure && PlayerModel.BlueCardsInHand.Count > 3)
+                        FindCureAction.SetActive(treatAction);
+
+                    foreach (Player player in PlayerModel.CurrentCityScript().PawnsInCity)
+                    {
+                        if (player != _player)
+                        {
+                            if (player.CardsInHand.Contains(_player.CurrentCity) || _player.CardsInHand.Contains(_player.CurrentCity))
+                                shareAction = true;
+                        }
                     }
                 }
-                FlyAction.SetActive(flyAction);
-                CharterAction.SetActive(charterAction);
-                FindCureAction.SetActive(findCureAction);
-
-                bool treatAction = false;
-                if(PlayerModel.CurrentCityScript().numberOfInfectionCubes > 0)
-                    treatAction = true;
-                TreatAction.SetActive(treatAction);
-
-                if(!game.RedCure && PlayerModel.RedCardsInHand.Count>3 || !game.YellowCure && PlayerModel.YellowCardsInHand.Count > 3 || !game.BlueCure && PlayerModel.BlueCardsInHand.Count > 3)
-                    FindCureAction.SetActive(treatAction);
-
-                foreach (Player player in PlayerModel.CurrentCityScript().PawnsInCity)
-                {
-                    if(player != _player)
-                    {
-                        if(player.CardsInHand.Contains(_player.CurrentCity) || _player.CardsInHand.Contains(_player.CurrentCity))
-                            shareAction = true;
-                    }
-                }
-                ShareAction.SetActive(shareAction);
             }
+
+            MoveAction.SetActive(moveAction);
+            FlyAction.SetActive(flyAction);
+            TreatAction.SetActive(treatAction);
+            CharterAction.SetActive(charterAction);
+            FindCureAction.SetActive(findCureAction);
+            ShareAction.SetActive(shareAction);
+
         }
         else
         {
@@ -133,6 +163,39 @@ public class PlayerGUI : MonoBehaviour
         ShareAction.SetActive(false);
         FindCureAction.SetActive(false);
     }
+
+    public void actionButtonClicked(int action)
+    {
+        if (PlayerModel == null) return;
+        if (PlayerModel != game.CurrentPlayer) return;
+        if (PlayerModel.ActionsRemaining <= 0) return;
+        
+        switch (action)
+        {
+            case 0: //move
+                
+                break;
+            case 1: //fly
+                
+                break;
+            case 2: //charter
+                
+                break;
+            case 3: //treat
+                
+                break;
+            case 4: //share
+                
+                break;
+            case 5: //find cure
+                
+                break;
+            case 6: //character action
+                
+                break;
+        }
+    }
+
 
     public GameObject AddPlayerCardToTransform(int cardToAdd, Transform transform)
     {
