@@ -6,7 +6,7 @@ using UnityEngine;
 internal class EAddEpidemicCards : EngineEvent
 {
     private const float OffsetEpidemicCards = 2.5f;
-    private const float DurationEpidemicMove = 0.1f;
+    private const float DurationEpidemicMove = 0.01f;
     GameGUI gui = GameGUI.gui;
     Game game = Game.theGame;
 

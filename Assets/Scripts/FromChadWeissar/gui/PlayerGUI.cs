@@ -7,6 +7,7 @@ using DG.Tweening;
 using System;
 using UnityEditor;
 using Unity.VisualScripting;
+using System.ComponentModel;
 
 
 public class PlayerGUI : MonoBehaviour
@@ -15,21 +16,31 @@ public class PlayerGUI : MonoBehaviour
     GameGUI gui;
     Game game;
 
+    public ActionTypes ActionSelected;
     public Image ContextButton;
 
     Player _player = null;
     public TMPro.TextMeshProUGUI CurrentInstructionText;
     public TMPro.TextMeshProUGUI playerNameText;
+    
     public RoleCardDisplay roleCard;
+    private Image roleCardBackground;
+
     public GameObject PlayerCards;
     private List<GameObject> cardsInHand;
 
     public GameObject MoveAction;
+    private Image MoveActionBackground;
     public GameObject FlyAction;
+    private Image FlyActionBackground;
     public GameObject CharterAction;
+    private Image CharterActionBackground;
     public GameObject TreatAction;
+    private Image TreatActionBackground;
     public GameObject ShareAction;
+    private Image ShareActionBackground;
     public GameObject FindCureAction;
+    private Image FindCureActionBackground;
 
     public Player PlayerModel
     {
@@ -43,6 +54,16 @@ public class PlayerGUI : MonoBehaviour
     {
         gui = GameGUI.gui;
         game = Game.theGame;
+        
+        ActionSelected = ActionTypes.None;
+        MoveActionBackground = MoveAction.transform.Find("highlight").GetComponent<Image>();
+        FlyActionBackground = FlyAction.transform.Find("highlight").GetComponent<Image>();
+        CharterActionBackground = CharterAction.transform.Find("highlight").GetComponent<Image>();
+        TreatActionBackground = TreatAction.transform.Find("highlight").GetComponent<Image>();
+        ShareActionBackground = ShareAction.transform.Find("highlight").GetComponent<Image>();
+        FindCureActionBackground = FindCureAction.transform.Find("highlight").GetComponent<Image>();
+        roleCardBackground = roleCard.transform.Find("background").GetComponent<Image>();
+
         _player = null;
         cardsInHand = new List<GameObject>();
         roleCard.RoleCardData = GameGUI.gui.roleCards[(int)PlayerModel.Role];
@@ -169,29 +190,57 @@ public class PlayerGUI : MonoBehaviour
         if (PlayerModel == null) return;
         if (PlayerModel != game.CurrentPlayer) return;
         if (PlayerModel.ActionsRemaining <= 0) return;
-        
+
+        MoveActionBackground.color = new Color(.2f, .2f, .2f, .2f);
+        FlyActionBackground.color = new Color(.2f, .2f, .2f, .2f);
+        CharterActionBackground.color = new Color(.2f, .2f, .2f, .2f);
+        TreatActionBackground.color = new Color(.2f, .2f, .2f, .2f);
+        ShareActionBackground.color = new Color(.2f, .2f, .2f, .2f);
+        FindCureActionBackground.color = new Color(.2f, .2f, .2f, .2f);
+        roleCardBackground.GetComponent<Outline>().enabled = false;
+
+        CurrentInstructionText.text = PlayerModel.ActionsRemaining + " actions left.";
+
         switch (action)
         {
             case 0: //move
-                
+                ActionSelected = ActionTypes.Move;
+                MoveActionBackground.color = new Color(1f, 1f, 1f, .25f);
+                CurrentInstructionText.text = "Move your pawn";
                 break;
             case 1: //fly
-                
+                ActionSelected = ActionTypes.Fly;
+                FlyActionBackground.color = new Color(1f, 1f, 1f, .25f);
+
+                CurrentInstructionText.text = "Discard [city], fly to [city]";
                 break;
             case 2: //charter
-                
+                ActionSelected = ActionTypes.Charter;
+                CharterActionBackground.color = new Color(1f, 1f, 1f, .25f);
+                CurrentInstructionText.text = "Discard [current city], fly to any city";
                 break;
             case 3: //treat
-                
+                ActionSelected = ActionTypes.Treat;
+                TreatActionBackground.color = new Color(1f, 1f, 1f, .25f);
+                CurrentInstructionText.text = "Remove 1 cube from city";
                 break;
             case 4: //share
-                
+                ActionSelected = ActionTypes.Share;
+                ShareActionBackground.color = new Color(1f, 1f, 1f, .25f);
+                CurrentInstructionText.text = "Exchange [current city] with another player";
                 break;
             case 5: //find cure
-                
+                ActionSelected = ActionTypes.FindCure;
+                FindCureActionBackground.color = new Color(1f, 1f, 1f, .25f);
+                CurrentInstructionText.text = "Discard 4 of same color, cure disease";
                 break;
             case 6: //character action
-                
+                if (_player.Role == Player.Roles.Virologist || _player.Role == Player.Roles.Pilot)
+                {
+                    ActionSelected = ActionTypes.CharacterAction;
+                    roleCardBackground.GetComponent<Outline>().enabled = true;
+                    CurrentInstructionText.text = "Perform your character action";
+                }
                 break;
         }
     }
@@ -204,13 +253,22 @@ public class PlayerGUI : MonoBehaviour
         {
             cardToAddObject = Instantiate(gui.EventCardPrefab, transform);
             cardToAddObject.GetComponent<EventCardDisplay>().EventCardData = gui.Events[cardToAdd - 24];
+            
         }
         else
         {
             cardToAddObject = Instantiate(gui.CityCardPrefab, transform);
             cardToAddObject.GetComponent<CityCardDisplay>().CityCardData = game.Cities[cardToAdd].city;
+
         }
+        var buttonComponent = cardToAddObject.AddComponent<Button>();
+        buttonComponent.onClick.AddListener(() => HandleButton(cardToAdd));
         return cardToAddObject;
+    }
+
+    private void HandleButton(int cardToAdd)
+    {
+        Debug.Log("Card:" + cardToAdd + " Button Clicked. Player:" + _player.Role.ToString());
     }
 
     public void drawLater(float time)
@@ -223,4 +281,16 @@ public class PlayerGUI : MonoBehaviour
         _isAnimating = false;
         draw();
     }
+}
+
+public enum ActionTypes
+{
+    Move,
+    Fly,
+    Charter,
+    Treat,
+    Share,
+    FindCure,
+    CharacterAction,
+    None
 }

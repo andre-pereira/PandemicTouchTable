@@ -103,6 +103,7 @@ public class GameGUI : MonoBehaviour
         saveCubesInitialPositions();
 
         CreateNeighborLines();
+
     }
 
     private void moveCityInfoToGame()

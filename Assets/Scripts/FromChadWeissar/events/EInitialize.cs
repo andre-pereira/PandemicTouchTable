@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 [System.Serializable]
@@ -20,6 +21,15 @@ public class EInitialize : EngineEvent
         initializeSeeds();
         initializeModel();
         initializeGUI();
+
+        // Find all TextMeshProUGUI components in the scene
+        TextMeshProUGUI[] allTMPTexts = Object.FindObjectsOfType<TextMeshProUGUI>();
+
+        // Loop through each one and disable its raycastTarget property
+        foreach (TextMeshProUGUI tmpText in allTMPTexts)
+        {
+            tmpText.raycastTarget = false;
+        }
 
         c.addEvent(new EStartRound());
     }
