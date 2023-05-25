@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandler
 {
-    public Canvas citiesCanvas;
+    private Canvas citiesCanvas;
     private Canvas canvas;
     private Vector2 offset;
     private RectTransform rectTransform;
@@ -21,6 +21,7 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
     {
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
+        citiesCanvas = GameGUI.gui.CityCanvas.GetComponent<Canvas>();
     }
 
 
@@ -95,14 +96,8 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
 
             if (foundConnection)
             {
-                Game.theGame.CurrentPlayer.UpdateCurrentCity(endedInCity.city.cityID);
-                Game.theGame.CurrentPlayer.ActionsRemaining -= numberOfActionsSpent;
-                Debug.Log("Ended in city: " + endedInCity.name);
-                
-                endedInCity.draw();
-                Game.theGame.Cities[initialCityID].draw();
-                GameGUI.gui.draw();
-
+                Timeline.theTimeline.addEvent(new PMoveEvent(endedInCity.city.cityID, numberOfActionsSpent));
+                Destroy(this.gameObject);
             }
             else rectTransform.localPosition = initialPosition;
         }

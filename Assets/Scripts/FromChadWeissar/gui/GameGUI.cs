@@ -9,12 +9,14 @@ using System;
 using TMPro;
 using UnityEditor;
 using static ENUMS;
+using UnityEngine.EventSystems;
 
 public class GameGUI : MonoBehaviour
 {
-    public PlayerGUIStates _state = PlayerGUIStates.None;
     private Game game = null;
     public static GameGUI gui = null;
+
+    public Sprite[] ContextButtonTextures;
 
     public Texture PlayerCardBack;
     public GameObject CityCardPrefab;
@@ -158,6 +160,7 @@ public class GameGUI : MonoBehaviour
 
     private void Update()
     {
+
         DebugText.text = "Pending event?: " + Timeline.theTimeline.hasPendingEvent() + "\n";
         if (Game.theGame.CurrentPlayer != null)
             DebugText.text += "Current Player: " + Game.theGame.CurrentPlayer.Role + "\n";
@@ -323,14 +326,4 @@ public class GameGUI : MonoBehaviour
     {
         return OutbreakMarkerTransforms[targetOutbreak].gameObject;
     }
-}
-
-public enum PlayerGUIStates
-{
-    None,
-    CardsExpanded,
-    CardsExpandedFlyAction,
-    CardsExpandedCharterAction,
-    CardsExpandedShareAction,
-    CardsExpandedCureAction
 }

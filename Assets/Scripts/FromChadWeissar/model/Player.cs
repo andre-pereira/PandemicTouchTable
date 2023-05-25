@@ -89,7 +89,6 @@ public class Player
         game.Cities[cityID].addPawn(this);
     }
 
-
     #region State
     #endregion
 

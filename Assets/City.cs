@@ -31,40 +31,35 @@ public class City : MonoBehaviour
     public GameObject CubesGameObject;
     public GameObject PawnsGameObject;
 
-    public List<Player> PawnsInCity = new List<Player>();
+    public List<Player> PlayersInCity = new List<Player>();
+    public Pawn[] PawnsInCity;
 
     private RectTransform rectTransform;
     private RectTransform canvasRectTransform;
 
 
-    // Start is called before the first frame update
     void Start()
     {
         game = Game.theGame;
         gui = GameGUI.gui;
+        PawnsInCity = new Pawn[4];
         rectTransform = GetComponent<RectTransform>();
         canvasRectTransform = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
     public void addPawn(Player player)
     {
-        PawnsInCity.Add(player);
+        PlayersInCity.Add(player);
     }
 
     public void removePawn(Player player)
     {
-        PawnsInCity.Remove(player);
+        PlayersInCity.Remove(player);
     }
 
     public void draw()
     {
+        Pawn[] Pawns = new Pawn[4];
         Vector3 worldPoint = new Vector3(0, 0, 0);
         CubesGameObject.DestroyChildrenImmediate();
         PawnsGameObject.DestroyChildrenImmediate();
@@ -79,13 +74,15 @@ public class City : MonoBehaviour
             }
         }
 
-        if (PawnsInCity.Count > 0)
+        if (PlayersInCity.Count > 0)
         {
-            for (int i = 0; i < PawnsInCity.Count; i++)
+            for (int i = 0; i < PlayersInCity.Count; i++)
             {
+                int playerPosition = PlayersInCity[i].Position;
                 GameObject pawn = Instantiate(gui.PawnPrefab, PawnsGameObject.transform.position , PawnsGameObject.transform.rotation, PawnsGameObject.transform);
                 pawn.transform.Translate(offsetPawns[i][0], offsetPawns[i][1], 0);
-                pawn.GetComponent<Image>().color = gui.roleCards[(int)PawnsInCity[i].Role].roleColor;
+                pawn.GetComponent<Image>().color = gui.roleCards[(int)PlayersInCity[i].Role].roleColor;
+                PawnsInCity[playerPosition] = pawn.GetComponent<Pawn>();
             }
         }
         //GameObject currentPawn = gui.Pawns[(int)PlayerRole];
