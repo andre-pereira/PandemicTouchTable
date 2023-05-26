@@ -91,4 +91,9 @@ public class City : MonoBehaviour
         //City initialCity = game.Cities[game.InitialCityID];
         //Vector3 pawnPosition = initialCity.getPawnPosition(PlayerRole);
     }
+
+    public void Clicked()
+    {
+        GameGUI.currentPlayerPad().CityClicked();
+    }
 }

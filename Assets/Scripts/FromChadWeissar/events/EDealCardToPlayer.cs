@@ -35,7 +35,7 @@ public class EDealCardToPlayer : EngineEvent
     public override float Act(bool qUndo = false)
     {
         
-        GameObject cardToAddObject = playerGui.AddPlayerCardToTransform(cardToAdd, gui.AnimationCanvas.transform);
+        GameObject cardToAddObject = playerGui.AddPlayerCardToTransform(cardToAdd, gui.AnimationCanvas.transform,false);
         cardToAddObject.transform.position = gui.PlayerDeck.transform.position;
         cardToAddObject.transform.rotation = gui.PlayerDeck.transform.rotation;
 

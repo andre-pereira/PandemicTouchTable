@@ -25,7 +25,7 @@
     {
         Game.theGame.Cities[newCityID].draw();
         Game.theGame.Cities[oldCityID].draw();
-        _gui.draw();
+        _playerGui.draw();
         return 0;
     }
 }

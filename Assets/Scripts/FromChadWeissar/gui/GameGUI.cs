@@ -160,7 +160,6 @@ public class GameGUI : MonoBehaviour
 
     private void Update()
     {
-
         DebugText.text = "Pending event?: " + Timeline.theTimeline.hasPendingEvent() + "\n";
         if (Game.theGame.CurrentPlayer != null)
             DebugText.text += "Current Player: " + Game.theGame.CurrentPlayer.Role + "\n";
@@ -260,7 +259,7 @@ public class GameGUI : MonoBehaviour
         }
     }
 
-    internal void drawCurrentPlayerArea()
+    public void drawCurrentPlayerArea()
     {
         foreach (PlayerGUI pad in gui.PlayerPads)
         {
@@ -326,4 +325,5 @@ public class GameGUI : MonoBehaviour
     {
         return OutbreakMarkerTransforms[targetOutbreak].gameObject;
     }
+
 }

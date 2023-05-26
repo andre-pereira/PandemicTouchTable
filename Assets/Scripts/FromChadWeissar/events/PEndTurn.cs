@@ -18,7 +18,7 @@ public class PEndTurn : PlayerEvent
     {
         PlayerGUI nextPlayerGUI = GameGUI.currentPlayerPad();
         nextPlayerGUI.draw();
-        _gui.draw();
+        _playerGui.draw();
         return 0;
     }
 

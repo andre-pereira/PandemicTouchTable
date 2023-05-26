@@ -41,9 +41,11 @@ public abstract class EngineEvent : TimelineEvent
 [System.Serializable]
 public abstract class PlayerEvent : TimelineEvent
 {
+  public GameGUI gui = GameGUI.gui;
+  public Game game = Game.theGame;
   public int PlayerPosition = -1;
   [JsonIgnore] protected Player _player { get { return PlayerList.playerAtPosition(PlayerPosition); } }
-  [JsonIgnore] protected PlayerGUI _gui { get { return GameGUI.playerPadForPosition(PlayerPosition); } }
+  [JsonIgnore] protected PlayerGUI _playerGui { get { return GameGUI.playerPadForPosition(PlayerPosition); } }
   public PlayerEvent() { }
   public PlayerEvent(Player player)
   {

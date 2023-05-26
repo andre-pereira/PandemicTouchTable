@@ -16,6 +16,7 @@ public class EventCardDisplay : MonoBehaviour
         set { eventCardData = value; UpdateData();}
     }
 
+    public Image border;
     public Image artwork;
     public TextMeshProUGUI eventName;
     public TextMeshProUGUI eventText;
