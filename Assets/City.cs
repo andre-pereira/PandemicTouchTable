@@ -71,6 +71,8 @@ public class City : MonoBehaviour
                 GameObject cube = Instantiate(gui.cubePrefab, CubesGameObject.transform);
                 cube.transform.Translate(offsetCubes[i][0], offsetCubes[i][1],0);
                 cube.GetComponent<Cube>().virusInfo = city.virusInfo;
+                cube.GetComponentInChildren<Button>().onClick.AddListener(() => cubeClicked());
+
             }
         }
 
@@ -92,8 +94,13 @@ public class City : MonoBehaviour
         //Vector3 pawnPosition = initialCity.getPawnPosition(PlayerRole);
     }
 
+    private void cubeClicked()
+    {
+        GameGUI.currentPlayerPad().CubeClicked(this);
+    }
+
     public void Clicked()
     {
-        GameGUI.currentPlayerPad().CityClicked();
+        GameGUI.currentPlayerPad().CityClicked(this);
     }
 }

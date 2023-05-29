@@ -15,16 +15,25 @@ internal class EFlipCardAddCubes : EngineEvent
     private int numberOfCubes;
     private int numberOfCityToInfect;
     private City cityToInfect;
+    private bool fromTheTop;
 
-    public EFlipCardAddCubes(int numberOfCubes)
+    public EFlipCardAddCubes(int numberOfCubes, bool fromTheTop)
     {
+        this.fromTheTop = fromTheTop;
         QUndoable = true;
         this.numberOfCubes = numberOfCubes;
     }
 
     public override void Do(Timeline timeline)
     {
-        numberOfCityToInfect = game.InfectionCards.Pop();
+        if(fromTheTop)
+            numberOfCityToInfect = game.InfectionCards.Pop();
+        else
+        {
+            numberOfCityToInfect = game.InfectionCards[0];
+            game.InfectionCards.Remove(numberOfCityToInfect);
+        }
+
         game.InfectionCardsDiscard.Add(numberOfCityToInfect);
         if (game.InfectionCards.Count == 0) 
         {
@@ -41,11 +50,12 @@ internal class EFlipCardAddCubes : EngineEvent
         }
 
         cityToInfect.numberOfInfectionCubes += numberOfCubes;
-        if(cityToInfect.numberOfInfectionCubes > 4)
-            cityToInfect.numberOfInfectionCubes = 4;
-
-        if(cityToInfect.numberOfInfectionCubes == 4)
+        if(cityToInfect.numberOfInfectionCubes > 3)
+        { 
+            cityToInfect.numberOfInfectionCubes = 3;
             Timeline.theTimeline.addEvent(new EOutbreak(cityToInfect));
+        }
+            
     }
 
 

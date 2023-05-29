@@ -16,6 +16,7 @@ public class EDealCardToPlayer : EngineEvent
     PlayerGUI playerGui = null;
     private bool waitForEnd;
     int cardToAdd = -1;
+    private bool epidemicPopped = false;
 
     public EDealCardToPlayer(Player player, bool waitForEnd)
     {
@@ -28,13 +29,22 @@ public class EDealCardToPlayer : EngineEvent
     public override void Do(Timeline timeline)
     {
         cardToAdd = game.PlayerCards.Pop();
-        player.AddCardToHand(cardToAdd);
-
+        if (cardToAdd == 28)
+        {
+            Timeline.theTimeline.addEvent(new EEpidemic());
+            epidemicPopped = true;
+        }
+        else
+        {
+            player.AddCardToHand(cardToAdd);
+        }
     }
 
     public override float Act(bool qUndo = false)
     {
-        
+        if(epidemicPopped)
+            return 0f;
+
         GameObject cardToAddObject = playerGui.AddPlayerCardToTransform(cardToAdd, gui.AnimationCanvas.transform,false);
         cardToAddObject.transform.position = gui.PlayerDeck.transform.position;
         cardToAddObject.transform.rotation = gui.PlayerDeck.transform.rotation;

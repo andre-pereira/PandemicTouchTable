@@ -24,7 +24,7 @@ public class PFlyToCity : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
-        _player.CardsInHand.Remove(flyTo);
+        _player.CityCardsInHand.Remove(flyTo);
         _player.UpdateCurrentCity(flyTo);
         game.PlayerCardsDiscard.Add(flyTo);
         game.CurrentPlayer.ActionsRemaining -= 1;

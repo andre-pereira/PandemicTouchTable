@@ -10,6 +10,12 @@ public class Player
     public Game game = Game.theGame;
     public GameGUI gui = GameGUI.gui;
 
+    public List<int> CityCardsInHand { get; private set; }
+    public List<int> RedCardsInHand { get; private set; }
+    public List<int> YellowCardsInHand { get; private set; }
+    public List<int> BlueCardsInHand { get; private set; }
+    public List<int> EventCardsInHand { get; private set; }
+
     public enum Roles
     {
         [Description("Containment Specialist")]
@@ -29,14 +35,14 @@ public class Player
     public int Place;
     public string Name;
     private int currentCity;
-    
+
 
     public Roles Role { get; set; }
     public int ActionsRemaining { get; internal set; }
 
     public Player()
     {
-        CardsInHand = new List<int>();
+        CityCardsInHand = new List<int>();
         RedCardsInHand = new List<int>();
         YellowCardsInHand = new List<int>();
         BlueCardsInHand = new List<int>();
@@ -45,8 +51,8 @@ public class Player
 
     public void AddCardToHand(int card)
     {
-        CardsInHand.Add(card);
-        if(card <24)
+        CityCardsInHand.Add(card);
+        if (card < 24)
             switch (game.Cities[card].city.virusInfo.virusName)
             {
                 case ENUMS.VirusName.Red:
@@ -63,14 +69,9 @@ public class Player
             }
         else
             EventCardsInHand.Add(card);
-        CardsInHand.Sort();
+        CityCardsInHand.Sort();
     }
 
-    public List<int> CardsInHand;
-    public List<int> RedCardsInHand;
-    public List<int> YellowCardsInHand;
-    public List<int> BlueCardsInHand;
-    public List<int> EventCardsInHand;
 
     public City CurrentCityScript()
     {
@@ -84,14 +85,33 @@ public class Player
 
     internal void UpdateCurrentCity(int cityID)
     {
+        Debug.Log("Update Current City");
         game.Cities[currentCity].removePawn(this);
         currentCity = cityID;
         game.Cities[cityID].addPawn(this);
     }
 
-    #region State
-    #endregion
+    internal void RemoveCityCardInHand(int cityID)
+    {
+        if (cityID < 24) {
+            CityCardsInHand.Remove(cityID);
 
-
-
+            switch (game.Cities[cityID].city.virusInfo.virusName)
+            {
+                case ENUMS.VirusName.Red:
+                    RedCardsInHand.Remove(cityID);
+                    break;
+                case ENUMS.VirusName.Yellow:
+                    YellowCardsInHand.Remove(cityID);
+                    break;
+                case ENUMS.VirusName.Blue:
+                    BlueCardsInHand.Remove(cityID);
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+            EventCardsInHand.Remove(cityID);
+    }
 }

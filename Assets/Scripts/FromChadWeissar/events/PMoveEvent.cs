@@ -25,6 +25,7 @@
     {
         Game.theGame.Cities[newCityID].draw();
         Game.theGame.Cities[oldCityID].draw();
+        _playerGui.ClearSelectedAction();
         _playerGui.draw();
         return 0;
     }

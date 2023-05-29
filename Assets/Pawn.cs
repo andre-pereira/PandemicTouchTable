@@ -63,6 +63,12 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
             if (endedInCity.city.cityID == Game.theGame.CurrentPlayer.GetCurrentCity())
                 return;
 
+            if (GameGUI.currentPlayerPad().ActionSelected == ActionTypes.Charter)
+            {
+                Timeline.theTimeline.addEvent(new PCharterEvent(endedInCity));
+                return;
+            }
+
             int numberOfActionsSpent = 0;
             HashSet<int> citiesToVisit = new HashSet<int>();
             HashSet<int> citiesVisited = new HashSet<int>();

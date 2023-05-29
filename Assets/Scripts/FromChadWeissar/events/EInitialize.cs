@@ -64,12 +64,12 @@ public class EInitialize : EngineEvent
         }
 
         Timeline.theTimeline.addEvent(new EAddEpidemicCards());
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(3));
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(3));
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(2));
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(2));
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(1));
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(1));
+        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(3,true));
+        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(3, true));
+        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(2, true));
+        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(2, true));
+        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(1, true));
+        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(1, true));
         Timeline.theTimeline.addEvent(new EInitializeFirstPlayer());
     }
 

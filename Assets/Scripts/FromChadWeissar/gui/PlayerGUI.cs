@@ -76,7 +76,9 @@ public class PlayerGUI : MonoBehaviour
         GetComponent<Image>().color = targeColor;
 
         changeContextText();
-        
+
+        playerToShareGUI = null;
+
         playerNameText.text = PlayerModel.Name;
         selectedCards = new List<int>();
     }
@@ -87,6 +89,7 @@ public class PlayerGUI : MonoBehaviour
     private CardGUIStates cardsState;
     private List<int> selectedCards;
     private GameObject flyLine;
+    private PlayerGUI playerToShareGUI;
 
     public void draw()
     {
@@ -112,7 +115,7 @@ public class PlayerGUI : MonoBehaviour
             layout.childControlWidth = true;
         }
 
-        foreach (int cardToAdd in _player.CardsInHand)
+        foreach (int cardToAdd in _player.CityCardsInHand)
         {
             cardsInHand.Add(AddPlayerCardToTransform(cardToAdd, PlayerCards.transform, true));
         }
@@ -133,7 +136,7 @@ public class PlayerGUI : MonoBehaviour
                 {
                     moveAction = true;
                     List<int>[] cardsOfEachColor = new List<int>[3];
-                    foreach (int card in PlayerModel.CardsInHand)
+                    foreach (int card in PlayerModel.CityCardsInHand)
                     {
                         if (card < 24)
                         {
@@ -154,24 +157,21 @@ public class PlayerGUI : MonoBehaviour
                     {
                         if (player != _player)
                         {
-                            if (player.CardsInHand.Contains(_player.GetCurrentCity()) || _player.CardsInHand.Contains(_player.GetCurrentCity()))
+                            if (player.CityCardsInHand.Contains(_player.GetCurrentCity()) || _player.CityCardsInHand.Contains(_player.GetCurrentCity()))
                                 shareAction = true;
                         }
                     }
                 }
                 else
                 { 
-                    if(cardsState == CardGUIStates.CardsExpandedFlyActionToSelect || cardsState == CardGUIStates.CardsExpandedCharterActionToSelect)
+                    if(cardsState == CardGUIStates.CardsExpandedFlyActionToSelect || cardsState == CardGUIStates.CardsExpandedCharterActionToSelect 
+                        || cardsState == CardGUIStates.CardsExpandedCureActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction)
                     {
                         ContextButtons[0].SetActive(true);
                         if(cardsState == CardGUIStates.CardsExpandedCharterActionToSelect)
                         {
                             getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
                         }
-                    }
-                    if (cardsState == CardGUIStates.CardsExpandedFlyActionSelected || cardsState == CardGUIStates.CardsExpandedCharterActionSelected)
-                    {
-                        ContextButtons[1].SetActive(true);
                     }
                 }
             }
@@ -200,14 +200,21 @@ public class PlayerGUI : MonoBehaviour
             if (cardsState == CardGUIStates.CardsExpandedFlyActionSelected)
             {
                 Timeline.theTimeline.addEvent(new PFlyToCity(selectedCards[0]));
+            }else if(cardsState == CardGUIStates.CardsExpandedCureActionSelected)
+            {
+                Timeline.theTimeline.addEvent(new PCureDisease(game.Cities[selectedCards[0]].city.virusInfo.virusName, selectedCards));
             }
+        }
+
+        if(buttonType == 0 && ActionSelected == ActionTypes.Share)
+        {
+            playerToShareGUI.ActionSelected = ActionTypes.None;
+            playerToShareGUI.ContextButtonClicked(0);
         }
 
         cardsState = CardGUIStates.None;
         ClearSelectedAction();
         draw();
-        ContextButtons[1].SetActive(false);
-        ContextButtons[0].SetActive(false);
     }
 
 
@@ -225,25 +232,19 @@ public class PlayerGUI : MonoBehaviour
 
     public void actionButtonClicked(int action)
     {
-
         if (PlayerModel == null) return;
         if (PlayerModel != game.CurrentPlayer) return;
         if (PlayerModel.ActionsRemaining <= 0) return;
 
         ClearSelectedAction();
 
+        City currentCity = game.Cities[PlayerModel.GetCurrentCity()];
         switch (action)
         {
             case 0: //move
-                City currentCity = game.Cities[PlayerModel.GetCurrentCity()];
                 ActionSelected = ActionTypes.Move;
                 MoveActionBackground.color = new Color(1f, 1f, 1f, .25f);
-                currentCity.removePawn(game.CurrentPlayer);
-                currentCity.draw();
-                movingPawn = Instantiate(gui.PawnPrefab, currentCity.transform.position, currentCity.transform.rotation, gui.AnimationCanvas.transform);
-                movingPawn.GetComponent<Image>().color = roleCard.RoleCardData.roleColor;
-                movingPawn.GetComponent<Pawn>().canMove = true;
-                movingPawn.GetComponent<Outline>().enabled = true;
+                CreateMovingPawn(currentCity);
                 break;
             case 1: //fly
                 ActionSelected = ActionTypes.Fly;
@@ -255,6 +256,7 @@ public class PlayerGUI : MonoBehaviour
                 ActionSelected = ActionTypes.Charter;
                 CharterActionBackground.color = new Color(1f, 1f, 1f, .25f);
                 cardsState = CardGUIStates.CardsExpandedCharterActionToSelect;
+                CreateMovingPawn(currentCity);
                 draw();
                 break;
             case 3: //treat
@@ -265,11 +267,40 @@ public class PlayerGUI : MonoBehaviour
                 ActionSelected = ActionTypes.Share;
                 ShareActionBackground.color = new Color(1f, 1f, 1f, .25f);
                 cardsState = CardGUIStates.CardsExpandedShareAction;
+
+
+                if (PlayerModel.CityCardsInHand.Contains(_player.GetCurrentCity()))
+                {
+                    cardsState = CardGUIStates.CardsExpandedShareAction;
+                    getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
+                    ContextButtons[1].SetActive(true);
+                }
+                else
+                {
+                    foreach (Player player in PlayerModel.CurrentCityScript().PlayersInCity)
+                    {
+                        if (player != _player)
+                        {
+                            if (player.CityCardsInHand.Contains(_player.GetCurrentCity()))
+                            {
+                                ContextButtons[0].SetActive(true);
+                                playerToShareGUI = GameGUI.playerPadForPlayer(player);
+                                playerToShareGUI.cardsState = CardGUIStates.CardsExpandedShareAction;
+                                playerToShareGUI.ContextButtons[0].SetActive(true);
+                                playerToShareGUI.ContextButtons[1].SetActive(true);
+                                playerToShareGUI.getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
+                                playerToShareGUI.changeContextText();
+                                playerToShareGUI.draw();
+                            }
+                        }
+                    }
+                }
                 break;
             case 5: //find cure
                 ActionSelected = ActionTypes.FindCure;
                 FindCureActionBackground.color = new Color(1f, 1f, 1f, .25f);
-                cardsState = CardGUIStates.CardsExpandedCureAction;
+                cardsState = CardGUIStates.CardsExpandedCureActionToSelect;
+                draw();
                 break;
             case 6: //character action
                 if (_player.Role == Player.Roles.Virologist || _player.Role == Player.Roles.Pilot)
@@ -284,6 +315,16 @@ public class PlayerGUI : MonoBehaviour
                 break;
         }
         changeContextText();
+    }
+
+    private void CreateMovingPawn(City currentCity)
+    {
+        currentCity.removePawn(game.CurrentPlayer);
+        currentCity.draw();
+        movingPawn = Instantiate(gui.PawnPrefab, currentCity.transform.position, currentCity.transform.rotation, gui.AnimationCanvas.transform);
+        movingPawn.GetComponent<Image>().color = roleCard.RoleCardData.roleColor;
+        movingPawn.GetComponent<Pawn>().canMove = true;
+        movingPawn.GetComponent<Outline>().enabled = true;
     }
 
     public void ClearSelectedAction()
@@ -311,6 +352,10 @@ public class PlayerGUI : MonoBehaviour
         roleCardBackground.GetComponent<Outline>().enabled = false;
         
         ActionSelected = ActionTypes.None;
+        cardsState = CardGUIStates.None;
+
+        ContextButtons[0].SetActive(false);
+        ContextButtons[1].SetActive(false);
 
         changeContextText();
     }
@@ -333,20 +378,21 @@ public class PlayerGUI : MonoBehaviour
         if (withButtonComponent)
         {
             var buttonComponent = cardToAddObject.AddComponent<Button>();
-            buttonComponent.onClick.AddListener(() => CardButtonClick(cardToAdd));
+            buttonComponent.onClick.AddListener(() => CardInHandClicked(cardToAdd));
         }
         return cardToAddObject;
     }
 
 
-    private void CardButtonClick(int cardClicked)
+    private void CardInHandClicked(int cardClicked)
     {
         if (cardClicked < 24)
         {
+            CityCardDisplay cardClickedScript = getCardInHand(cardClicked).GetComponent<CityCardDisplay>();
+
             if (cardsState == CardGUIStates.CardsExpandedCharterActionToSelect)
             {
-                CityCardDisplay cityCard = getCardInHand(cardClicked).GetComponent<CityCardDisplay>();
-                if(cardClicked != _player.GetCurrentCity())
+                if (cardClicked != _player.GetCurrentCity())
                 {
                     return;
                 }
@@ -357,13 +403,8 @@ public class PlayerGUI : MonoBehaviour
                     {
                         Destroy(flyLine);
                     }
-                    cityCard.border.gameObject.SetActive(true);
+                    cardClickedScript.border.gameObject.SetActive(true);
                 }
-            }
-
-            if(cardsState == CardGUIStates.CardsExpandedCharterActionSelected)
-            {
-
             }
 
             if (cardsState == CardGUIStates.CardsExpandedFlyActionToSelect || cardsState == CardGUIStates.CardsExpandedFlyActionSelected)
@@ -372,9 +413,7 @@ public class PlayerGUI : MonoBehaviour
                 selectedCards.Clear();
                 selectedCards.Add(cardClicked);
 
-                CityCardDisplay cityCard = getCardInHand(cardClicked).GetComponent<CityCardDisplay>();
-
-                if (cityCard != null)
+                if (cardClickedScript != null)
                 {
                     if (flyLine != null)
                     {
@@ -382,30 +421,60 @@ public class PlayerGUI : MonoBehaviour
                     }
 
                     removeBorderFromCardsInHand();
-                    cityCard.border.gameObject.SetActive(true);
+                    cardClickedScript.border.gameObject.SetActive(true);
                     City cityToMoveTo = game.Cities[cardClicked];
                     City cityToMoveFrom = game.Cities[_player.GetCurrentCity()];
 
                     cityToMoveFrom.PawnsInCity[_player.Position].gameObject.GetComponent<Outline>().enabled = true;
-
-                    flyLine = new GameObject("Line - FlyAction");
-                    flyLine.transform.SetParent(gui.AnimationCanvas.transform, false);
-                    flyLine.transform.position = cityToMoveFrom.PawnsInCity[_player.Position].transform.position;
-                    flyLine.AddComponent<LineRenderer>();
-                    LineRenderer lr = flyLine.GetComponent<LineRenderer>();
-                    lr.sortingLayerName = "Animation";
-                    lr.material = gui.lineMaterial;
-                    lr.startColor = roleCard.RoleCardData.roleColor;
-                    lr.endColor = roleCard.RoleCardData.roleColor;
-                    lr.startWidth = 0.1f;
-                    lr.endWidth = 0.1f;
-                    lr.SetPosition(0, cityToMoveFrom.PawnsInCity[_player.Position].transform.position);
-                    lr.SetPosition(1, cityToMoveTo.transform.position);
+                    CreateLineBetweenCities(cityToMoveTo, cityToMoveFrom);
                     ContextButtons[1].SetActive(true);
                 }
             }
+
+            if (cardsState == CardGUIStates.CardsExpandedCureActionToSelect || cardsState == CardGUIStates.CardsExpandedCureActionSelected)
+            {
+                if(selectedCards.Contains(cardClicked))
+                {
+                    selectedCards.Remove(cardClicked);
+                    getCardInHand(cardClicked).GetComponent<CityCardDisplay>().border.gameObject.SetActive(false);
+                    ContextButtons[1].SetActive(false);
+                }
+                else
+                {
+                    if (selectedCards.Count == 4)
+                        return;
+                    if(selectedCards.Count == 0 || getCardInHand(selectedCards[0]).GetComponent<CityCardDisplay>().CityCardData.virusInfo.virusName == cardClickedScript.CityCardData.virusInfo.virusName)
+                    {
+                        selectedCards.Add(cardClicked);
+                        getCardInHand(cardClicked).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
+                        if (selectedCards.Count == 4)
+                        {
+                            cardsState = CardGUIStates.CardsExpandedCureActionSelected;
+                            ContextButtons[1].SetActive(true);
+                        }
+                    }
+                    
+                }
+            }    
         }
 
+    }
+
+    private void CreateLineBetweenCities(City cityToMoveTo, City cityToMoveFrom)
+    {
+        flyLine = new GameObject("Line - FlyAction");
+        flyLine.transform.SetParent(gui.AnimationCanvas.transform, false);
+        flyLine.transform.position = cityToMoveFrom.PawnsInCity[_player.Position].transform.position;
+        flyLine.AddComponent<LineRenderer>();
+        LineRenderer lr = flyLine.GetComponent<LineRenderer>();
+        lr.sortingLayerName = "Animation";
+        lr.material = gui.lineMaterial;
+        lr.startColor = roleCard.RoleCardData.roleColor;
+        lr.endColor = roleCard.RoleCardData.roleColor;
+        lr.startWidth = 0.1f;
+        lr.endWidth = 0.1f;
+        lr.SetPosition(0, cityToMoveFrom.PawnsInCity[_player.Position].transform.position);
+        lr.SetPosition(1, cityToMoveTo.transform.position);
     }
 
     private void removeBorderFromCardsInHand()
@@ -449,8 +518,16 @@ public class PlayerGUI : MonoBehaviour
     {
         if (game.CurrentPlayer != _player)
         {
-            CurrentInstructionText.text = "Not your turn.";
-            return;
+            if (cardsState == CardGUIStates.CardsExpandedShareAction)
+            {
+                CurrentInstructionText.text = "Share your card?";
+                return;
+            }
+            else
+            {
+                CurrentInstructionText.text = "Not your turn.";
+                return;
+            }
         }
         string textToreturn = PlayerModel.ActionsRemaining + " actions left."; 
 
@@ -475,11 +552,7 @@ public class PlayerGUI : MonoBehaviour
         {
             if (cardsState == CardGUIStates.CardsExpandedCharterActionToSelect)
             {
-                additionalMessage += "Pick a city";
-            }
-            else if (cardsState == CardGUIStates.CardsExpandedCharterActionSelected)
-            {
-                additionalMessage += "Complete action?";
+                additionalMessage += "Move to any city";
             }
         }
         else if (ActionSelected == ActionTypes.Treat)
@@ -490,7 +563,10 @@ public class PlayerGUI : MonoBehaviour
         {
             if (cardsState == CardGUIStates.CardsExpandedShareAction)
             {
-                additionalMessage += "Share card?";
+                if (playerToShareGUI == null)
+                    additionalMessage += "Share you card?";
+                else
+                    additionalMessage += "Wait for response...";
             }
         }
         else if (ActionSelected == ActionTypes.FindCure)
@@ -521,10 +597,20 @@ public class PlayerGUI : MonoBehaviour
         draw();
     }
 
-    public void CityClicked()
+    public void CityClicked(City city)
     {
-        Debug.Log("I am player " + Position);
-        Debug.Log("City clicked");
+        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID)
+        {
+            Timeline.theTimeline.addEvent(new PTreatDisease(city));
+        }
+    }
+
+    internal void CubeClicked(City city)
+    {
+        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID)
+        {
+            Timeline.theTimeline.addEvent(new PTreatDisease(city));
+        }
     }
 }
 
@@ -548,10 +634,10 @@ public enum CardGUIStates
     CardsExpandedFlyActionToSelect,
     CardsExpandedFlyActionSelected,
     CardsExpandedShareAction,
-    CardsExpandedCureAction,
     CardsExpandedVirologistAction,
     CardsExpandedCharterActionToSelect,
-    CardsExpandedCharterActionSelected
+    CardsExpandedCureActionToSelect,
+    CardsExpandedCureActionSelected
 }
 
 public enum ContextButtonStates

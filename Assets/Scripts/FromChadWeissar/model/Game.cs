@@ -69,7 +69,7 @@ public class Game : MonoBehaviour
 
     public void test()
     {
-        GameGUI.gui.draw();
+        Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer, true));
     }
 
     public void Awake()

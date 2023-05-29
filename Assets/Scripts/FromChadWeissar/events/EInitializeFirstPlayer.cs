@@ -21,7 +21,7 @@ internal class EInitializeFirstPlayer : EngineEvent
         int highestPopulation = 0;
         foreach (Player player in PlayerList.Players)
         {
-            foreach(int card in player.CardsInHand)
+            foreach(int card in player.CityCardsInHand)
             {
                 if (card < 24)
                 {
