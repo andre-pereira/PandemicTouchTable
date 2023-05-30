@@ -34,6 +34,7 @@ internal class PCharterEvent : PlayerEvent
     {
         _playerGui.ClearSelectedAction();
         _playerGui.draw();
+        flyTo.draw();
         //gui.drawBoard();
         Sequence sequence = DOTween.Sequence();
         GameObject cardToAddObject = _playerGui.AddPlayerCardToTransform(flyFrom.city.cityID, gui.PlayerDeckDiscard.transform, false);
@@ -44,7 +45,6 @@ internal class PCharterEvent : PlayerEvent
         sequence.AppendCallback(() =>
         {
             gui.drawBoard();
-            flyTo.draw();
             //_playerGui.draw();
         });
 

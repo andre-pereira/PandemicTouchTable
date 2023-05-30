@@ -66,6 +66,7 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
             if (GameGUI.currentPlayerPad().ActionSelected == ActionTypes.Charter)
             {
                 Timeline.theTimeline.addEvent(new PCharterEvent(endedInCity));
+                Destroy(gameObject);
                 return;
             }
 
