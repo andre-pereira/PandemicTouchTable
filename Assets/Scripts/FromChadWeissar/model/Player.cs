@@ -85,7 +85,6 @@ public class Player
 
     internal void UpdateCurrentCity(int cityID)
     {
-        Debug.Log("Update Current City");
         game.Cities[currentCity].removePawn(this);
         currentCity = cityID;
         game.Cities[cityID].addPawn(this);
