@@ -212,6 +212,11 @@ public class PlayerGUI : MonoBehaviour
             playerToShareGUI.ContextButtonClicked(0);
         }
 
+        if(this != GameGUI.currentPlayerPad())
+        {
+            GameGUI.currentPlayerPad().ClearSelectedAction();
+        }
+
         cardsState = CardGUIStates.None;
         ClearSelectedAction();
         draw();
