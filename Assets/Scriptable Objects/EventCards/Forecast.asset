@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a116c06700224942ab7a0240f05b4c5, type: 3}
   m_Name: Forecast
   m_EditorClassIdentifier: 
+  eventID: 25
   eventName: Forecast
   eventText: Look at, rearrange, and return the top 6 cards of the Infection deck.
   mainArtwork: {fileID: 21300000, guid: 646d34d4224cfaa4d8d009eb260f74d7, type: 3}

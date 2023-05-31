@@ -13,7 +13,7 @@
         _player.ActionsRemaining -= 1;
         if (game.CurrentPlayer.ActionsRemaining == 0)
         {
-            Timeline.theTimeline.addEvent(new PEndTurn());
+            game.setCurrentGameState(Game.GameState.DRAW1STPLAYERCARD);
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Game;
 
 public class PEndTurn : PlayerEvent
 {
@@ -11,7 +12,7 @@ public class PEndTurn : PlayerEvent
     public override void Do(Timeline timeline)
     {
         Game.theGame.CurrentPlayer = PlayerList.nextPlayer(_player);
-        Game.theGame.CurrentPlayer.ActionsRemaining = 4;
+        Game.theGame.CurrentPlayer.ResetTurn(); 
     }
 
     public override float Act(bool qUndo = false)

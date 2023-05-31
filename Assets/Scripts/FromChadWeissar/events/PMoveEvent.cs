@@ -16,9 +16,9 @@
         _player.UpdateCurrentCity(newCityID);
         Game.theGame.CurrentPlayer.ActionsRemaining -= numberOfActionsSpent;
        if(Game.theGame.CurrentPlayer.ActionsRemaining == 0)
-        {
-            Timeline.theTimeline.addEvent(new PEndTurn());
-        }
+       {
+           game.setCurrentGameState(Game.GameState.DRAW1STPLAYERCARD);
+       }
     }
 
     public override float Act(bool qUndo = false)

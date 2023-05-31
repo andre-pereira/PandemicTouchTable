@@ -8,7 +8,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class EDealCardToPlayer : EngineEvent
 {
     private const float scaleToCenterScale = 3f;
-    private const float scaleToCenterDuration = 0.01f;
+    private const float scaleToCenterDuration = 0.1f;
 
     GameGUI gui = GameGUI.gui;
     Game game = Game.theGame;
@@ -38,6 +38,7 @@ public class EDealCardToPlayer : EngineEvent
         {
             player.AddCardToHand(cardToAdd);
         }
+        game.actionCompleted = true;
     }
 
     public override float Act(bool qUndo = false)
@@ -57,29 +58,13 @@ public class EDealCardToPlayer : EngineEvent
         sequence.AppendInterval(scaleToCenterDuration);
         sequence.Append(cardToAddObject.transform.DOScale(new Vector3(1f, 1f, 1f), scaleToCenterDuration)).
             Join(cardToAddObject.transform.DORotate(playerGui.transform.rotation.eulerAngles, scaleToCenterDuration)).
-            Join(cardToAddObject.transform.DOMove(playerGui.PlayerCards.transform.position, scaleToCenterDuration)).
+            Join(cardToAddObject.transform.DOMove(playerGui.roleCard.transform.position, scaleToCenterDuration)).
             OnComplete(() => {
                 Object.Destroy(cardToAddObject);
                 playerGui.draw();
             });
         sequence.Play();
 
-
-        //Texture frontTexture = cardToAddObject.GetComponent<Image>().image;
-
-        //cardToAddObject.transform.DOScale(new Vector3(1.2f, 1.2f, 1.2f), flipDuration)
-        //    .OnComplete(() =>
-        //    {
-        //        cardToAddObject.transform.DORotate(new Vector3(0, 90, 0), flipDuration / 2).WaitForCompletion();
-        //        cardToAddObject.GetComponent<Image>().image = isShowingFront ? gui.PlayerCardBack : frontTexture;
-        //        isShowingFront = !isShowingFront;
-        //       cardToAddObject.transform.DORotate(new Vector3(0, 0, 0), flipDuration / 2).WaitForCompletion();
-
-        //        // Shrink and move the card to hand after flip
-        //        cardToAddObject.transform.DOScale(Vector3.one, flipDuration);
-        //        cardToAddObject.transform.DOMove(playerGui.PlayerCards.transform.position, flipDuration)
-        //            .SetEase(Ease.InOutQuad);
-        //    });
         if(waitForEnd)
             return sequence.Duration();
         else return 0f;

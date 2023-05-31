@@ -5,9 +5,9 @@ using UnityEngine;
 using static ENUMS;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
-internal class EFlipCardAddCubes : EngineEvent
+internal class EDrawInfectionCard : EngineEvent
 {
-    private const float durationMove = 0.01f;
+    private const float durationMove = 0.05f;
     private const float scaleToCenterScale = 3f;
 
     GameGUI gui = GameGUI.gui;
@@ -17,7 +17,7 @@ internal class EFlipCardAddCubes : EngineEvent
     private City cityToInfect;
     private bool fromTheTop;
 
-    public EFlipCardAddCubes(int numberOfCubes, bool fromTheTop)
+    public EDrawInfectionCard(int numberOfCubes, bool fromTheTop)
     {
         this.fromTheTop = fromTheTop;
         QUndoable = true;
@@ -53,8 +53,11 @@ internal class EFlipCardAddCubes : EngineEvent
         if(cityToInfect.numberOfInfectionCubes > 3)
         { 
             cityToInfect.numberOfInfectionCubes = 3;
-            Timeline.theTimeline.addEvent(new EOutbreak(cityToInfect));
+            if(game.OutbreakTracker.Contains(cityToInfect.city.cityID) == false)
+                Timeline.theTimeline.addEvent(new EOutbreak(cityToInfect));
+            else game.actionCompleted = true;
         }
+        else game.actionCompleted = true;
             
     }
 

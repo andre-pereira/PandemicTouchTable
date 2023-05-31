@@ -16,22 +16,43 @@ public class Game : MonoBehaviour
     public enum GameState
     {
         INVALID = -1,
-        LOGIN,
-        PLAY,
+        SETTINGBOARD,
+        PLAYERACTIONS,
+        DRAW1STPLAYERCARD,
+        DRAW2NDPLAYERCARD,
+        EPIDEMIC,
+        DRAWINFECTCARDS,
+        OUTBREAK,
         GAME_OVER
+    }
+
+    public enum EpidemicGameState
+    {
+
+        EPIDEMICINCREASE,
+        EPIDEMICINFECT,
+        EPIDEMICINTENSIFY
     }
 
     public int InfectionRate = 0;
     public int[] InfectionRateValues = new int[] { 2, 2, 3, 4 };
+    private int numberOfDrawnInfectCards = 0;
 
     public int OutbreakCounter = 0;
+    public List<int> OutbreakTracker = new List<int>();
 
     public int InitialCityID = 13;
 
     public static Game theGame = null;
 
     public Player CurrentPlayer = null;
-    public GameState CurrentGameState = GameState.INVALID;
+
+    public GameState CurrentGameState { get; private set; } = GameState.INVALID;
+    private GameState previousGameState = GameState.INVALID;
+    public EpidemicGameState epidemicGameState = EpidemicGameState.EPIDEMICINCREASE;
+
+    private bool actionsInitiated = false;
+    public bool actionCompleted = false;
 
     public List<int> PlayerCards = null;
     public List<int> PlayerCardsDiscard = null;
@@ -69,7 +90,77 @@ public class Game : MonoBehaviour
 
     public void test()
     {
-        Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer, true));
+        if(CurrentPlayer.PlayerCardsInHand.Count < 7)
+            Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer, true));
+    }
+
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            test();
+        }
+        if (CurrentGameState == GameState.DRAW1STPLAYERCARD || CurrentGameState == GameState.DRAW2NDPLAYERCARD)
+        {
+            if (actionsInitiated == false)
+            {
+                actionsInitiated = true;
+                Debug.Log("Draw Player Card: " + CurrentGameState);
+                Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer, true));
+            }
+            if (actionCompleted == true)
+            {
+                if (CurrentPlayer.PlayerCardsInHand.Count < 7)
+                {
+                    if (CurrentGameState == GameState.DRAW1STPLAYERCARD)
+                        setCurrentGameState(GameState.DRAW2NDPLAYERCARD);
+                    else setCurrentGameState(CurrentGameState = GameState.DRAWINFECTCARDS);
+                }
+            }
+        }
+        else if (CurrentGameState == GameState.EPIDEMIC)
+        {
+            if (epidemicGameState == EpidemicGameState.EPIDEMICINCREASE)
+            {
+                Timeline.theTimeline.addEvent(new EIncreaseInfectionRate());
+                Timeline.theTimeline.addEvent(new EDrawInfectionCard(3, true));
+                epidemicGameState = EpidemicGameState.EPIDEMICINFECT;
+            }
+            else if (epidemicGameState == EpidemicGameState.EPIDEMICINFECT)
+            {
+                if (actionCompleted == true)
+                {
+                    epidemicGameState = EpidemicGameState.EPIDEMICINTENSIFY;
+                    Timeline.theTimeline.addEvent(new EIntensify());
+                    if (previousGameState == GameState.DRAW1STPLAYERCARD)
+                        setCurrentGameState(GameState.DRAW2NDPLAYERCARD);
+                    else if (previousGameState == GameState.DRAW2NDPLAYERCARD)
+                        setCurrentGameState(CurrentGameState = GameState.DRAWINFECTCARDS);
+                }
+            }
+        }
+        else if (CurrentGameState == GameState.DRAWINFECTCARDS)
+        {
+            if (numberOfDrawnInfectCards < InfectionRateValues[InfectionRate])
+            {
+                if (actionsInitiated == false)
+                {
+                    actionsInitiated = true;
+                    Timeline.theTimeline.addEvent(new EDrawInfectionCard(1, true));
+                }
+                if (actionCompleted == true)
+                {
+                    numberOfDrawnInfectCards++;
+                    actionsInitiated = false;
+                    actionCompleted = false;
+                }
+            }
+            else
+            {
+                Timeline.theTimeline.addEvent(new PEndTurn());
+                setCurrentGameState(GameState.PLAYERACTIONS);
+            }
+        }
     }
 
     public void Awake()
@@ -82,4 +173,14 @@ public class Game : MonoBehaviour
         if (theGame == this) theGame = null;
     }
 
+    internal void setCurrentGameState(GameState state)
+    {
+        numberOfDrawnInfectCards = 0;
+        previousGameState = CurrentGameState;
+        CurrentGameState = state;
+        actionsInitiated = false;
+        actionCompleted = false;
+        if(state == GameState.EPIDEMIC)
+            epidemicGameState = EpidemicGameState.EPIDEMICINCREASE;
+    }
 }

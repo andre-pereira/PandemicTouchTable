@@ -9,7 +9,9 @@ public class Player
 {
     public Game game = Game.theGame;
     public GameGUI gui = GameGUI.gui;
+    public PlayerGUI playerGui;
 
+    public List<int> PlayerCardsInHand { get; private set; }
     public List<int> CityCardsInHand { get; private set; }
     public List<int> RedCardsInHand { get; private set; }
     public List<int> YellowCardsInHand { get; private set; }
@@ -42,6 +44,8 @@ public class Player
 
     public Player()
     {
+        playerGui = GameGUI.playerPadForPosition(Position);
+        PlayerCardsInHand = new List<int>();
         CityCardsInHand = new List<int>();
         RedCardsInHand = new List<int>();
         YellowCardsInHand = new List<int>();
@@ -51,8 +55,11 @@ public class Player
 
     public void AddCardToHand(int card)
     {
-        CityCardsInHand.Add(card);
+        PlayerCardsInHand.Add(card);
         if (card < 24)
+        {
+            CityCardsInHand.Add(card);
+            CityCardsInHand.Sort();
             switch (game.Cities[card].city.virusInfo.virusName)
             {
                 case ENUMS.VirusName.Red:
@@ -67,9 +74,10 @@ public class Player
                 default:
                     break;
             }
+        }
         else
             EventCardsInHand.Add(card);
-        CityCardsInHand.Sort();
+        PlayerCardsInHand.Sort();
     }
 
 
@@ -90,11 +98,11 @@ public class Player
         game.Cities[cityID].addPawn(this);
     }
 
-    internal void RemoveCityCardInHand(int cityID)
+    internal void RemoveCardInHand(int cityID)
     {
+        PlayerCardsInHand.Remove(cityID);
         if (cityID < 24) {
             CityCardsInHand.Remove(cityID);
-
             switch (game.Cities[cityID].city.virusInfo.virusName)
             {
                 case ENUMS.VirusName.Red:
@@ -112,5 +120,11 @@ public class Player
         }
         else
             EventCardsInHand.Remove(cityID);
+    }
+
+    internal void ResetTurn()
+    {
+        ActionsRemaining = 4;
+        playerGui.ClearSelectedAction();
     }
 }

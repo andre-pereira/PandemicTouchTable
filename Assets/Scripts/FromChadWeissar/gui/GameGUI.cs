@@ -16,6 +16,8 @@ public class GameGUI : MonoBehaviour
     private Game game = null;
     public static GameGUI gui = null;
 
+    public TextMeshProUGUI BigTextMessage;
+
     public Sprite[] ContextButtonTextures;
 
     public Texture PlayerCardBack;
@@ -30,6 +32,7 @@ public class GameGUI : MonoBehaviour
     public GameObject cubePrefab;
 
     public GameObject EpidemicCardPrefab;
+    public Image EpidemicCardBoard;
 
     public GameObject CureVialPrefab;
 
@@ -51,6 +54,7 @@ public class GameGUI : MonoBehaviour
 
     public GameObject InfectionDeck;
     public GameObject InfectionDiscard;
+    public GameObject InfectionCardBackPrefab;
     public TextMeshProUGUI InfectionDeckCount;
 
     public GameObject OutbreakMarkerPrefab;
@@ -158,14 +162,6 @@ public class GameGUI : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        DebugText.text = "Pending event?: " + Timeline.theTimeline.hasPendingEvent() + "\n";
-        if (Game.theGame.CurrentPlayer != null)
-            DebugText.text += "Current Player: " + Game.theGame.CurrentPlayer.Role + "\n";
-        //add debug text to check if an animation is running
-        //DebugText.text += "Animation running?: " + Timeline.theTimeline.isAnimationRunning() + "\n";
-    }
 
     void OnDestroy()
     {
@@ -324,6 +320,23 @@ public class GameGUI : MonoBehaviour
     public GameObject getOutbreakMarker(int targetOutbreak)
     {
         return OutbreakMarkerTransforms[targetOutbreak].gameObject;
+    }
+
+    private void Update()
+    {
+        DebugText.text = "Game State: " + Game.theGame.CurrentGameState + "\n";
+        if(Game.theGame.CurrentGameState == Game.GameState.EPIDEMIC)
+            DebugText.text += "Epidemic State: " + Game.theGame.epidemicGameState + "\n";
+        if (Game.theGame.CurrentPlayer != null)
+        {
+            DebugText.text += "Current Player: " + Game.theGame.CurrentPlayer.Role + "\n";
+            DebugText.text += "Action Selected: " + GameGUI.currentPlayerPad().ActionSelected + "\n";
+            DebugText.text += "Actions remaining: " + GameGUI.currentPlayerPad().PlayerModel.ActionsRemaining + "\n";
+            DebugText.text += "Cards State: " + GameGUI.currentPlayerPad().cardsState + "\n";
+            DebugText.text += "Cards in Hand: " + string.Join(", ", currentPlayerPad().PlayerModel.PlayerCardsInHand) + "\n";
+        }
+        //add debug text to check if an animation is running
+        //DebugText.text += "Animation running?: " + Timeline.theTimeline.isAnimationRunning() + "\n";
     }
 
 }

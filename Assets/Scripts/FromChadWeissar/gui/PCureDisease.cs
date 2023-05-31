@@ -27,7 +27,7 @@ internal class PCureDisease : PlayerEvent
     {
         for (int i = 0; i < selectedCards.Count; i++)
         {
-            _player.RemoveCityCardInHand(selectedCards[i]);
+            _player.RemoveCardInHand(selectedCards[i]);
             game.PlayerCardsDiscard.Add(selectedCards[i]);
         }
         switch (virusName)
@@ -42,6 +42,13 @@ internal class PCureDisease : PlayerEvent
                 game.YellowCure = true;
                 break;
         }
+
+        game.CurrentPlayer.ActionsRemaining -= 1;
+        if (game.CurrentPlayer.ActionsRemaining == 0)
+        {
+            game.setCurrentGameState(Game.GameState.DRAW1STPLAYERCARD);
+        }
+        _playerGui.ActionSelected = ActionTypes.None;
     }
 
     public override float Act(bool qUndo = false)

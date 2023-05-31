@@ -19,13 +19,13 @@ internal class PCharterEvent : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
-        _player.RemoveCityCardInHand(flyFrom.city.cityID);
+        _player.RemoveCardInHand(flyFrom.city.cityID);
         _player.UpdateCurrentCity(flyTo.city.cityID);
         game.PlayerCardsDiscard.Add(flyFrom.city.cityID);
         game.CurrentPlayer.ActionsRemaining -= 1;
         if (game.CurrentPlayer.ActionsRemaining == 0)
         {
-            Timeline.theTimeline.addEvent(new PEndTurn());
+            game.setCurrentGameState(Game.GameState.DRAW1STPLAYERCARD);
         }
         _playerGui.ActionSelected = ActionTypes.None;
     }

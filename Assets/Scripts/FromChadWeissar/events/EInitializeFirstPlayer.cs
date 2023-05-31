@@ -21,16 +21,13 @@ internal class EInitializeFirstPlayer : EngineEvent
         int highestPopulation = 0;
         foreach (Player player in PlayerList.Players)
         {
-            foreach(int card in player.CityCardsInHand)
+            foreach (int card in player.CityCardsInHand)
             {
-                if (card < 24)
+                int population = int.Parse(game.Cities[card].city.population.Replace(".", ""));
+                if (population > highestPopulation)
                 {
-                    int population = int.Parse(game.Cities[card].city.population.Replace(".",""));
-                    if (population > highestPopulation)
-                    {
-                        highestPopulation = population;
-                        startPlayer = player;
-                    }
+                    highestPopulation = population;
+                    startPlayer = player;
                 }
             }
         }

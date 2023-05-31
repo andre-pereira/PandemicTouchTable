@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a116c06700224942ab7a0240f05b4c5, type: 3}
   m_Name: Mobile Hospital
   m_EditorClassIdentifier: 
+  eventID: 26
   eventName: Mobile Hospital
   eventText: This turn, remove 1 cube from each city the current player Drives/Ferries
     to. (Do this after using abilities.)

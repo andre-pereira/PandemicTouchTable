@@ -43,9 +43,7 @@ public class EInitialize : EngineEvent
 
     public void initializeModel()
     {
-        
-
-        game.CurrentGameState = Game.GameState.PLAY;
+        game.setCurrentGameState(Game.GameState.SETTINGBOARD);
 
         //0 to 23 are city cards and 24 to 27 are event cards
         game.PlayerCards = Enumerable.Range(0, 28).ToList();
@@ -64,12 +62,12 @@ public class EInitialize : EngineEvent
         }
 
         Timeline.theTimeline.addEvent(new EAddEpidemicCards());
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(3,true));
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(3, true));
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(2, true));
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(2, true));
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(1, true));
-        Timeline.theTimeline.addEvent(new EFlipCardAddCubes(1, true));
+        Timeline.theTimeline.addEvent(new EDrawInfectionCard(3,true));
+        Timeline.theTimeline.addEvent(new EDrawInfectionCard(3, true));
+        Timeline.theTimeline.addEvent(new EDrawInfectionCard(2, true));
+        Timeline.theTimeline.addEvent(new EDrawInfectionCard(2, true));
+        Timeline.theTimeline.addEvent(new EDrawInfectionCard(1, true));
+        Timeline.theTimeline.addEvent(new EDrawInfectionCard(1, true));
         Timeline.theTimeline.addEvent(new EInitializeFirstPlayer());
     }
 

@@ -13,7 +13,7 @@ public class EStartRound : EngineEvent
   public override void Do(Timeline timeline)
   {
     Game.theGame.CurrentPlayer = PlayerList.Players[0];
-    Game.theGame.CurrentGameState = Game.GameState.PLAY;
+    Game.theGame.setCurrentGameState(Game.GameState.PLAYERACTIONS);
   }
   public override float Act(bool qUndo = false)
   {
@@ -31,7 +31,7 @@ public class EEndGame : EngineEvent
 {
   public override void Do(Timeline timeline)
   {
-    Game.theGame.CurrentGameState = Game.GameState.GAME_OVER;
+    Game.theGame.setCurrentGameState(Game.GameState.GAME_OVER);
   }
   public override float Act(bool qUndo = false)
   {

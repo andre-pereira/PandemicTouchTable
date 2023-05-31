@@ -76,6 +76,8 @@ public class Timeline : MonoBehaviour
     {
         if (QReprocessingEvents) return;
 
+        Debug.Log("addEvent " + e.ToString());
+
         myPendingEvents.Add(e);
 
         if (myPendingEvents.Count > 100)

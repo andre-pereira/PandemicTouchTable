@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a116c06700224942ab7a0240f05b4c5, type: 3}
   m_Name: Resource Planning
   m_EditorClassIdentifier: 
+  eventID: 27
   eventName: Resource Planning
   eventText: Look at, rearrange, and return the top 4 cards of the Player deck. Do
     not mix them with your hand.

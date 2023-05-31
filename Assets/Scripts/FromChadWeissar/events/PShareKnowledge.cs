@@ -27,12 +27,12 @@ public class PShareKnowledge : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
-        playerFrom.PlayerModel.RemoveCityCardInHand(cityID);
+        playerFrom.PlayerModel.RemoveCardInHand(cityID);
         playerTo.PlayerModel.AddCardToHand(cityID);
         Game.theGame.CurrentPlayer.ActionsRemaining -= 1;
         if (Game.theGame.CurrentPlayer.ActionsRemaining == 0)
         {
-            Timeline.theTimeline.addEvent(new PEndTurn());
+            game.setCurrentGameState(Game.GameState.DRAW1STPLAYERCARD);
         }
     }
 

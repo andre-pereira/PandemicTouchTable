@@ -24,13 +24,13 @@ public class PFlyToCity : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
-        _player.CityCardsInHand.Remove(flyTo);
+        _player.RemoveCardInHand(flyTo);
         _player.UpdateCurrentCity(flyTo);
         game.PlayerCardsDiscard.Add(flyTo);
         game.CurrentPlayer.ActionsRemaining -= 1;
         if (game.CurrentPlayer.ActionsRemaining == 0)
         {
-            Timeline.theTimeline.addEvent(new PEndTurn());
+            game.setCurrentGameState(Game.GameState.DRAW1STPLAYERCARD);
         }
     }
 
