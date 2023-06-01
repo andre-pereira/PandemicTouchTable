@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using static GameGUI;
+using static Game;
 
 [System.Serializable]
 public class EInitialize : EngineEvent
 {
     public int? Seed;
-    private GameGUI gui = GameGUI.gui;
-    private Game game = Game.theGame;
 
     public EInitialize()
     {
@@ -43,14 +43,14 @@ public class EInitialize : EngineEvent
 
     public void initializeModel()
     {
-        game.setCurrentGameState(Game.GameState.SETTINGBOARD);
+        theGame.setCurrentGameState(Game.GameState.SETTINGBOARD);
 
         //0 to 23 are city cards and 24 to 27 are event cards
-        game.PlayerCards = Enumerable.Range(0, 28).ToList();
-        game.PlayerCards.Shuffle();
+        theGame.PlayerCards = Enumerable.Range(0, 28).ToList();
+        theGame.PlayerCards.Shuffle();
 
-        game.InfectionCards = Enumerable.Range(0, 24).ToList();
-        game.InfectionCards.Shuffle();
+        theGame.InfectionCards = Enumerable.Range(0, 24).ToList();
+        theGame.InfectionCards.Shuffle();
 
         int numCardsToDeal = PlayerList.Players.Count == 2 ? 3 : 2;
         foreach (Player player in PlayerList.Players)

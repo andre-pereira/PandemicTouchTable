@@ -2,11 +2,11 @@
 using System.Linq;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
+using static GameGUI;
+using static Game;
 
 internal class EInitializeFirstPlayer : EngineEvent
 {
-    Game game = Game.theGame;
-    GameGUI gui = GameGUI.gui;
 
     public EInitializeFirstPlayer()
     {
@@ -23,7 +23,7 @@ internal class EInitializeFirstPlayer : EngineEvent
         {
             foreach (int card in player.CityCardsInHand)
             {
-                int population = int.Parse(game.Cities[card].city.population.Replace(".", ""));
+                int population = int.Parse(theGame.Cities[card].city.population.Replace(".", ""));
                 if (population > highestPopulation)
                 {
                     highestPopulation = population;
@@ -33,7 +33,7 @@ internal class EInitializeFirstPlayer : EngineEvent
         }
 
         PlayerList.setOrderToClockwiseWithStartAt(startPlayer);
-        game.CurrentPlayer = startPlayer;
+        theGame.CurrentPlayer = startPlayer;
         startPlayer.ActionsRemaining = 4;
     }
 

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static GameGUI;
+using static Game;
 
 internal class EAddEpidemicCards : EngineEvent
 {
     private const float OffsetEpidemicCards = 2.5f;
-    private const float DurationEpidemicMove = 0.01f;
-    GameGUI gui = GameGUI.gui;
-    Game game = Game.theGame;
+    private const float DurationEpidemicMove = 1f;
 
     public EAddEpidemicCards()
     {
@@ -17,7 +17,7 @@ internal class EAddEpidemicCards : EngineEvent
 
     public override void Do(Timeline timeline)
     {
-        game.PlayerCards = addEpidemicCards(game.PlayerCards);
+        theGame.PlayerCards = addEpidemicCards(theGame.PlayerCards);
     }
 
     public override float Act(bool qUndo = false)

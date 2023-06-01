@@ -3,15 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEngine.RuleTile.TilingRuleOutput;
+using static GameGUI;
+using static Game;
 
 public class EDealCardToPlayer : EngineEvent
 {
     private const float scaleToCenterScale = 3f;
-    private const float scaleToCenterDuration = 0.1f;
+    private const float ANIMATIONDURATION = 0.5f;
 
-    GameGUI gui = GameGUI.gui;
-    Game game = Game.theGame;
     Player player = null;
     PlayerGUI playerGui = null;
     private bool waitForEnd;
@@ -22,23 +21,23 @@ public class EDealCardToPlayer : EngineEvent
     {
         QUndoable = false;
         this.player = player;
-        playerGui = GameGUI.playerPadForPlayer(player);
+        playerGui = playerPadForPlayer(player);
         this.waitForEnd = waitForEnd;
     }
 
     public override void Do(Timeline timeline)
     {
-        cardToAdd = game.PlayerCards.Pop();
+        cardToAdd = theGame.PlayerCards.Pop();
         if (cardToAdd == 28)
         {
-            Timeline.theTimeline.addEvent(new EEpidemic());
+            Timeline.theTimeline.addEvent(new EEpidemicInitiate());
             epidemicPopped = true;
         }
         else
         {
             player.AddCardToHand(cardToAdd);
         }
-        game.actionCompleted = true;
+        theGame.actionCompleted = true;
     }
 
     public override float Act(bool qUndo = false)
@@ -52,13 +51,13 @@ public class EDealCardToPlayer : EngineEvent
 
         gui.drawBoard();
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(cardToAddObject.transform.DOShakeRotation(scaleToCenterDuration/2, new Vector3(0f, 0f, scaleToCenterScale), 10, 90, false));
-        sequence.Append(cardToAddObject.transform.DOScale(new Vector3(scaleToCenterScale, scaleToCenterScale, 1f), scaleToCenterDuration)).
-            Join(cardToAddObject.transform.DOMove(new Vector3(0, 0, 0), scaleToCenterDuration));
-        sequence.AppendInterval(scaleToCenterDuration);
-        sequence.Append(cardToAddObject.transform.DOScale(new Vector3(1f, 1f, 1f), scaleToCenterDuration)).
-            Join(cardToAddObject.transform.DORotate(playerGui.transform.rotation.eulerAngles, scaleToCenterDuration)).
-            Join(cardToAddObject.transform.DOMove(playerGui.roleCard.transform.position, scaleToCenterDuration)).
+        sequence.Append(cardToAddObject.transform.DOShakeRotation(ANIMATIONDURATION/2, new Vector3(0f, 0f, scaleToCenterScale), 10, 90, false));
+        sequence.Append(cardToAddObject.transform.DOScale(new Vector3(scaleToCenterScale, scaleToCenterScale, 1f), ANIMATIONDURATION)).
+            Join(cardToAddObject.transform.DOMove(new Vector3(0, 0, 0), ANIMATIONDURATION));
+        sequence.AppendInterval(ANIMATIONDURATION);
+        sequence.Append(cardToAddObject.transform.DOScale(new Vector3(1f, 1f, 1f), ANIMATIONDURATION)).
+            Join(cardToAddObject.transform.DORotate(playerGui.transform.rotation.eulerAngles, ANIMATIONDURATION)).
+            Join(cardToAddObject.transform.DOMove(playerGui.roleCard.transform.position, ANIMATIONDURATION)).
             OnComplete(() => {
                 Object.Destroy(cardToAddObject);
                 playerGui.draw();

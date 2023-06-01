@@ -3,31 +3,45 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static ENUMS;
+using static GameGUI;
+using static Game;
 
 public class City : MonoBehaviour
 {
-    public static readonly float[][] offsetCubes = new float[][]
+    public static readonly float[][] offsetCubesRed = new float[][]
     {
-        new float[] { 0.28f, -0.48f },
-        new float[] { 0.48f, -0.48f },
-        new float[] { 0.08f, -0.38f },
-        new float[] { 0.58f, -0.38f }
+        new float[] { 0.61f, -0.42f },
+        new float[] { 0.61f, -0.62f },
+        new float[] { 0.61f, -0.82f }
+    };
+
+    public static readonly float[][] offsetCubesYellow = new float[][]
+    {
+        new float[] { 0.38f, -0.48f },
+        new float[] { 0.38f, -0.68f },
+        new float[] { 0.38f, -0.88f }
+    };
+    public static readonly float[][] offsetCubesBlue = new float[][]
+    {
+        new float[] { 0.15f, -0.42f },
+        new float[] { 0.15f, -0.62f },
+        new float[] { 0.15f, -0.82f }
     };
 
     public static readonly float[][] offsetPawns = new float[][]
-{
+    {
         new float[] { -0.1f, 0.55f },
         new float[] { 0.1f, 0.55f },
         new float[] { 0.3f, 0.45f },
         new float[] { -0.3f, 0.45f }
-};
-
-    private Game game;
-    private GameGUI gui;
+    };
 
     public CityCard city;
 
-    public int numberOfInfectionCubes = 0;
+    private int numberOfInfectionCubesRed = 0;
+    private int numberOfInfectionCubesYellow = 0;
+    private int numberOfInfectionCubesBlue = 0;
     public GameObject CubesGameObject;
     public GameObject PawnsGameObject;
 
@@ -40,11 +54,62 @@ public class City : MonoBehaviour
 
     void Start()
     {
-        game = Game.theGame;
-        gui = GameGUI.gui;
         PawnsInCity = new Pawn[4];
         rectTransform = GetComponent<RectTransform>();
         canvasRectTransform = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
+    }
+
+    public int getNumberOfCubes(VirusName virusName)
+    {
+        switch (virusName)
+        {
+            case VirusName.Red:
+                return numberOfInfectionCubesRed;
+            case VirusName.Yellow:
+                return numberOfInfectionCubesYellow;
+            case VirusName.Blue:
+                return numberOfInfectionCubesBlue;
+        }
+        return 0;
+    }
+
+    public void resetCubes()
+    {
+        numberOfInfectionCubesRed = 0;
+        numberOfInfectionCubesYellow = 0;
+        numberOfInfectionCubesBlue = 0;
+    }
+
+    public bool incrementNumberOfCubes(VirusName virusName, int increment)
+    {
+        switch (virusName)
+        {
+            case VirusName.Red:
+                numberOfInfectionCubesRed += increment;
+                if (numberOfInfectionCubesRed > 3)
+                {
+                    numberOfInfectionCubesRed = 3;
+                    return true;
+                }
+                break;
+            case VirusName.Yellow:
+                numberOfInfectionCubesYellow += increment;
+                if (numberOfInfectionCubesYellow > 3)
+                {
+                    numberOfInfectionCubesYellow = 3;
+                    return true;
+                }
+                break;
+            case VirusName.Blue:
+                numberOfInfectionCubesBlue += increment;
+                if (numberOfInfectionCubesBlue > 3)
+                {
+                    numberOfInfectionCubesBlue = 3;
+                    return true;
+                }
+                break;
+        }
+        return false;
     }
 
     public void addPawn(Player player)
@@ -64,24 +129,14 @@ public class City : MonoBehaviour
         CubesGameObject.DestroyChildrenImmediate();
         PawnsGameObject.DestroyChildrenImmediate();
 
-        if (numberOfInfectionCubes > 0)
-        {
-            for (int i = 0; i < numberOfInfectionCubes; i++)
-            {
-                GameObject cube = Instantiate(gui.cubePrefab, CubesGameObject.transform);
-                cube.transform.Translate(offsetCubes[i][0], offsetCubes[i][1],0);
-                cube.GetComponent<Cube>().virusInfo = city.virusInfo;
-                cube.GetComponentInChildren<Button>().onClick.AddListener(() => cubeClicked());
-
-            }
-        }
+        DrawCubes();
 
         if (PlayersInCity.Count > 0)
         {
             for (int i = 0; i < PlayersInCity.Count; i++)
             {
                 int playerPosition = PlayersInCity[i].Position;
-                GameObject pawn = Instantiate(gui.PawnPrefab, PawnsGameObject.transform.position , PawnsGameObject.transform.rotation, PawnsGameObject.transform);
+                GameObject pawn = Instantiate(gui.PawnPrefab, PawnsGameObject.transform.position, PawnsGameObject.transform.rotation, PawnsGameObject.transform);
                 pawn.transform.Translate(offsetPawns[i][0], offsetPawns[i][1], 0);
                 pawn.GetComponent<Image>().color = gui.roleCards[(int)PlayersInCity[i].Role].roleColor;
                 PawnsInCity[playerPosition] = pawn.GetComponent<Pawn>();
@@ -94,13 +149,51 @@ public class City : MonoBehaviour
         //Vector3 pawnPosition = initialCity.getPawnPosition(PlayerRole);
     }
 
-    private void cubeClicked()
+    private void DrawCubes()
     {
-        GameGUI.currentPlayerPad().CubeClicked(this);
+        InstantiateCubes(numberOfInfectionCubesRed, offsetCubesRed, gui.VirusInfos[0]);
+        InstantiateCubes(numberOfInfectionCubesYellow, offsetCubesYellow, gui.VirusInfos[1]);
+        InstantiateCubes(numberOfInfectionCubesBlue, offsetCubesBlue, gui.VirusInfos[2]);
+    }
+
+    private void InstantiateCubes(int numberOfCubes, float[][] offsets, VirusInfo info)
+    {
+        for (int i = 0; i < numberOfCubes; i++)
+        {
+            GameObject cube = Instantiate(gui.cubePrefab, CubesGameObject.transform);
+            cube.transform.Translate(offsets[i][0], offsets[i][1], 0);
+            cube.GetComponent<Cube>().virusInfo = info;
+            cube.GetComponentInChildren<Button>().onClick.AddListener(() => cubeClicked(info.virusName));
+        }
+    }
+
+    private void cubeClicked(VirusName virusName)
+    {
+        GameGUI.currentPlayerPad().CubeClicked(this, virusName);
     }
 
     public void Clicked()
     {
         GameGUI.currentPlayerPad().CityClicked(this);
+    }
+
+    public bool cubesInCity()
+    {
+        if (numberOfInfectionCubesRed > 0 || numberOfInfectionCubesYellow > 0 || numberOfInfectionCubesBlue > 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public VirusName? firstVirusFoundInCity()
+    {
+        if (numberOfInfectionCubesRed > 0)
+            return VirusName.Red;
+        if (numberOfInfectionCubesYellow > 0)
+            return VirusName.Yellow;
+        if (numberOfInfectionCubesBlue > 0)
+            return VirusName.Blue;
+        return null;
     }
 }

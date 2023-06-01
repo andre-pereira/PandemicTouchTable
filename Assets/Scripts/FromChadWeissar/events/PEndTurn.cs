@@ -11,8 +11,9 @@ public class PEndTurn : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
-        Game.theGame.CurrentPlayer = PlayerList.nextPlayer(_player);
-        Game.theGame.CurrentPlayer.ResetTurn(); 
+        theGame.CurrentPlayer = PlayerList.nextPlayer(_player);
+        theGame.CurrentPlayer.ResetTurn();
+        theGame.setCurrentGameState(GameState.PLAYERACTIONS);
     }
 
     public override float Act(bool qUndo = false)
@@ -20,6 +21,7 @@ public class PEndTurn : PlayerEvent
         PlayerGUI nextPlayerGUI = GameGUI.currentPlayerPad();
         nextPlayerGUI.draw();
         _playerGui.draw();
+        gui.draw();
         return 0;
     }
 

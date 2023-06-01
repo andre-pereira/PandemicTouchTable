@@ -1,15 +1,33 @@
-﻿public class PTreatDisease : PlayerEvent
+﻿using static ENUMS;
+
+public class PTreatDisease : PlayerEvent
 {
     private City city;
+    private VirusName virusName;
+    private bool defaultClick = true;
 
-    public PTreatDisease(City city): base(Game.theGame.CurrentPlayer)
+    public PTreatDisease(City city, VirusName virusName): base(Game.theGame.CurrentPlayer)
     {
         this.city = city;
+        this.virusName = virusName;
+    }
+
+    public PTreatDisease(City city) : base(Game.theGame.CurrentPlayer)
+    {
+        this.city = city;
+        defaultClick = false;
     }
 
     public override void Do(Timeline timeline)
     {
-        city.numberOfInfectionCubes -= 1;
+        if (defaultClick)
+            city.incrementNumberOfCubes(virusName,-1);
+        else
+        {
+            VirusName? virus = city.firstVirusFoundInCity();
+            if (virus != null)
+                city.incrementNumberOfCubes((VirusName)virus, -1);
+        }    
         _player.ActionsRemaining -= 1;
         if (game.CurrentPlayer.ActionsRemaining == 0)
         {

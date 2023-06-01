@@ -48,7 +48,7 @@ public class Game : MonoBehaviour
     public Player CurrentPlayer = null;
 
     public GameState CurrentGameState { get; private set; } = GameState.INVALID;
-    private GameState previousGameState = GameState.INVALID;
+    public GameState previousGameState { get; private set; } = GameState.INVALID;
     public EpidemicGameState epidemicGameState = EpidemicGameState.EPIDEMICINCREASE;
 
     private bool actionsInitiated = false;
@@ -67,6 +67,7 @@ public class Game : MonoBehaviour
     public bool RedCure = false;
     public bool YellowCure = false;
     public bool BlueCure = false;
+    private bool turnEnded = false;
 
     public City[] Cities { get; internal set; }
 
@@ -100,6 +101,15 @@ public class Game : MonoBehaviour
         {
             test();
         }
+        
+        foreach (Player player in PlayerList.getAllPlayers())
+        {
+            if(player.PlayerCardsInHand.Count > 6)
+            {
+                return;
+            }
+        }
+
         if (CurrentGameState == GameState.DRAW1STPLAYERCARD || CurrentGameState == GameState.DRAW2NDPLAYERCARD)
         {
             if (actionsInitiated == false)
@@ -114,7 +124,7 @@ public class Game : MonoBehaviour
                 {
                     if (CurrentGameState == GameState.DRAW1STPLAYERCARD)
                         setCurrentGameState(GameState.DRAW2NDPLAYERCARD);
-                    else setCurrentGameState(CurrentGameState = GameState.DRAWINFECTCARDS);
+                    else setCurrentGameState(GameState.DRAWINFECTCARDS);
                 }
             }
         }
@@ -123,8 +133,8 @@ public class Game : MonoBehaviour
             if (epidemicGameState == EpidemicGameState.EPIDEMICINCREASE)
             {
                 Timeline.theTimeline.addEvent(new EIncreaseInfectionRate());
-                Timeline.theTimeline.addEvent(new EDrawInfectionCard(3, true));
                 epidemicGameState = EpidemicGameState.EPIDEMICINFECT;
+                Timeline.theTimeline.addEvent(new EDrawInfectionCard(3, true));
             }
             else if (epidemicGameState == EpidemicGameState.EPIDEMICINFECT)
             {
@@ -135,8 +145,16 @@ public class Game : MonoBehaviour
                     if (previousGameState == GameState.DRAW1STPLAYERCARD)
                         setCurrentGameState(GameState.DRAW2NDPLAYERCARD);
                     else if (previousGameState == GameState.DRAW2NDPLAYERCARD)
-                        setCurrentGameState(CurrentGameState = GameState.DRAWINFECTCARDS);
+                        setCurrentGameState(GameState.DRAWINFECTCARDS);
                 }
+            }
+        }
+        else if (CurrentGameState == GameState.OUTBREAK)
+        {
+            if (actionCompleted == true)
+            {
+                OutbreakTracker.Clear();
+                setCurrentGameState(GameState.DRAWINFECTCARDS);
             }
         }
         else if (CurrentGameState == GameState.DRAWINFECTCARDS)
@@ -157,8 +175,11 @@ public class Game : MonoBehaviour
             }
             else
             {
-                Timeline.theTimeline.addEvent(new PEndTurn());
-                setCurrentGameState(GameState.PLAYERACTIONS);
+                if (!turnEnded)
+                {
+                    Timeline.theTimeline.addEvent(new PEndTurn());
+                    turnEnded = true;
+                }
             }
         }
     }
@@ -175,6 +196,7 @@ public class Game : MonoBehaviour
 
     internal void setCurrentGameState(GameState state)
     {
+        turnEnded = false;
         numberOfDrawnInfectCards = 0;
         previousGameState = CurrentGameState;
         CurrentGameState = state;

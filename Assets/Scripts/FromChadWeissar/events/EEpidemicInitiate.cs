@@ -2,14 +2,13 @@
 using UnityEngine;
 using static Game;
 using static GameGUI;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public class EEpidemic : EngineEvent
+public class EEpidemicInitiate : EngineEvent
 {
-    private const float AnimationDuration = 0.5f;
+    private const float AnimationDuration = 1f;
     private const float scaleToCenterScale = 3f;
 
-    public EEpidemic()
+    public EEpidemicInitiate()
     {
 
     }

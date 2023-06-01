@@ -5,7 +5,7 @@ using DG.Tweening;
 
 internal class EIntensify : EngineEvent
 {
-    public const float ANIMATIONDURATION = 1f;
+    public const float ANIMATIONDURATION = 2f;
 
     public EIntensify()
     {

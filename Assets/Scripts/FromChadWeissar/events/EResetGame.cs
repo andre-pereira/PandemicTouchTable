@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using static GameGUI;
+using static Game;
+
 [System.Serializable]
 public class EResetGame : EngineEvent
 {
@@ -10,10 +13,10 @@ public class EResetGame : EngineEvent
 
     public override void Do(Timeline c)
     {
-        Game.theGame.init();
-        Game.theGame.CurrentPlayer = null;
+        theGame.init();
+        theGame.CurrentPlayer = null;
         PlayerList.Players.Clear();
-        foreach (PlayerGUI pad in GameGUI.gui.PlayerPads)
+        foreach (PlayerGUI pad in gui.PlayerPads)
             pad.PlayerModel = null;
     }
     

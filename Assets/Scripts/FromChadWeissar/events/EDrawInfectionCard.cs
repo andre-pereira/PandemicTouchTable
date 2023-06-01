@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static ENUMS;
-using static UnityEngine.RuleTile.TilingRuleOutput;
+using static GameGUI;
+using static Game;
 
 internal class EDrawInfectionCard : EngineEvent
 {
-    private const float durationMove = 0.05f;
+    private const float ANIMATIONDURATION = 0.5f;
     private const float scaleToCenterScale = 3f;
 
-    GameGUI gui = GameGUI.gui;
-    Game game = Game.theGame;
     private int numberOfCubes;
     private int numberOfCityToInfect;
     private City cityToInfect;
@@ -27,21 +26,21 @@ internal class EDrawInfectionCard : EngineEvent
     public override void Do(Timeline timeline)
     {
         if(fromTheTop)
-            numberOfCityToInfect = game.InfectionCards.Pop();
+            numberOfCityToInfect = theGame.InfectionCards.Pop();
         else
         {
-            numberOfCityToInfect = game.InfectionCards[0];
-            game.InfectionCards.Remove(numberOfCityToInfect);
+            numberOfCityToInfect = theGame.InfectionCards[0];
+            theGame.InfectionCards.Remove(numberOfCityToInfect);
         }
 
-        game.InfectionCardsDiscard.Add(numberOfCityToInfect);
-        if (game.InfectionCards.Count == 0) 
+        theGame.InfectionCardsDiscard.Add(numberOfCityToInfect);
+        if (theGame.InfectionCards.Count == 0) 
         {
-            game.InfectionCards = game.InfectionCardsDiscard;
-            game.InfectionCardsDiscard = new List<int>();
-            game.InfectionCards.Shuffle();
+            theGame.InfectionCards = theGame.InfectionCardsDiscard;
+            theGame.InfectionCardsDiscard = new List<int>();
+            theGame.InfectionCards.Shuffle();
         }
-        cityToInfect = game.Cities[numberOfCityToInfect];
+        cityToInfect = theGame.Cities[numberOfCityToInfect];
 
         if(checkIfNoMoreCubesExist(cityToInfect))
         {
@@ -49,16 +48,15 @@ internal class EDrawInfectionCard : EngineEvent
             return;
         }
 
-        cityToInfect.numberOfInfectionCubes += numberOfCubes;
-        if(cityToInfect.numberOfInfectionCubes > 3)
+        bool outbreak = cityToInfect.incrementNumberOfCubes(cityToInfect.city.virusInfo.virusName, numberOfCubes);
+
+        if(outbreak)
         { 
-            cityToInfect.numberOfInfectionCubes = 3;
-            if(game.OutbreakTracker.Contains(cityToInfect.city.cityID) == false)
+            if(theGame.OutbreakTracker.Contains(cityToInfect.city.cityID) == false)
                 Timeline.theTimeline.addEvent(new EOutbreak(cityToInfect));
-            else game.actionCompleted = true;
+            else theGame.actionCompleted = true;
         }
-        else game.actionCompleted = true;
-            
+        else theGame.actionCompleted = true;
     }
 
 
@@ -68,24 +66,24 @@ internal class EDrawInfectionCard : EngineEvent
         switch (cityToInfect.city.virusInfo.virusName)
         {
             case VirusName.Red:
-                game.RedCubes--;
-                if (game.RedCubes < 0)
+                theGame.RedCubes--;
+                if (theGame.RedCubes < 0)
                 {
                     Timeline.theTimeline.addEvent(new EGameOver(GameOverReasons.NoMoreCubesOfAColor));
                     gameOver = true;
                 }
                 break;
             case VirusName.Yellow:
-                game.YellowCubes--;
-                if (game.YellowCubes < 0)
+                theGame.YellowCubes--;
+                if (theGame.YellowCubes < 0)
                 {
                     Timeline.theTimeline.addEvent(new EGameOver(GameOverReasons.NoMoreCubesOfAColor));
                     gameOver = true;
                 }
                 break;
             case VirusName.Blue:
-                game.BlueCubes--;
-                if (game.BlueCubes < 0)
+                theGame.BlueCubes--;
+                if (theGame.BlueCubes < 0)
                 {
                     Timeline.theTimeline.addEvent(new EGameOver(GameOverReasons.NoMoreCubesOfAColor));
                     gameOver = true;
@@ -107,20 +105,20 @@ internal class EDrawInfectionCard : EngineEvent
         gui.drawBoard();
 
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(cardToAddObject.transform.DOShakeRotation(durationMove / 2, new Vector3(0f, 0f, scaleToCenterScale), 10, 90, false));
-        sequence.Append(cardToAddObject.transform.DOScale(new Vector3(scaleToCenterScale, scaleToCenterScale, 1f), durationMove)).
-            Join(cardToAddObject.transform.DOMove(new Vector3(0, 0, 0), durationMove));
-        sequence.AppendInterval(durationMove);
-        sequence.Append(cardToAddObject.transform.DOScale(new Vector3(1f, 1f, 1f), durationMove)).
-            Join(cardToAddObject.transform.DOMove(gui.InfectionDiscard.transform.position, durationMove));
+        sequence.Append(cardToAddObject.transform.DOShakeRotation(ANIMATIONDURATION / 2, new Vector3(0f, 0f, scaleToCenterScale), 10, 90, false));
+        sequence.Append(cardToAddObject.transform.DOScale(new Vector3(scaleToCenterScale, scaleToCenterScale, 1f), ANIMATIONDURATION)).
+            Join(cardToAddObject.transform.DOMove(new Vector3(0, 0, 0), ANIMATIONDURATION));
+        sequence.AppendInterval(ANIMATIONDURATION);
+        sequence.Append(cardToAddObject.transform.DOScale(new Vector3(1f, 1f, 1f), ANIMATIONDURATION)).
+            Join(cardToAddObject.transform.DOMove(gui.InfectionDiscard.transform.position, ANIMATIONDURATION));
 
-        sequence.Append(cardToAddObject.transform.DOShakeRotation(durationMove * 2, new Vector3(0f, 0f, scaleToCenterScale), 10, 90, false));
+        sequence.Append(cardToAddObject.transform.DOShakeRotation(ANIMATIONDURATION * 2, new Vector3(0f, 0f, scaleToCenterScale), 10, 90, false));
         List<GameObject> cubes = new List<GameObject>();
         for (int i = 0; i < numberOfCubes; i++)
         {
             cubes.Add(gui.GetCubesList(cityToInfect.GetComponent<City>().city.virusInfo).Pop());
             Vector3 positionToMove = new Vector3(cityToInfect.CubesGameObject.transform.position.x, cityToInfect.CubesGameObject.transform.position.y, 0);
-            sequence.Join(cubes[i].transform.DOMove(positionToMove, durationMove * 2));
+            sequence.Join(cubes[i].transform.DOMove(positionToMove, ANIMATIONDURATION * 2));
             if (i == numberOfCubes - 1)
                 sequence.AppendCallback(() =>
                 {

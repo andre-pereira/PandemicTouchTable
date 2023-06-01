@@ -1,6 +1,8 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using static GameGUI;
+using static Game;
 
 [System.Serializable]
 public class EAddPlayer : EngineEvent
@@ -9,8 +11,6 @@ public class EAddPlayer : EngineEvent
     public Player.Roles PlayerRole;
     public string PlayerName;
 
-    GameGUI gui = GameGUI.gui;
-    Game game = Game.theGame;
 
     EAddPlayer()
     {
@@ -27,7 +27,7 @@ public class EAddPlayer : EngineEvent
     {
         Player p = new Player() { Position = TablePositionId, Role = PlayerRole, Name = PlayerName };
         PlayerList.Players.Add(p);
-        p.UpdateCurrentCity(game.InitialCityID);
+        p.UpdateCurrentCity(theGame.InitialCityID);
     }
 
     public override float Act(bool qUndo = false)
@@ -38,7 +38,7 @@ public class EAddPlayer : EngineEvent
         //sequence.Append(currentPawnImage.DOFade(1f, 1f));
         //sequence.Append(currentPawn.transform.DOMove(pawnPosition,1f));
         //sequence.Play();
-        game.Cities[game.InitialCityID].draw();
+        theGame.Cities[theGame.InitialCityID].draw();
         return 0f;
     }
 

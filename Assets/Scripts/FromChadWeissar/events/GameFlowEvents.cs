@@ -3,6 +3,8 @@ using System.Collections;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using static GameGUI;
+using static Game;
 
 // Game flow:
 // EInitialize
@@ -12,8 +14,8 @@ public class EStartRound : EngineEvent
 {
   public override void Do(Timeline timeline)
   {
-    Game.theGame.CurrentPlayer = PlayerList.Players[0];
-    Game.theGame.setCurrentGameState(Game.GameState.PLAYERACTIONS);
+    theGame.CurrentPlayer = PlayerList.Players[0];
+    theGame.setCurrentGameState(GameState.PLAYERACTIONS);
   }
   public override float Act(bool qUndo = false)
   {
@@ -31,12 +33,12 @@ public class EEndGame : EngineEvent
 {
   public override void Do(Timeline timeline)
   {
-    Game.theGame.setCurrentGameState(Game.GameState.GAME_OVER);
+    theGame.setCurrentGameState(GameState.GAME_OVER);
   }
   public override float Act(bool qUndo = false)
   {
     //WindowsVoice.speak("Game Over.");
-    GameGUI.gui.draw();
+    gui.draw();
     return 0;
   }
 }

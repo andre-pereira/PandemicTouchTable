@@ -9,11 +9,13 @@ using System;
 using TMPro;
 using UnityEditor;
 using static ENUMS;
+using static GameGUI;
+using static Game;
 using UnityEngine.EventSystems;
 
 public class GameGUI : MonoBehaviour
 {
-    private Game game = null;
+
     public static GameGUI gui = null;
 
     public TextMeshProUGUI BigTextMessage;
@@ -102,8 +104,6 @@ public class GameGUI : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        game = Game.theGame;
-
         moveCityInfoToGame();
 
         saveCubesInitialPositions();
@@ -114,10 +114,10 @@ public class GameGUI : MonoBehaviour
 
     private void moveCityInfoToGame()
     {
-        game.Cities = new City[Cities.Length];
+        theGame.Cities = new City[Cities.Length];
         for (int i = 0; i < Cities.Length; i++)
         {
-            game.Cities[i] = Cities[i].GetComponent<City>();
+            theGame.Cities[i] = Cities[i].GetComponent<City>();
         }
     }
 
@@ -200,8 +200,8 @@ public class GameGUI : MonoBehaviour
 
     public void drawBoard()
     {
-        PlayerDeckCount.text = game.PlayerCards.Count.ToString();
-        InfectionDeckCount.text = game.InfectionCards.Count.ToString();
+        PlayerDeckCount.text = theGame.PlayerCards.Count.ToString();
+        InfectionDeckCount.text = theGame.InfectionCards.Count.ToString();
 
         foreach (Transform item in OutbreakMarkerTransforms)
         {
@@ -213,10 +213,12 @@ public class GameGUI : MonoBehaviour
             item.gameObject.DestroyChildrenImmediate();
         }
 
-        Instantiate(InfectionRateMarkerPrefab, InfectionRateMarkerTransforms[game.InfectionRate].position, InfectionRateMarkerTransforms[game.InfectionRate].rotation, InfectionRateMarkerTransforms[game.InfectionRate]);
-        Instantiate(OutbreakMarkerPrefab, OutbreakMarkerTransforms[game.OutbreakCounter].position, OutbreakMarkerTransforms[game.OutbreakCounter].rotation, OutbreakMarkerTransforms[game.OutbreakCounter]);
+        Instantiate(InfectionRateMarkerPrefab, InfectionRateMarkerTransforms[theGame.InfectionRate].position, InfectionRateMarkerTransforms[theGame.InfectionRate].rotation, InfectionRateMarkerTransforms[theGame.InfectionRate]);
+        Instantiate(OutbreakMarkerPrefab, OutbreakMarkerTransforms[theGame.OutbreakCounter].position, OutbreakMarkerTransforms[theGame.OutbreakCounter].rotation, OutbreakMarkerTransforms[theGame.OutbreakCounter]);
 
         drawCureVialsOnBoard();
+
+        drawBigContextText();
 
     }
 
@@ -227,19 +229,19 @@ public class GameGUI : MonoBehaviour
             VialTokensTransforms[i].gameObject.DestroyChildrenImmediate();
         }
 
-        if (game.RedCure)
+        if (theGame.RedCure)
         {
             GameObject vial = Instantiate(CureVialPrefab, VialTokensTransforms[0].position, VialTokensTransforms[0].rotation, VialTokensTransforms[0]);
             vial.GetComponent<Image>().color = gui.VirusInfos[0].virusColor; 
         }
 
-        if (game.YellowCure)
+        if (theGame.YellowCure)
         {
             GameObject vial = Instantiate(CureVialPrefab, VialTokensTransforms[1].position, VialTokensTransforms[1].rotation, VialTokensTransforms[1]);
             vial.GetComponent<Image>().color = gui.VirusInfos[1].virusColor;
         }
 
-        if (game.BlueCure)
+        if (theGame.BlueCure)
         { 
             GameObject vial = Instantiate(CureVialPrefab, VialTokensTransforms[2].position, VialTokensTransforms[2].rotation, VialTokensTransforms[2]);
             vial.GetComponent<Image>().color = gui.VirusInfos[2].virusColor;
@@ -259,7 +261,7 @@ public class GameGUI : MonoBehaviour
     {
         foreach (PlayerGUI pad in gui.PlayerPads)
         {
-            if (game.CurrentPlayer == pad.PlayerModel)
+            if (theGame.CurrentPlayer == pad.PlayerModel)
                 pad.draw();
         }
     }
@@ -322,17 +324,62 @@ public class GameGUI : MonoBehaviour
         return OutbreakMarkerTransforms[targetOutbreak].gameObject;
     }
 
+    public void drawBigContextText()
+    {
+        switch (theGame.CurrentGameState)
+        {
+            case GameState.SETTINGBOARD:
+                GameGUI.gui.BigTextMessage.text = "Set up phase";
+                break;
+            case GameState.PLAYERACTIONS:
+                GameGUI.gui.BigTextMessage.text = theGame.CurrentPlayer.Name.ToString() + "'s turn";
+                break;
+            case GameState.DRAW1STPLAYERCARD:
+                GameGUI.gui.BigTextMessage.text = "Drawing First Player Card";
+                break;
+            case GameState.DRAW2NDPLAYERCARD:
+                GameGUI.gui.BigTextMessage.text = "Drawing Second Player Card";
+                break;
+            case GameState.EPIDEMIC:
+                switch (theGame.epidemicGameState)
+                {
+                    case EpidemicGameState.EPIDEMICINCREASE:
+                        GameGUI.gui.BigTextMessage.text = "Epidemic: Increase";
+                        break;
+                    case EpidemicGameState.EPIDEMICINFECT:
+                        GameGUI.gui.BigTextMessage.text = "Epidemic: Infect";
+                        break;
+                    case EpidemicGameState.EPIDEMICINTENSIFY:
+                        GameGUI.gui.BigTextMessage.text = "Epidemic: Intensify";
+                        break;
+                }
+                break;
+            case GameState.DRAWINFECTCARDS:
+                GameGUI.gui.BigTextMessage.text = "Drawing Infection Cards";
+                break;
+            case GameState.OUTBREAK:
+                GameGUI.gui.BigTextMessage.text = "Outbreak!";
+                break;
+            case GameState.GAME_OVER:
+                GameGUI.gui.BigTextMessage.text = "Game Over!";
+                break;
+            default:
+                break;
+        }
+    }
+
     private void Update()
     {
-        DebugText.text = "Game State: " + Game.theGame.CurrentGameState + "\n";
-        if(Game.theGame.CurrentGameState == Game.GameState.EPIDEMIC)
-            DebugText.text += "Epidemic State: " + Game.theGame.epidemicGameState + "\n";
-        if (Game.theGame.CurrentPlayer != null)
+        DebugText.text = "State: " + theGame.CurrentGameState + "\n";
+        DebugText.text += "Previous: " + theGame.previousGameState + "\n";
+        if (theGame.CurrentGameState == GameState.EPIDEMIC)
+            DebugText.text += "Epidemic State: " + theGame.epidemicGameState + "\n";
+        if (theGame.CurrentPlayer != null)
         {
-            DebugText.text += "Current Player: " + Game.theGame.CurrentPlayer.Role + "\n";
-            DebugText.text += "Action Selected: " + GameGUI.currentPlayerPad().ActionSelected + "\n";
-            DebugText.text += "Actions remaining: " + GameGUI.currentPlayerPad().PlayerModel.ActionsRemaining + "\n";
-            DebugText.text += "Cards State: " + GameGUI.currentPlayerPad().cardsState + "\n";
+            DebugText.text += "Current Player: " + theGame.CurrentPlayer.Role + "\n";
+            DebugText.text += "Action Selected: " + currentPlayerPad().ActionSelected + "\n";
+            DebugText.text += "Actions remaining: " + currentPlayerPad().PlayerModel.ActionsRemaining + "\n";
+            DebugText.text += "Cards State: " + currentPlayerPad().cardsState + "\n";
             DebugText.text += "Cards in Hand: " + string.Join(", ", currentPlayerPad().PlayerModel.PlayerCardsInHand) + "\n";
         }
         //add debug text to check if an animation is running

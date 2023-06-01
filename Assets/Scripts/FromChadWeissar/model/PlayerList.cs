@@ -60,4 +60,8 @@ public class PlayerList : MonoBehaviour
             p => (p.Position - player.Position + MAX_PLAYERS) % MAX_PLAYERS).ToList();
     }
 
+    public static List<Player> getAllPlayers()
+    {
+        return thePlayerList._players;
+    }
 }

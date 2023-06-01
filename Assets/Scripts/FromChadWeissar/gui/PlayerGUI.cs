@@ -8,7 +8,7 @@ using System;
 using UnityEditor;
 using Unity.VisualScripting;
 using System.ComponentModel;
-
+using static ENUMS;
 
 public class PlayerGUI : MonoBehaviour
 {
@@ -175,6 +175,10 @@ public class PlayerGUI : MonoBehaviour
         {
             if (_player.PlayerCardsInHand.Count <= 6)
             {
+                if(cardsState == CardGUIStates.CardsDiscarding)
+                {
+                    cardsState = CardGUIStates.None;
+                }
                 layout.gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
                 layout.spacing = 30;
                 layout.padding.left = -585;
@@ -216,7 +220,7 @@ public class PlayerGUI : MonoBehaviour
                             charterAction = true;
                     }
 
-                    if (PlayerModel.CurrentCityScript().numberOfInfectionCubes > 0)
+                    if (PlayerModel.CurrentCityScript().cubesInCity())
                         treatAction = true;
 
                     if (!game.RedCure && PlayerModel.RedCardsInHand.Count > 3 || !game.YellowCure && PlayerModel.YellowCardsInHand.Count > 3 || !game.BlueCure && PlayerModel.BlueCardsInHand.Count > 3)
@@ -502,17 +506,19 @@ public class PlayerGUI : MonoBehaviour
 
     public void CityClicked(City city)
     {
-        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID)
+        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID 
+            && _player.ActionsRemaining > 0 && city.cubesInCity())
         {
             Timeline.theTimeline.addEvent(new PTreatDisease(city));
         }
     }
 
-    internal void CubeClicked(City city)
+    internal void CubeClicked(City city, VirusName virusName)
     {
-        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID)
+        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID 
+            && _player.ActionsRemaining > 0 && city.cubesInCity())
         {
-            Timeline.theTimeline.addEvent(new PTreatDisease(city));
+            Timeline.theTimeline.addEvent(new PTreatDisease(city, virusName));
         }
     }
 
