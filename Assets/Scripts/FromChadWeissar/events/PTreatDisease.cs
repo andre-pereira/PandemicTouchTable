@@ -26,7 +26,10 @@ public class PTreatDisease : PlayerEvent
         {
             VirusName? virus = city.firstVirusFoundInCity();
             if (virus != null)
+            {
                 city.incrementNumberOfCubes((VirusName)virus, -1);
+                game.incrementNumberOfCubesOnBoard((VirusName)virus, -1);
+            }
         }    
         _player.ActionsRemaining -= 1;
         if (game.CurrentPlayer.ActionsRemaining == 0)
@@ -39,6 +42,7 @@ public class PTreatDisease : PlayerEvent
     {
         city.draw();
         _playerGui.draw();
+        gui.drawBoard();
         return 0;
     }
 }

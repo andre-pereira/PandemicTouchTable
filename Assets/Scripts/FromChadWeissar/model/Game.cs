@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using System;
+using static ENUMS;
 
 public class Game : MonoBehaviour
 {
@@ -60,9 +61,9 @@ public class Game : MonoBehaviour
     public List<int> InfectionCards = null;
     public List<int> InfectionCardsDiscard = null;
 
-    public int RedCubes = 16;
-    public int YellowCubes = 16;
-    public int BlueCubes = 16;
+    public int RedCubesOnBoard = 16;
+    public int YellowCubesOnBoard = 16;
+    public int BlueCubesOnBoard = 16;
 
     public bool RedCure = false;
     public bool YellowCure = false;
@@ -204,5 +205,21 @@ public class Game : MonoBehaviour
         actionCompleted = false;
         if(state == GameState.EPIDEMIC)
             epidemicGameState = EpidemicGameState.EPIDEMICINCREASE;
+    }
+
+    public void incrementNumberOfCubesOnBoard(VirusName virus, int increment)
+    {
+        switch (virus)
+        {
+            case VirusName.Red:
+                RedCubesOnBoard += increment;
+                break;
+            case VirusName.Yellow:
+                YellowCubesOnBoard += increment;
+                break;
+            case VirusName.Blue:
+                BlueCubesOnBoard += increment;
+                break;
+        }
     }
 }

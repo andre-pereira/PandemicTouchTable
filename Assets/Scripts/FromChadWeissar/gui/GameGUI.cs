@@ -105,11 +105,8 @@ public class GameGUI : MonoBehaviour
     void Start()
     {
         moveCityInfoToGame();
-
         saveCubesInitialPositions();
-
         CreateNeighborLines();
-
     }
 
     private void moveCityInfoToGame()
@@ -220,6 +217,17 @@ public class GameGUI : MonoBehaviour
 
         drawBigContextText();
 
+        drawCubes();
+    }
+
+    private void drawCubes()
+    {
+        for (int i = 0; i < RedCubes.Count; i++)
+        {
+            RedCubes[i].SetActive(i < theGame.RedCubesOnBoard);
+            YellowCubes[i].SetActive(i < theGame.YellowCubesOnBoard);
+            BlueCubes[i].SetActive(i < theGame.BlueCubesOnBoard);
+        }
     }
 
     private void drawCureVialsOnBoard()
@@ -227,26 +235,12 @@ public class GameGUI : MonoBehaviour
         for (int i = 0; i < VialTokensTransforms.Length; i++)
         {
             VialTokensTransforms[i].gameObject.DestroyChildrenImmediate();
+            if (i == (int)VirusName.Red && theGame.RedCure || i == (int)VirusName.Yellow && theGame.YellowCure || i == (int)VirusName.Blue && theGame.BlueCure)
+            {
+                GameObject vial = Instantiate(CureVialPrefab, VialTokensTransforms[i].position, VialTokensTransforms[i].rotation, VialTokensTransforms[i]);
+                vial.GetComponent<Image>().color = gui.VirusInfos[i].virusColor;
+            }
         }
-
-        if (theGame.RedCure)
-        {
-            GameObject vial = Instantiate(CureVialPrefab, VialTokensTransforms[0].position, VialTokensTransforms[0].rotation, VialTokensTransforms[0]);
-            vial.GetComponent<Image>().color = gui.VirusInfos[0].virusColor; 
-        }
-
-        if (theGame.YellowCure)
-        {
-            GameObject vial = Instantiate(CureVialPrefab, VialTokensTransforms[1].position, VialTokensTransforms[1].rotation, VialTokensTransforms[1]);
-            vial.GetComponent<Image>().color = gui.VirusInfos[1].virusColor;
-        }
-
-        if (theGame.BlueCure)
-        { 
-            GameObject vial = Instantiate(CureVialPrefab, VialTokensTransforms[2].position, VialTokensTransforms[2].rotation, VialTokensTransforms[2]);
-            vial.GetComponent<Image>().color = gui.VirusInfos[2].virusColor;
-        }
-
     }
 
     public void drawPlayerAreas()
@@ -298,16 +292,16 @@ public class GameGUI : MonoBehaviour
         */
     }
 
-    public List<GameObject> GetCubesList(VirusInfo virusInfo)
+    public GameObject GetCubeToDuplicate(VirusInfo virusInfo, int increment)
     {
         switch (virusInfo.virusName)
         {
             case VirusName.Red:
-                return RedCubes;
+                return RedCubes[theGame.RedCubesOnBoard + increment];
             case VirusName.Yellow:
-                return YellowCubes;
+                return YellowCubes[theGame.YellowCubesOnBoard + increment];
             case VirusName.Blue:
-                return BlueCubes;
+                return BlueCubes[theGame.BlueCubesOnBoard + increment];
             default:
                 Debug.LogError("Unknown virus name: " + virusInfo.virusName);
                 return null;

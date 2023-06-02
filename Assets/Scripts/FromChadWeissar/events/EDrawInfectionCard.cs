@@ -66,24 +66,24 @@ internal class EDrawInfectionCard : EngineEvent
         switch (cityToInfect.city.virusInfo.virusName)
         {
             case VirusName.Red:
-                theGame.RedCubes--;
-                if (theGame.RedCubes < 0)
+                theGame.RedCubesOnBoard-= numberOfCubes;
+                if (theGame.RedCubesOnBoard < 0)
                 {
                     Timeline.theTimeline.addEvent(new EGameOver(GameOverReasons.NoMoreCubesOfAColor));
                     gameOver = true;
                 }
                 break;
             case VirusName.Yellow:
-                theGame.YellowCubes--;
-                if (theGame.YellowCubes < 0)
+                theGame.YellowCubesOnBoard -= numberOfCubes;
+                if (theGame.YellowCubesOnBoard < 0)
                 {
                     Timeline.theTimeline.addEvent(new EGameOver(GameOverReasons.NoMoreCubesOfAColor));
                     gameOver = true;
                 }
                 break;
             case VirusName.Blue:
-                theGame.BlueCubes--;
-                if (theGame.BlueCubes < 0)
+                theGame.BlueCubesOnBoard -= numberOfCubes;
+                if (theGame.BlueCubesOnBoard < 0)
                 {
                     Timeline.theTimeline.addEvent(new EGameOver(GameOverReasons.NoMoreCubesOfAColor));
                     gameOver = true;
@@ -116,7 +116,11 @@ internal class EDrawInfectionCard : EngineEvent
         List<GameObject> cubes = new List<GameObject>();
         for (int i = 0; i < numberOfCubes; i++)
         {
-            cubes.Add(gui.GetCubesList(cityToInfect.GetComponent<City>().city.virusInfo).Pop());
+            GameObject cubeToDuplicate = gui.GetCubeToDuplicate(cityToInfect.GetComponent<City>().city.virusInfo, i);
+            cubes.Add(Object.Instantiate(cubeToDuplicate, gui.AnimationCanvas.transform));
+            cubes[i].transform.position = cubeToDuplicate.transform.position;
+            cubes[i].transform.localScale = new Vector3(0.06f, 0.06f, 0.06f);
+            cubes[i].SetActive(true);
             Vector3 positionToMove = new Vector3(cityToInfect.CubesGameObject.transform.position.x, cityToInfect.CubesGameObject.transform.position.y, 0);
             sequence.Join(cubes[i].transform.DOMove(positionToMove, ANIMATIONDURATION * 2));
             if (i == numberOfCubes - 1)
@@ -130,6 +134,7 @@ internal class EDrawInfectionCard : EngineEvent
         sequence.Play().OnComplete(() =>
         {
             //Object.Destroy(cardToAddObject);
+            gui.drawBoard();
             cityToInfect.draw();
         });
 
