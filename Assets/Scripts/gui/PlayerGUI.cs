@@ -224,7 +224,8 @@ public class PlayerGUI : MonoBehaviour
                         treatAction = true;
 
                     if (!game.RedCure && PlayerModel.RedCardsInHand.Count > 3 || !game.YellowCure && PlayerModel.YellowCardsInHand.Count > 3 || !game.BlueCure && PlayerModel.BlueCardsInHand.Count > 3)
-                        findCureAction = true;
+                        if(PlayerModel.GetCurrentCity() == game.InitialCityID)
+                            findCureAction = true;
 
                     playersToShareGUI.Clear();
 

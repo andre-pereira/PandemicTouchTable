@@ -4,7 +4,7 @@ using UnityEngine;
 
 internal class PDiscardCard : PlayerEvent
 {
-    private const float ANIMATIONDURATION = 1f;
+    private float ANIMATIONDURATION = 1f / GameGUI.gui.AnimationTimingMultiplier;
     private int cardToDiscard;
     private PlayerGUI playerGui;
     private Vector3 objectToDiscardPosition;

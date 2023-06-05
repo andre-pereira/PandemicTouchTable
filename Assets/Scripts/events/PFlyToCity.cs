@@ -12,7 +12,7 @@ public class PFlyToCity : PlayerEvent
     private Vector3 originalCardPosition;
     private Quaternion originalCardRotation;
     int flyTo;
-    const float ANIMATIONDURATION = 1f;
+    float ANIMATIONDURATION = 1f / GameGUI.gui.AnimationTimingMultiplier;
 
     public PFlyToCity(int flyTo) : base(Game.theGame.CurrentPlayer)
     {

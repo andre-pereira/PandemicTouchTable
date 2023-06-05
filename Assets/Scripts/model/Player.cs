@@ -96,6 +96,8 @@ public class Player
         game.Cities[currentCity].removePawn(this);
         currentCity = cityID;
         game.Cities[cityID].addPawn(this);
+        if(Role == Roles.ContainmentSpecialist)
+            Timeline.theTimeline.addEvent(new PContainSpecialistRemoveWhenEntering(cityID));
     }
 
     internal void RemoveCardInHand(int cityID)

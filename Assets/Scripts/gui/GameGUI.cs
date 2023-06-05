@@ -82,6 +82,8 @@ public class GameGUI : MonoBehaviour
     private Vector3[] yellowCubePositions;
     private Vector3[] blueCubePositions;
 
+    public int AnimationTimingMultiplier;
+
     public static GameObject cloneOnCanvas(GameObject source, GameObject targetCanvas)
     {
         GameObject movingResource = Instantiate(source);

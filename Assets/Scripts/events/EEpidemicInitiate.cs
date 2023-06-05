@@ -5,7 +5,7 @@ using static GameGUI;
 
 public class EEpidemicInitiate : EngineEvent
 {
-    private const float AnimationDuration = 1f;
+    private float AnimationDuration = 1f / gui.AnimationTimingMultiplier;
     private const float scaleToCenterScale = 3f;
 
     public EEpidemicInitiate()

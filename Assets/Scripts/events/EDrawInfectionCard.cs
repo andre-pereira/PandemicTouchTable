@@ -8,7 +8,7 @@ using static Game;
 
 internal class EDrawInfectionCard : EngineEvent
 {
-    private const float ANIMATIONDURATION = 0.5f;
+    private float ANIMATIONDURATION = 0.5f / gui.AnimationTimingMultiplier;
     private const float scaleToCenterScale = 3f;
 
     private int numberOfCubes;

@@ -3,6 +3,7 @@
     private int newCityID;
     private int oldCityID;
     private int numberOfActionsSpent;
+    float ANIMATIONDURATION = 1f / GameGUI.gui.AnimationTimingMultiplier;
 
     public PMoveEvent(int cityID, int numberOfActionsSpent): base(Game.theGame.CurrentPlayer)
     {

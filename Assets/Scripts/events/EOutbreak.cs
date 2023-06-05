@@ -7,7 +7,7 @@ using static GameGUI;
 internal class EOutbreak : EngineEvent
 {
     private City originOfOutbreak;
-    private const float ANIMATIONDURATION = 2f;
+    private float ANIMATIONDURATION = 2f / gui.AnimationTimingMultiplier;
 
     public EOutbreak(City origin)
     {

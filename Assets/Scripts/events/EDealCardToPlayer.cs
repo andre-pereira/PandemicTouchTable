@@ -9,7 +9,7 @@ using static Game;
 public class EDealCardToPlayer : EngineEvent
 {
     private const float scaleToCenterScale = 3f;
-    private const float ANIMATIONDURATION = 0.5f;
+    private float ANIMATIONDURATION = 0.5f / gui.AnimationTimingMultiplier;
 
     Player player = null;
     PlayerGUI playerGui = null;

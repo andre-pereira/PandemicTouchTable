@@ -7,7 +7,7 @@ internal class PCharterEvent : PlayerEvent
     private City flyTo, flyFrom;
     private Vector3 originalCardPosition;
     private Quaternion originalCardRotation;
-    const float ANIMATIONDURATION = 1f;
+    float ANIMATIONDURATION = 1f / GameGUI.gui.AnimationTimingMultiplier;
 
     public PCharterEvent(City flyTo) : base(Game.theGame.CurrentPlayer)
     {

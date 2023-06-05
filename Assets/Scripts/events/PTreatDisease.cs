@@ -5,6 +5,7 @@ public class PTreatDisease : PlayerEvent
     private City city;
     private VirusName virusName;
     private bool defaultClick = true;
+    float ANIMATIONDURATION = 1f / GameGUI.gui.AnimationTimingMultiplier;
 
     public PTreatDisease(City city, VirusName virusName): base(Game.theGame.CurrentPlayer)
     {
@@ -28,7 +29,7 @@ public class PTreatDisease : PlayerEvent
             if (virus != null)
             {
                 city.incrementNumberOfCubes((VirusName)virus, -1);
-                game.incrementNumberOfCubesOnBoard((VirusName)virus, -1);
+                game.incrementNumberOfCubesOnBoard((VirusName)virus, 1);
             }
         }    
         _player.ActionsRemaining -= 1;

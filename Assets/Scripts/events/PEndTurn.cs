@@ -5,6 +5,8 @@ using static Game;
 
 public class PEndTurn : PlayerEvent
 {
+    float ANIMATIONDURATION = 1f / GameGUI.gui.AnimationTimingMultiplier;
+
     public PEndTurn() : base(Game.theGame.CurrentPlayer)
     {
     }

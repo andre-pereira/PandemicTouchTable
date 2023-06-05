@@ -1,5 +1,3 @@
-
-
 using UnityEngine.UI;
 using UnityEngine;
 using DG.Tweening;
@@ -8,7 +6,7 @@ using static UnityEngine.Timeline.TimelineAsset;
 public class PShareKnowledge : PlayerEvent
 {
     PlayerGUI playerFrom, playerTo;
-    const float ANIMATIONDURATION = 1f;
+    float ANIMATIONDURATION = 1f/ GameGUI.gui.AnimationTimingMultiplier;
     private int cityID;
     Vector3 initialPosition;
     Quaternion initialRotation;
