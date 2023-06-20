@@ -93,7 +93,7 @@ public class Game : MonoBehaviour
     public void test()
     {
         if(CurrentPlayer.PlayerCardsInHand.Count < 7)
-            Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer, true));
+            Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer));
     }
 
     public void Update()
@@ -116,8 +116,9 @@ public class Game : MonoBehaviour
             if (actionsInitiated == false)
             {
                 actionsInitiated = true;
+                actionCompleted = false;
                 Debug.Log("Draw Player Card: " + CurrentGameState);
-                Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer, true));
+                Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer));
             }
             if (actionCompleted == true)
             {
@@ -125,7 +126,11 @@ public class Game : MonoBehaviour
                 {
                     if (CurrentGameState == GameState.DRAW1STPLAYERCARD)
                         setCurrentGameState(GameState.DRAW2NDPLAYERCARD);
-                    else setCurrentGameState(GameState.DRAWINFECTCARDS);
+                    else
+                    {
+                        if(CurrentGameState != GameState.EPIDEMIC)
+                            setCurrentGameState(GameState.DRAWINFECTCARDS);
+                    }
                 }
             }
         }
@@ -147,6 +152,10 @@ public class Game : MonoBehaviour
                         setCurrentGameState(GameState.DRAW2NDPLAYERCARD);
                     else if (previousGameState == GameState.DRAW2NDPLAYERCARD)
                         setCurrentGameState(GameState.DRAWINFECTCARDS);
+                    else
+                    {
+                        Debug.Log("I am stuck and should not be here!");
+                    }
                 }
             }
         }

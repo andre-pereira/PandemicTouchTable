@@ -20,7 +20,7 @@ internal class PCharterEvent : PlayerEvent
     public override void Do(Timeline timeline)
     {
         _player.RemoveCardInHand(flyFrom.city.cityID);
-        _player.UpdateCurrentCity(flyTo.city.cityID);
+        _player.UpdateCurrentCity(flyTo.city.cityID,true);
         game.PlayerCardsDiscard.Add(flyFrom.city.cityID);
         game.CurrentPlayer.ActionsRemaining -= 1;
         if (game.CurrentPlayer.ActionsRemaining == 0)

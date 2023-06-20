@@ -13,16 +13,14 @@ public class EDealCardToPlayer : EngineEvent
 
     Player player = null;
     PlayerGUI playerGui = null;
-    private bool waitForEnd;
     int cardToAdd = -1;
     private bool epidemicPopped = false;
 
-    public EDealCardToPlayer(Player player, bool waitForEnd)
+    public EDealCardToPlayer(Player player)
     {
         QUndoable = false;
         this.player = player;
         playerGui = playerPadForPlayer(player);
-        this.waitForEnd = waitForEnd;
     }
 
     public override void Do(Timeline timeline)
@@ -48,10 +46,10 @@ public class EDealCardToPlayer : EngineEvent
         GameObject cardToAddObject = playerGui.AddPlayerCardToTransform(cardToAdd, gui.AnimationCanvas.transform,false);
         cardToAddObject.transform.position = gui.PlayerDeck.transform.position;
         cardToAddObject.transform.rotation = gui.PlayerDeck.transform.rotation;
-
         gui.drawBoard();
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(cardToAddObject.transform.DOShakeRotation(ANIMATIONDURATION/2, new Vector3(0f, 0f, scaleToCenterScale), 10, 90, false));
+
+        sequence.Append(cardToAddObject.transform.DOShakeRotation(ANIMATIONDURATION / 2, new Vector3(0f, 0f, scaleToCenterScale), 10, 90, false));
         sequence.Append(cardToAddObject.transform.DOScale(new Vector3(scaleToCenterScale, scaleToCenterScale, 1f), ANIMATIONDURATION)).
             Join(cardToAddObject.transform.DOMove(new Vector3(0, 0, 0), ANIMATIONDURATION));
         sequence.AppendInterval(ANIMATIONDURATION);
@@ -63,10 +61,8 @@ public class EDealCardToPlayer : EngineEvent
                 playerGui.draw();
             });
         sequence.Play();
-
-        if(waitForEnd)
-            return sequence.Duration();
-        else return 0f;
+        
+        return sequence.Duration();
     }
 
 }

@@ -57,12 +57,12 @@ public class EInitialize : EngineEvent
         {
             for (int i = 0; i < numCardsToDeal; ++i)
             {
-                Timeline.theTimeline.addEvent(new EDealCardToPlayer(player,true));
+                Timeline.theTimeline.addEvent(new EDealCardToPlayer(player));
             }
         }
 
         Timeline.theTimeline.addEvent(new EAddEpidemicCards());
-        Timeline.theTimeline.addEvent(new EDrawInfectionCard(3,true));
+        Timeline.theTimeline.addEvent(new EDrawInfectionCard(3, true));
         Timeline.theTimeline.addEvent(new EDrawInfectionCard(3, true));
         Timeline.theTimeline.addEvent(new EDrawInfectionCard(2, true));
         Timeline.theTimeline.addEvent(new EDrawInfectionCard(2, true));

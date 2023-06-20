@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Helsinki
   m_EditorClassIdentifier: 
   cityID: 4
-  neighbors: 0100000006000000
+  neighbors: 0000000006000000
   cityName: Helsinki
   population: 650.000
   countryName: Finland

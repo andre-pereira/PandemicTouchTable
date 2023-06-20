@@ -14,7 +14,7 @@
 
     public override void Do(Timeline timeline)
     {
-        _player.UpdateCurrentCity(newCityID);
+        _player.UpdateCurrentCity(newCityID, true);
         Game.theGame.CurrentPlayer.ActionsRemaining -= numberOfActionsSpent;
        if(Game.theGame.CurrentPlayer.ActionsRemaining == 0)
        {

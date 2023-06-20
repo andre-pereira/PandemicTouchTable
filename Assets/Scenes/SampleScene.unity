@@ -1159,7 +1159,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 30d155109893ffc4483ea464c555b291, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 143150895}
   PawnsGameObject: {fileID: 1417681793}
   PawnsInCity: []
@@ -1611,7 +1610,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: dbf0ac367bf357e4bad57bb931f37895, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1414195020}
   PawnsGameObject: {fileID: 817226222}
   PawnsInCity: []
@@ -1667,7 +1665,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 8f5e16a38381fb14cbb6eb04bf21056b, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 280151653}
   PawnsGameObject: {fileID: 660102829}
   PawnsInCity: []
@@ -2214,7 +2211,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 288874e2d55695246bee8ae8efa733bd, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1124122226}
   PawnsGameObject: {fileID: 481138212}
   PawnsInCity: []
@@ -2937,7 +2933,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 0c6d641aa19ddd9418b5920350cfe0af, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 864716928}
   PawnsGameObject: {fileID: 1479411316}
   PawnsInCity: []
@@ -3139,7 +3134,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: cd872bc34c1654c4e9b7336bed04cff7, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1007887866}
   PawnsGameObject: {fileID: 276813398}
   PawnsInCity: []
@@ -3298,7 +3292,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 2c72fb365ed4f6e4dbedb4a396f99f99, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1865564391}
   PawnsGameObject: {fileID: 522170329}
   PawnsInCity: []
@@ -3489,7 +3482,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 10aec70e54f850749b07d9fdb532c32f, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 372432491}
   PawnsGameObject: {fileID: 253660856}
   PawnsInCity: []
@@ -6154,7 +6146,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 88c6808d8d6b2134ba61a789f789f3ea, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 549974656}
   PawnsGameObject: {fileID: 990544678}
   PawnsInCity: []
@@ -7042,7 +7033,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 0ba03c0783822f248bfca36a51f6b6eb, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 724630706}
   PawnsGameObject: {fileID: 61523647}
   PawnsInCity: []
@@ -7232,7 +7222,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 2e84852cb87017f43b0aa037a619d405, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1805927354}
   PawnsGameObject: {fileID: 1246696494}
   PawnsInCity: []
@@ -8338,7 +8327,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: c0d8b2ce2b323a549b9f66af64669332, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 750906183}
   PawnsGameObject: {fileID: 282983062}
   PawnsInCity: []
@@ -9629,7 +9617,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 4f61bf98077862d438a373c9e80edca5, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 2136597392}
   PawnsGameObject: {fileID: 892682087}
   PawnsInCity: []
@@ -11652,7 +11639,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 6424345977ea07c4b90846f92b22932b, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1975524360}
   PawnsGameObject: {fileID: 914557935}
   PawnsInCity: []
@@ -12619,7 +12605,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: dfc6d63ab1460cc4d95849753c387ba2, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1321042786}
   PawnsGameObject: {fileID: 619490179}
   PawnsInCity: []
@@ -13547,7 +13532,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: b4ad7820995161545a46eef6219ebe06, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 676133979}
   PawnsGameObject: {fileID: 1245395016}
   PawnsInCity: []
@@ -14477,7 +14461,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: b2604f1d05297cb40862c0efc6682121, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 725556889}
   PawnsGameObject: {fileID: 1436424816}
   PawnsInCity: []
@@ -14753,7 +14736,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 78b76ab518653a24ca3c8e4a2403cfd6, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 510735002}
   PawnsGameObject: {fileID: 1681761019}
   PawnsInCity: []
@@ -15857,7 +15839,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 58395714c4da38d4d8af9a193d6421ec, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1984878644}
   PawnsGameObject: {fileID: 1908733128}
   PawnsInCity: []
@@ -17466,7 +17447,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 4c3d0d48da6d80c4b829bf8461ee849a, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 280339238}
   PawnsGameObject: {fileID: 1792414912}
   PawnsInCity: []
@@ -18875,7 +18855,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: dde2f6262f2496d45a51ac26ad3009b6, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1671458124}
   PawnsGameObject: {fileID: 62356432}
   PawnsInCity: []
@@ -21592,6 +21571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bae47974ec1bff44b256317b1ed4168, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AnimationTimingMultiplier: 1
   BigTextMessage: {fileID: 956547152}
   ContextButtonTextures:
   - {fileID: 21300000, guid: fae8314865b5ea14f8303979dfc96c9c, type: 3}
@@ -21806,9 +21786,9 @@ MonoBehaviour:
   PlayerCardsDiscard: 
   InfectionCards: 
   InfectionCardsDiscard: 
-  RedCubes: 16
-  YellowCubes: 16
-  BlueCubes: 16
+  RedCubesOnBoard: 16
+  YellowCubesOnBoard: 16
+  BlueCubesOnBoard: 16
   RedCure: 0
   YellowCure: 0
   BlueCure: 0
@@ -23525,7 +23505,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: f2b94021cd23aa54db47c5f647640ccb, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1069477076}
   PawnsGameObject: {fileID: 1134063802}
   PawnsInCity: []
@@ -24555,7 +24534,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: 8283aba08591cb54e88a94badd66f3b3, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1906017872}
   PawnsGameObject: {fileID: 665526687}
   PawnsInCity: []
@@ -24611,7 +24589,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   city: {fileID: 11400000, guid: e81ac16494fb51f4c9cc3275793d8a79, type: 2}
-  numberOfInfectionCubes: 0
   CubesGameObject: {fileID: 1394623909}
   PawnsGameObject: {fileID: 1627363392}
   PawnsInCity: []

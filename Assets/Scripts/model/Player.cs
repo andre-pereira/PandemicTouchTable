@@ -34,7 +34,6 @@ public class Player
     };
 
     public int Position;
-    public int Place;
     public string Name;
     private int currentCity;
 
@@ -42,9 +41,12 @@ public class Player
     public Roles Role { get; set; }
     public int ActionsRemaining { get; internal set; }
 
-    public Player()
+    public Player(int tablePositionId, Roles playerRole, string playerName)
     {
-        playerGui = GameGUI.playerPadForPosition(Position);
+        playerGui = GameGUI.playerPadForPosition(tablePositionId);
+        Position = tablePositionId;
+        Role = playerRole;
+        Name = playerName;
         PlayerCardsInHand = new List<int>();
         CityCardsInHand = new List<int>();
         RedCardsInHand = new List<int>();
@@ -81,7 +83,7 @@ public class Player
     }
 
 
-    public City CurrentCityScript()
+    public City GetCurrentCityScript()
     {
         return Game.theGame.Cities[currentCity];
     }
@@ -91,13 +93,16 @@ public class Player
         return currentCity;
     }
 
-    internal void UpdateCurrentCity(int cityID)
+    internal void UpdateCurrentCity(int cityID, bool updateRoles)
     {
         game.Cities[currentCity].removePawn(this);
         currentCity = cityID;
         game.Cities[cityID].addPawn(this);
-        if(Role == Roles.ContainmentSpecialist)
-            Timeline.theTimeline.addEvent(new PContainSpecialistRemoveWhenEntering(cityID));
+        if (updateRoles)
+        {
+            if (Role == Roles.ContainmentSpecialist)
+                Timeline.theTimeline.addEvent(new PContainSpecialistRemoveWhenEntering(cityID));
+        }
     }
 
     internal void RemoveCardInHand(int cityID)

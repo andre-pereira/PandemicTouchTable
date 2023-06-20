@@ -9,7 +9,7 @@ using static Game;
 
 public class EIncreaseOutbreak : EngineEvent
 {
-    private const float ANIMATIONDURATION = 1f;
+    private float ANIMATIONDURATION = 1f / gui.AnimationTimingMultiplier;
 
 
     public override void Do(Timeline timeline)

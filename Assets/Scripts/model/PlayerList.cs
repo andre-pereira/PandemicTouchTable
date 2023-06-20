@@ -64,4 +64,9 @@ public class PlayerList : MonoBehaviour
     {
         return thePlayerList._players;
     }
+    
+    public static Player? GetPlayerByRole(Player.Roles role)
+    {
+        return thePlayerList._players.Find(p => p.Role == role);
+    }
 }

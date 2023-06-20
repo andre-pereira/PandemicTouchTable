@@ -25,9 +25,9 @@ public class EAddPlayer : EngineEvent
 
     public override void Do(Timeline c)
     {
-        Player p = new Player() { Position = TablePositionId, Role = PlayerRole, Name = PlayerName };
+        Player p = new Player(TablePositionId, PlayerRole, PlayerName);
         PlayerList.Players.Add(p);
-        p.UpdateCurrentCity(theGame.InitialCityID);
+        p.UpdateCurrentCity(theGame.InitialCityID, false);
     }
 
     public override float Act(bool qUndo = false)

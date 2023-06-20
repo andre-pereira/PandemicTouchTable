@@ -18,6 +18,8 @@ public class GameGUI : MonoBehaviour
 
     public static GameGUI gui = null;
 
+    public int AnimationTimingMultiplier;
+
     public TextMeshProUGUI BigTextMessage;
 
     public Sprite[] ContextButtonTextures;
@@ -81,8 +83,6 @@ public class GameGUI : MonoBehaviour
     private Vector3[] redCubePositions;
     private Vector3[] yellowCubePositions;
     private Vector3[] blueCubePositions;
-
-    public int AnimationTimingMultiplier;
 
     public static GameObject cloneOnCanvas(GameObject source, GameObject targetCanvas)
     {

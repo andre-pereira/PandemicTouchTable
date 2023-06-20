@@ -35,7 +35,7 @@ public class PlayerGUI : MonoBehaviour
     public TMPro.TextMeshProUGUI playerNameText;
     
     public RoleCardDisplay roleCard;
-    private Image roleCardBackground;
+    public Image roleCardBackground { get; private set; }
 
     public GameObject PlayerCards;
     private List<GameObject> cardsInHand;
@@ -220,7 +220,7 @@ public class PlayerGUI : MonoBehaviour
                             charterAction = true;
                     }
 
-                    if (PlayerModel.CurrentCityScript().cubesInCity())
+                    if (PlayerModel.GetCurrentCityScript().cubesInCity())
                         treatAction = true;
 
                     if (!game.RedCure && PlayerModel.RedCardsInHand.Count > 3 || !game.YellowCure && PlayerModel.YellowCardsInHand.Count > 3 || !game.BlueCure && PlayerModel.BlueCardsInHand.Count > 3)
@@ -230,7 +230,7 @@ public class PlayerGUI : MonoBehaviour
                     playersToShareGUI.Clear();
 
                     int countOtherPlayerInCity = 0;
-                    foreach (Player player in PlayerModel.CurrentCityScript().PlayersInCity)
+                    foreach (Player player in PlayerModel.GetCurrentCityScript().PlayersInCity)
                     {
                         if (player != _player)
                         {
