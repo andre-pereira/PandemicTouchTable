@@ -74,8 +74,6 @@ public class Game : MonoBehaviour
 
     public void init()
     {
-        // Reset any state here. When we undo, all the events are re-executed and the first event will
-        // call this function to cleanup the old game state.
         PlayerCards = new List<int>();
         PlayerCardsDiscard = new List<int>();
         InfectionCards = new List<int>();
@@ -207,12 +205,14 @@ public class Game : MonoBehaviour
     internal void setCurrentGameState(GameState state)
     {
         turnEnded = false;
-        numberOfDrawnInfectCards = 0;
         previousGameState = CurrentGameState;
         CurrentGameState = state;
         actionsInitiated = false;
         actionCompleted = false;
-        if(state == GameState.EPIDEMIC)
+        if(state == GameState.PLAYERACTIONS)
+            numberOfDrawnInfectCards = 0;
+
+        if (state == GameState.EPIDEMIC)
             epidemicGameState = EpidemicGameState.EPIDEMICINCREASE;
     }
 

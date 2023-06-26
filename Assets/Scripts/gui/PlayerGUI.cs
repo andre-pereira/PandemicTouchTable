@@ -24,6 +24,7 @@ public class PlayerGUI : MonoBehaviour
     public CardGUIStates cardsState { get; private set; }
     private List<int> selectedCards;
     private GameObject flyLine;
+    private GameObject flyLine2;
     private List<PlayerGUI> playersToShareGUI;
 
     public int Position;
@@ -101,6 +102,11 @@ public class PlayerGUI : MonoBehaviour
         }
         else return null;
     }
+
+    private int pilotCitySelected = -1;
+
+    public GameObject[] pilotPawnsTagAlong;
+    private Pawn pawnPilotSelected = null;
 
     #endregion
 
@@ -223,8 +229,8 @@ public class PlayerGUI : MonoBehaviour
                     if (PlayerModel.GetCurrentCityScript().cubesInCity())
                         treatAction = true;
 
-                    if (!game.RedCure && PlayerModel.RedCardsInHand.Count > 3 || !game.YellowCure && PlayerModel.YellowCardsInHand.Count > 3 || !game.BlueCure && PlayerModel.BlueCardsInHand.Count > 3)
-                        if(PlayerModel.GetCurrentCity() == game.InitialCityID)
+                    if (ableToFindCure())
+                        if (PlayerModel.GetCurrentCity() == game.InitialCityID)
                             findCureAction = true;
 
                     playersToShareGUI.Clear();
@@ -246,7 +252,8 @@ public class PlayerGUI : MonoBehaviour
                 else
                 {
                     if (cardsState == CardGUIStates.CardsExpandedFlyActionToSelect || cardsState == CardGUIStates.CardsExpandedCharterActionToSelect
-                        || cardsState == CardGUIStates.CardsExpandedCureActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction)
+                        || cardsState == CardGUIStates.CardsExpandedCureActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction
+                        || cardsState == CardGUIStates.CardsExpandedVirologistAction)
                     {
                         ContextButtons[0].SetActive(true);
                         if (cardsState == CardGUIStates.CardsExpandedCharterActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction)
@@ -279,6 +286,20 @@ public class PlayerGUI : MonoBehaviour
         changeContextText();
     }
 
+    private bool ableToFindCure()
+    {
+        if (_player.Role != Player.Roles.Virologist)
+            return 
+                !game.RedCure && PlayerModel.RedCardsInHand.Count > 3 || 
+                !game.YellowCure && PlayerModel.YellowCardsInHand.Count > 3 || 
+                !game.BlueCure && PlayerModel.BlueCardsInHand.Count > 3;
+        else
+            return
+                    !game.RedCure && PlayerModel.RedCardsInHand.Count > 2 && PlayerModel.CityCardsInHand.Count > 4 ||
+                    !game.YellowCure && PlayerModel.YellowCardsInHand.Count > 2 && PlayerModel.CityCardsInHand.Count > 4 ||
+                    !game.BlueCure && PlayerModel.BlueCardsInHand.Count > 2 && PlayerModel.CityCardsInHand.Count > 4;
+    }
+
     #region Buttons
 
     public void ContextButtonClicked(int buttonType)
@@ -295,7 +316,7 @@ public class PlayerGUI : MonoBehaviour
             }
             else if (cardsState == CardGUIStates.CardsExpandedCureActionSelected)
             {
-                Timeline.theTimeline.addEvent(new PCureDisease(game.Cities[selectedCards[0]].city.virusInfo.virusName, selectedCards));
+                Timeline.theTimeline.addEvent(new PCureDisease(selectedCards));
             }
             else if (cardsState == CardGUIStates.CardsExpandedShareAction)
             {
@@ -395,12 +416,23 @@ public class PlayerGUI : MonoBehaviour
             case 6: //character action
                 if (_player.Role == Player.Roles.Virologist || _player.Role == Player.Roles.Pilot)
                 {
+                    bool enableAction = true;
+
                     if (_player.Role == Player.Roles.Virologist)
                     {
-                        cardsState = CardGUIStates.CardsExpandedVirologistAction;
+                        if (PlayerModel.CityCardsInHand.Count == 0 || PlayerModel.roleActionUsed) enableAction = false;
+                        else
+                        {
+                            cardsState = CardGUIStates.CardsExpandedVirologistAction;
+                            draw();
+                        }
                     }
-                    ActionSelected = ActionTypes.CharacterAction;
-                    roleCardBackground.GetComponent<Outline>().enabled = true;
+
+                    if (enableAction)
+                    {
+                        ActionSelected = ActionTypes.CharacterAction;
+                        roleCardBackground.GetComponent<Outline>().enabled = true;
+                    }
                 }
                 break;
         }
@@ -485,17 +517,10 @@ public class PlayerGUI : MonoBehaviour
                 }
                 else
                 {
-                    if (selectedCards.Count == 4)
-                        return;
-                    if (selectedCards.Count == 0 || getCardInHand(selectedCards[0]).GetComponent<CityCardDisplay>().CityCardData.virusInfo.virusName == cardClickedScript.CityCardData.virusInfo.virusName)
-                    {
-                        selectedCards.Add(cardClicked);
-                        getCardInHand(cardClicked).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
-                        if (selectedCards.Count == 4)
-                        {
+                    if (AddCardAndTestforCure(cardClickedScript))
+                    { 
                             cardsState = CardGUIStates.CardsExpandedCureActionSelected;
                             ContextButtons[1].SetActive(true);
-                        }
                     }
 
                 }
@@ -505,12 +530,154 @@ public class PlayerGUI : MonoBehaviour
 
     }
 
+    private bool AddCardAndTestforCure(CityCardDisplay cardClickedScript)
+    {
+        bool virologist = PlayerModel.Role == Player.Roles.Virologist;
+        VirusName cardClickedVirusName = cardClickedScript.CityCardData.virusInfo.virusName;
+
+        int cardID = cardClickedScript.CityCardData.cityID;
+        int numRedCards = 0;
+        int numYellowCards = 0;
+        int numBlueCards = 0;
+        const int MAX_CARDS = 5;
+        const int MAX_SAME_COLOR_CARDS = 4;
+        
+        foreach (int card in selectedCards)
+        {
+            switch (game.Cities[card].city.virusInfo.virusName)
+            {
+                case VirusName.Red:
+                    numRedCards++;
+                    break;
+                case VirusName.Yellow:
+                    numYellowCards++;
+                    break;
+                case VirusName.Blue:
+                    numBlueCards++;
+                    break;
+            }
+        }
+
+        bool toAdd = false;
+        switch (cardClickedVirusName)
+        {
+            case VirusName.Red:
+                if (!virologist)
+                {
+                    if (game.RedCure)
+                        return false;
+                    if (numBlueCards == 0 && numYellowCards == 0 && numRedCards < MAX_SAME_COLOR_CARDS) toAdd = true;
+                }
+                else
+                {
+                    if(selectedCards.Count < 4) toAdd = true;
+                    else
+                    {
+                        if(numYellowCards == 3 && !game.YellowCure) toAdd = true;
+                        else if (numBlueCards == 3 && !game.BlueCure) toAdd = true;
+                        else if(numRedCards > 2 && !game.RedCure) toAdd = true;
+                    }
+                }
+                break;
+            case VirusName.Yellow:
+                if (!virologist)
+                {
+                    if (game.YellowCure)
+                        return false;
+                    if (numRedCards == 0 && numBlueCards == 0 && numYellowCards < MAX_SAME_COLOR_CARDS) toAdd = true;
+                }
+                else
+                {
+                    if (selectedCards.Count < 4) toAdd = true;
+                    else
+                    {
+                        if (numRedCards == 3 && !game.RedCure) toAdd = true;
+                        else if (numBlueCards == 3 && !game.BlueCure) toAdd = true;
+                        else if (numYellowCards > 2 && !game.YellowCure) toAdd = true;
+                    }
+                }
+                break;
+            case VirusName.Blue:
+                if (!virologist)
+                {
+                    if (game.BlueCure)
+                        return false;
+                    if (numRedCards == 0 && numYellowCards == 0 && numBlueCards < MAX_SAME_COLOR_CARDS) toAdd = true;
+                }
+                else
+                {
+                    if (selectedCards.Count < 4) toAdd = true;
+                    else
+                    {
+                        if (numRedCards == 3 && !game.RedCure) toAdd = true;
+                        else if (numYellowCards == 3 && !game.YellowCure) toAdd = true;
+                        else if (numBlueCards > 2 && !game.BlueCure) toAdd = true;
+                    }
+                }
+                break;
+        }
+
+        if (toAdd)
+        {
+            selectedCards.Add(cardID);
+            getCardInHand(cardID).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
+        }
+
+        if (!virologist)
+        {
+            if (selectedCards.Count >= MAX_SAME_COLOR_CARDS) return true;
+        }
+        else
+        {
+            if (selectedCards.Count == MAX_CARDS) return true;
+            else if (selectedCards.Count == MAX_SAME_COLOR_CARDS)
+            {
+                if (numRedCards == MAX_SAME_COLOR_CARDS || numYellowCards == MAX_SAME_COLOR_CARDS || numBlueCards == MAX_SAME_COLOR_CARDS) return true;
+            }
+        }
+        return false;
+    }
+
     public void CityClicked(City city)
     {
-        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID 
+        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID
             && _player.ActionsRemaining > 0 && city.cubesInCity())
         {
             Timeline.theTimeline.addEvent(new PTreatDisease(city));
+        }
+        else if (ActionSelected == ActionTypes.CharacterAction && PlayerModel.Role == Player.Roles.Pilot)
+        {
+            pilotCitySelected = city.city.cityID;
+
+            if (flyLine != null) Destroy(flyLine);
+            if(flyLine2 != null) Destroy (flyLine2);
+            
+            City cityToMoveTo = game.Cities[city.city.cityID];
+            City cityToMoveFrom = game.Cities[_player.GetCurrentCity()];
+
+            cityToMoveFrom.PawnsInCity[_player.Position].gameObject.GetComponent<Outline>().enabled = true;
+            CreateLineBetweenCities(cityToMoveTo, cityToMoveFrom);
+
+            int counterPlayers = 0;
+            foreach(Player player in cityToMoveFrom.PlayersInCity)
+            {
+                if(player != PlayerModel)
+                {
+                    GameObject pawn = pilotPawnsTagAlong[counterPlayers];
+                    pawn.SetActive(true);
+                    Pawn pawnScript = pawn.GetComponent<Pawn>();
+                    pawnScript.SetRoleAndPlayer(player);
+                    pawnScript.IsInterfaceElement = true;
+                    counterPlayers++;
+                }
+            }
+
+            if(pawnPilotSelected != null)
+                CreateLineBetweenGameObjects(cityToMoveTo.gameObject, getPawnInCurrentCity(pawnPilotSelected).gameObject, gui.roleCards[(int)pawnPilotSelected.PawnRole]);
+
+            ContextButtons[1].SetActive(true);
+            ContextButtons[0].SetActive(true);
+
         }
     }
 
@@ -521,6 +688,43 @@ public class PlayerGUI : MonoBehaviour
         {
             Timeline.theTimeline.addEvent(new PTreatDisease(city, virusName));
         }
+        else if(cardsState == CardGUIStates.CardsExpandedVirologistAction)
+        {
+            foreach (int card in PlayerModel.CityCardsInHand)
+            {
+                if (game.Cities[card].city.virusInfo.virusName == virusName)
+                {
+                    Timeline.theTimeline.addEvent(new PTreatDisease(city, virusName));
+                    PlayerModel.roleActionUsed = true;
+                    ClearSelectedAction();
+                    break;
+                }
+            }
+        }
+    }
+
+    internal void PawnClicked(Pawn pawn)
+    {
+        pawnPilotSelected = pawn;
+        if (flyLine2 != null)
+        {
+            Destroy(flyLine2);
+        }
+
+        City cityToMoveTo = game.Cities[pilotCitySelected];
+
+        pawn.GetComponent<Outline>().enabled = true;
+        CreateLineBetweenGameObjects(cityToMoveTo.gameObject, getPawnInCurrentCity(pawn).gameObject, gui.roleCards[(int)pawn.PawnRole]);
+    }
+
+    private Pawn getPawnInCurrentCity(Pawn pawn)
+    {
+        foreach (Pawn pawnInCity in PlayerModel.GetCurrentCityScript().PawnsInCity)
+        {
+            if(pawnInCity.PawnRole == pawn.PawnRole)
+                return pawnInCity;
+        }
+        return null;
     }
 
     #endregion
@@ -540,8 +744,8 @@ public class PlayerGUI : MonoBehaviour
         currentCity.removePawn(game.CurrentPlayer);
         currentCity.draw();
         movingPawn = Instantiate(gui.PawnPrefab, currentCity.transform.position, currentCity.transform.rotation, gui.AnimationCanvas.transform);
-        movingPawn.GetComponent<Image>().color = roleCard.RoleCardData.roleColor;
-        movingPawn.GetComponent<Pawn>().canMove = true;
+        movingPawn.GetComponent<Pawn>().CanMove = true;
+        movingPawn.GetComponent<Pawn>().SetRoleAndPlayer(PlayerModel);
         movingPawn.GetComponent<Outline>().enabled = true;
     }
 
@@ -576,6 +780,14 @@ public class PlayerGUI : MonoBehaviour
         ContextButtons[1].SetActive(false);
         ContextButtons[2].SetActive(false);
 
+        pilotCitySelected = -1;
+        if (flyLine != null) Destroy(flyLine);
+        flyLine = null;
+        if (flyLine2 != null) Destroy(flyLine2);
+        flyLine2 = null;
+        if(pawnPilotSelected != null) Destroy(pawnPilotSelected);
+        pawnPilotSelected = null;
+        foreach (GameObject pawn in pilotPawnsTagAlong) pawn.SetActive(false);
         changeContextText();
     }
 
@@ -617,6 +829,23 @@ public class PlayerGUI : MonoBehaviour
         lr.endWidth = 0.1f;
         lr.SetPosition(0, cityToMoveFrom.PawnsInCity[_player.Position].transform.position);
         lr.SetPosition(1, cityToMoveTo.transform.position);
+    }
+
+    private void CreateLineBetweenGameObjects(GameObject one, GameObject two, RoleCard roleData)
+    {
+        flyLine2 = new GameObject("Line - FlyAction");
+        flyLine2.transform.SetParent(gui.AnimationCanvas.transform, false);
+        flyLine2.transform.position = one.transform.position;
+        flyLine2.AddComponent<LineRenderer>();
+        LineRenderer lr = flyLine2.GetComponent<LineRenderer>();
+        lr.sortingLayerName = "Animation";
+        lr.material = gui.lineMaterial;
+        lr.startColor = roleData.roleColor;
+        lr.endColor = roleData.roleColor;
+        lr.startWidth = 0.1f;
+        lr.endWidth = 0.1f;
+        lr.SetPosition(0, one.transform.position);
+        lr.SetPosition(1, two.transform.position);
     }
 
     private void removeBorderFromCardsInHand()
@@ -723,7 +952,24 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (ActionSelected == ActionTypes.CharacterAction)
         {
-            additionalMessage += "Read role action text";
+            if (PlayerModel.Role == Player.Roles.Virologist)
+                additionalMessage += "Remove a cube";
+            else if (PlayerModel.Role == Player.Roles.Pilot)
+            {
+                if (pilotCitySelected == -1)
+                    additionalMessage += "Touch city within 2";
+                else
+                {
+                    if (pawnPilotSelected != null)
+                        additionalMessage += "Complete move?";
+                    else
+                    {
+                        if (game.Cities[pilotCitySelected].PlayersInCity.Count > 1)
+                            additionalMessage += "Touch pawn?";
+                        else additionalMessage += "Complete move?";
+                    }
+                }
+            }
         }
 
         if (additionalMessage != "")
@@ -747,7 +993,6 @@ public class PlayerGUI : MonoBehaviour
     }
 
 }
-
 
 public enum ActionTypes
 {

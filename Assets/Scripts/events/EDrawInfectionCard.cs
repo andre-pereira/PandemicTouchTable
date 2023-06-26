@@ -17,6 +17,7 @@ internal class EDrawInfectionCard : EngineEvent
     private City cityToInfect = null;
     private bool fromTheTop;
     private Player quarantineSpecialist = null;
+    private bool gameOver = false;
 
     public EDrawInfectionCard(int numberOfCubes, bool fromTheTop)
     {
@@ -90,7 +91,6 @@ internal class EDrawInfectionCard : EngineEvent
 
     private bool checkIfNoMoreCubesExist(City cityToInfect)
     {
-        bool gameOver = false;
         switch (cityToInfect.city.virusInfo.virusName)
         {
             case VirusName.Red:
@@ -125,7 +125,6 @@ internal class EDrawInfectionCard : EngineEvent
 
     public override float Act(bool qUndo = false)
     {
-
         GameObject cardToAddObject = Object.Instantiate(gui.InfectionCardPrefab, gui.InfectionDeck.transform.position, gui.PlayerDeck.transform.rotation, gui.InfectionDiscard.transform);
         cardToAddObject.GetComponent<InfectionCardDisplay>().cityCardData = cityToInfect.city;
         //cardToAddObject.transform.position = gui.PlayerDeck.transform.position;
@@ -146,21 +145,24 @@ internal class EDrawInfectionCard : EngineEvent
 
         if (quarantineSpecialist == null)
         {
-            for (int i = 0; i < numberOfCubes; i++)
+            if (gameOver == false)
             {
-                GameObject cubeToDuplicate = gui.GetCubeToDuplicate(cityToInfect.GetComponent<City>().city.virusInfo, i);
-                cubes.Add(Object.Instantiate(cubeToDuplicate, gui.AnimationCanvas.transform));
-                cubes[i].transform.position = cubeToDuplicate.transform.position;
-                cubes[i].transform.localScale = new Vector3(0.06f, 0.06f, 0.06f);
-                cubes[i].SetActive(true);
-                Vector3 positionToMove = new Vector3(cityToInfect.CubesGameObject.transform.position.x, cityToInfect.CubesGameObject.transform.position.y, 0);
-                sequence.Join(cubes[i].transform.DOMove(positionToMove, ANIMATIONDURATION * 2));
-                if (i == numberOfCubes - 1)
-                    sequence.AppendCallback(() =>
-                    {
-                        foreach (GameObject cube in cubes)
-                            Object.Destroy(cube);
-                    });
+                for (int i = 0; i < numberOfCubes; i++)
+                {
+                    GameObject cubeToDuplicate = gui.GetCubeToDuplicate(cityToInfect.GetComponent<City>().city.virusInfo, i);
+                    cubes.Add(Object.Instantiate(cubeToDuplicate, gui.AnimationCanvas.transform));
+                    cubes[i].transform.position = cubeToDuplicate.transform.position;
+                    cubes[i].transform.localScale = new Vector3(0.06f, 0.06f, 0.06f);
+                    cubes[i].SetActive(true);
+                    Vector3 positionToMove = new Vector3(cityToInfect.CubesGameObject.transform.position.x, cityToInfect.CubesGameObject.transform.position.y, 0);
+                    sequence.Join(cubes[i].transform.DOMove(positionToMove, ANIMATIONDURATION * 2));
+                    if (i == numberOfCubes - 1)
+                        sequence.AppendCallback(() =>
+                        {
+                            foreach (GameObject cube in cubes)
+                                Object.Destroy(cube);
+                        });
+                }
             }
         }
         else 

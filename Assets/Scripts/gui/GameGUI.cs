@@ -103,7 +103,7 @@ public class GameGUI : MonoBehaviour
     {
         gui = this;
     }
-    // Use this for initialization
+
     void Start()
     {
         moveCityInfoToGame();
@@ -161,7 +161,6 @@ public class GameGUI : MonoBehaviour
         }
     }
 
-
     void OnDestroy()
     {
         gui = null;
@@ -189,7 +188,6 @@ public class GameGUI : MonoBehaviour
             Debug.LogError("Requesting playerGUI for player at position " + position + " which doesn't exist.");
         return retVal;
     }
-
 
     public void draw()
     {
@@ -260,38 +258,6 @@ public class GameGUI : MonoBehaviour
             if (theGame.CurrentPlayer == pad.PlayerModel)
                 pad.draw();
         }
-    }
-
-    public void saveAndExit()
-    {
-        AudioPlayer.PlayClip(AudioPlayer.AudioClipEnum.CLICK);
-
-        Timeline.theTimeline.save(PlayerPrefs.GetString(Game.PlayerPrefSettings.LAST_FILE_LOADED.ToString()));
-        Timeline.theTimeline.saveScreenshot(PlayerPrefs.GetString(Game.PlayerPrefSettings.LAST_FILE_LOADED.ToString()));
-        SceneManager.LoadScene(0);
-    }
-    public void undoAction()
-    {
-        AudioPlayer.Stop();
-        StopAllCoroutines();
-        AudioPlayer.PlayClip(AudioPlayer.AudioClipEnum.CLICK);
-        DOTween.CompleteAll(true);
-        Timeline.theTimeline.undo();
-    }
-
-    // During development, I'll often add a save/load button to the screen so that I can quickly
-    // see that the save file looks correct and load a save. In a final game, these buttons go away
-    // and are replaced with a "Save and Exit" button
-    public void save()
-    {
-        Timeline.theTimeline.save(PlayerPrefs.GetString(Game.PlayerPrefSettings.LAST_FILE_LOADED.ToString()));
-    }
-    public void load()
-    {
-        /*
-        PlayerPrefs.SetString(Game.PlayerPrefSettings.FILE_TO_LOAD.ToString(), "test");
-        Game.loadLevel();
-        */
     }
 
     public GameObject GetCubeToDuplicate(VirusInfo virusInfo, int increment)

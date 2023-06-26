@@ -41,6 +41,8 @@ public class Player
     public Roles Role { get; set; }
     public int ActionsRemaining { get; internal set; }
 
+    public bool roleActionUsed = false;
+
     public Player(int tablePositionId, Roles playerRole, string playerName)
     {
         playerGui = GameGUI.playerPadForPosition(tablePositionId);
@@ -81,7 +83,6 @@ public class Player
             EventCardsInHand.Add(card);
         PlayerCardsInHand.Sort();
     }
-
 
     public City GetCurrentCityScript()
     {
@@ -132,6 +133,7 @@ public class Player
     internal void ResetTurn()
     {
         ActionsRemaining = 4;
+        roleActionUsed = false;
         playerGui.ClearSelectedAction();
     }
 }

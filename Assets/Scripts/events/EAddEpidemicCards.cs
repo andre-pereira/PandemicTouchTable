@@ -8,7 +8,7 @@ using static Game;
 internal class EAddEpidemicCards : EngineEvent
 {
     private const float OffsetEpidemicCards = 2.5f;
-    private const float DurationEpidemicMove = 1f;
+    private float DurationEpidemicMove = 1f / gui.AnimationTimingMultiplier;
 
     public EAddEpidemicCards()
     {

@@ -138,8 +138,8 @@ public class City : MonoBehaviour
                 int playerPosition = PlayersInCity[i].Position;
                 GameObject pawn = Instantiate(gui.PawnPrefab, PawnsGameObject.transform.position, PawnsGameObject.transform.rotation, PawnsGameObject.transform);
                 pawn.transform.Translate(offsetPawns[i][0], offsetPawns[i][1], 0);
-                pawn.GetComponent<Image>().color = gui.roleCards[(int)PlayersInCity[i].Role].roleColor;
                 PawnsInCity[playerPosition] = pawn.GetComponent<Pawn>();
+                PawnsInCity[playerPosition].SetRoleAndPlayer(PlayersInCity[i]);
             }
         }
         //GameObject currentPawn = gui.Pawns[(int)PlayerRole];

@@ -3,19 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static GameGUI;
+using static Game;
+using System;
 
-public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandler
+public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandler, IPointerClickHandler
 {
     private Canvas citiesCanvas;
     private Canvas canvas;
     private Vector2 offset;
     private RectTransform rectTransform;
     private GraphicRaycaster graphicRaycaster;
-    public bool canMove = false;
+    public bool CanMove = false;
+    public bool IsInterfaceElement = false;
     private Vector2 initialPosition;
     private int initialCityID;
     
     private City endedInCity = null;
+    public Player.Roles PawnRole;
+
+    public Player PlayerModel;
 
     private void Awake()
     {
@@ -27,7 +34,7 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (canMove)
+        if (CanMove)
         {
             Vector2 pointerPosition = eventData.position;
             Vector2 localPointerPosition;
@@ -115,5 +122,18 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
     {
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, eventData.position, canvas.worldCamera, out initialPosition);
         initialCityID = Game.theGame.CurrentPlayer.GetCurrentCity();
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (IsInterfaceElement)
+            theGame.CurrentPlayer.playerGui.PawnClicked(this);
+    }
+
+    internal void SetRoleAndPlayer(Player player)
+    {
+        PawnRole = player.Role;
+        PlayerModel = player;
+        GetComponent<Image>().color = gui.roleCards[(int)PawnRole].roleColor;
     }
 }
