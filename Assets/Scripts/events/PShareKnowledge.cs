@@ -27,11 +27,7 @@ public class PShareKnowledge : PlayerEvent
     {
         playerFrom.PlayerModel.RemoveCardInHand(cityID);
         playerTo.PlayerModel.AddCardToHand(cityID);
-        Game.theGame.CurrentPlayer.ActionsRemaining -= 1;
-        if (Game.theGame.CurrentPlayer.ActionsRemaining == 0)
-        {
-            game.setCurrentGameState(Game.GameState.DRAW1STPLAYERCARD);
-        }
+        _player.DecreaseActionsRemaining(1);
     }
 
     public override float Act(bool qUndo = false)

@@ -29,12 +29,8 @@ public class PTreatDisease : PlayerEvent
         {
             city.incrementNumberOfCubes((VirusName)virus, -1);
             game.incrementNumberOfCubesOnBoard((VirusName)virus, 1);
-        } 
-        _player.ActionsRemaining -= 1;
-        if (game.CurrentPlayer.ActionsRemaining == 0)
-        {
-            game.setCurrentGameState(Game.GameState.DRAW1STPLAYERCARD);
         }
+        _player.DecreaseActionsRemaining(1);
     }
 
     public override float Act(bool qUndo = false)

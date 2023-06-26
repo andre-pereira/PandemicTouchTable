@@ -27,11 +27,7 @@ public class PFlyToCity : PlayerEvent
         _player.RemoveCardInHand(flyTo);
         _player.UpdateCurrentCity(flyTo, true);
         game.PlayerCardsDiscard.Add(flyTo);
-        game.CurrentPlayer.ActionsRemaining -= 1;
-        if (game.CurrentPlayer.ActionsRemaining == 0)
-        {
-            game.setCurrentGameState(Game.GameState.DRAW1STPLAYERCARD);
-        }
+        _player.DecreaseActionsRemaining(1);
     }
 
     public override float Act(bool qUndo = false)

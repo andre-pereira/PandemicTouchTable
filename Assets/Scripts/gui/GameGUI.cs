@@ -296,11 +296,8 @@ public class GameGUI : MonoBehaviour
             case GameState.PLAYERACTIONS:
                 GameGUI.gui.BigTextMessage.text = theGame.CurrentPlayer.Name.ToString() + "'s turn";
                 break;
-            case GameState.DRAW1STPLAYERCARD:
-                GameGUI.gui.BigTextMessage.text = "Drawing First Player Card";
-                break;
-            case GameState.DRAW2NDPLAYERCARD:
-                GameGUI.gui.BigTextMessage.text = "Drawing Second Player Card";
+            case GameState.DRAWPLAYERCARDS:
+                GameGUI.gui.BigTextMessage.text = "Drawing Player Cards: " + Game.theGame.PlayerCardsDrawn;
                 break;
             case GameState.EPIDEMIC:
                 switch (theGame.epidemicGameState)

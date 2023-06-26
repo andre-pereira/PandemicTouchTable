@@ -35,6 +35,7 @@ public class EDealCardToPlayer : EngineEvent
         {
             player.AddCardToHand(cardToAdd);
         }
+        theGame.PlayerCardsDrawn++;
         theGame.actionCompleted = true;
     }
 

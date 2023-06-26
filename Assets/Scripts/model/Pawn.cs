@@ -65,55 +65,25 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (endedInCity != null)
+        if (endedInCity != null && endedInCity.city.cityID != theGame.CurrentPlayer.GetCurrentCity())
         {
-            if (endedInCity.city.cityID == Game.theGame.CurrentPlayer.GetCurrentCity())
-                return;
-
-            if (GameGUI.currentPlayerPad().ActionSelected == ActionTypes.Charter)
+            if (currentPlayerPad().ActionSelected == ActionTypes.Charter)
             {
                 Timeline.theTimeline.addEvent(new PCharterEvent(endedInCity));
                 Destroy(gameObject);
                 return;
             }
-
-            int numberOfActionsSpent = 0;
-            HashSet<int> citiesToVisit = new HashSet<int>();
-            HashSet<int> citiesVisited = new HashSet<int>();
-            bool foundConnection = false;
-
-            HashSet<int> newCitiesToVisit = new HashSet<int>();
-
-            newCitiesToVisit.UnionWith(endedInCity.city.neighbors);
-
-            for (int i = 0; i < Game.theGame.CurrentPlayer.ActionsRemaining; i++)
+            else if (currentPlayerPad().ActionSelected == ActionTypes.Move)
             {
-                numberOfActionsSpent++;
-                citiesToVisit = new HashSet<int>(newCitiesToVisit);
-                newCitiesToVisit.RemoveWhere(citiesVisited.Contains);
-                citiesVisited.UnionWith(citiesToVisit);
+                int distance = theGame.DistanceFromCity(theGame.CurrentPlayer.GetCurrentCity(), endedInCity.city.cityID);
 
-                if (citiesVisited.Contains(Game.theGame.CurrentPlayer.GetCurrentCity()))
+                if (distance > 0)
                 {
-                    foundConnection = true;
-                    break;
+                    Timeline.theTimeline.addEvent(new PMoveEvent(endedInCity.city.cityID, distance));
+                    Destroy(this.gameObject);
                 }
-
-                foreach (int city in citiesToVisit)
-                {
-                    foreach (int neighbor in Game.theGame.Cities[city].city.neighbors)
-                    {
-                        newCitiesToVisit.Add(neighbor);
-                    }
-                }
+                else rectTransform.localPosition = initialPosition;
             }
-
-            if (foundConnection)
-            {
-                Timeline.theTimeline.addEvent(new PMoveEvent(endedInCity.city.cityID, numberOfActionsSpent));
-                Destroy(this.gameObject);
-            }
-            else rectTransform.localPosition = initialPosition;
         }
     }
 

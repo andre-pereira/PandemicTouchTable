@@ -19,6 +19,7 @@ internal class EOutbreak : EngineEvent
 
     public override void Do(Timeline timeline)
     {
+        theGame.setCurrentGameState(GameState.OUTBREAK);
         quarantineSpecialistExceptions = new List<int>();
         foreach (Player player in PlayerList.Players)
         {
@@ -30,9 +31,9 @@ internal class EOutbreak : EngineEvent
         }
 
         bool recurrentOutbreak = false;
-        if(theGame.CurrentGameState != GameState.OUTBREAK)
-            theGame.setCurrentGameState(GameState.OUTBREAK);
+        
         theGame.OutbreakTracker.Add(originOfOutbreak.city.cityID);
+        
         foreach (int neighbor in originOfOutbreak.city.neighbors)
         {
             City neighborCity = gui.Cities[neighbor].GetComponent<City>();

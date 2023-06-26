@@ -22,11 +22,7 @@ internal class PCharterEvent : PlayerEvent
         _player.RemoveCardInHand(flyFrom.city.cityID);
         _player.UpdateCurrentCity(flyTo.city.cityID,true);
         game.PlayerCardsDiscard.Add(flyFrom.city.cityID);
-        game.CurrentPlayer.ActionsRemaining -= 1;
-        if (game.CurrentPlayer.ActionsRemaining == 0)
-        {
-            game.setCurrentGameState(Game.GameState.DRAW1STPLAYERCARD);
-        }
+        _player.DecreaseActionsRemaining(1);
         _playerGui.ActionSelected = ActionTypes.None;
     }
 

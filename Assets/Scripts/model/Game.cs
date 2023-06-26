@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using System;
 using static ENUMS;
+using static GameGUI;
 
 public class Game : MonoBehaviour
 {
@@ -19,8 +20,7 @@ public class Game : MonoBehaviour
         INVALID = -1,
         SETTINGBOARD,
         PLAYERACTIONS,
-        DRAW1STPLAYERCARD,
-        DRAW2NDPLAYERCARD,
+        DRAWPLAYERCARDS,
         EPIDEMIC,
         DRAWINFECTCARDS,
         OUTBREAK,
@@ -37,7 +37,7 @@ public class Game : MonoBehaviour
 
     public int InfectionRate = 0;
     public int[] InfectionRateValues = new int[] { 2, 2, 3, 4 };
-    private int numberOfDrawnInfectCards = 0;
+    public int NumberOfDrawnInfectCards = 0;
 
     public int OutbreakCounter = 0;
     public List<int> OutbreakTracker = new List<int>();
@@ -60,7 +60,7 @@ public class Game : MonoBehaviour
 
     public List<int> InfectionCards = null;
     public List<int> InfectionCardsDiscard = null;
-
+    public int PlayerCardsDrawn;
     public int RedCubesOnBoard = 16;
     public int YellowCubesOnBoard = 16;
     public int BlueCubesOnBoard = 16;
@@ -79,6 +79,8 @@ public class Game : MonoBehaviour
         InfectionCards = new List<int>();
         InfectionCardsDiscard = new List<int>();
 
+        PlayerCardsDrawn = 0;
+
         InfectionRate = 0;
         OutbreakCounter = 0;
     }
@@ -90,45 +92,36 @@ public class Game : MonoBehaviour
 
     public void test()
     {
-        if(CurrentPlayer.PlayerCardsInHand.Count < 7)
-            Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer));
+        //if(CurrentPlayer.PlayerCardsInHand.Count < 7)
+        //    Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer));
+        Timeline.theTimeline.addEvent(new EOutbreak(Cities[InitialCityID]));
     }
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            test();
-        }
+        if (PlayerList.getAllPlayers().Any(player => player.PlayerCardsInHand.Count > 6)) return;
         
-        foreach (Player player in PlayerList.getAllPlayers())
-        {
-            if(player.PlayerCardsInHand.Count > 6)
-            {
-                return;
-            }
-        }
 
-        if (CurrentGameState == GameState.DRAW1STPLAYERCARD || CurrentGameState == GameState.DRAW2NDPLAYERCARD)
+        if (CurrentGameState == GameState.DRAWPLAYERCARDS)
         {
             if (actionsInitiated == false)
             {
                 actionsInitiated = true;
-                actionCompleted = false;
                 Debug.Log("Draw Player Card: " + CurrentGameState);
                 Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer));
             }
-            if (actionCompleted == true)
+            if(actionCompleted == true)
             {
-                if (CurrentPlayer.PlayerCardsInHand.Count < 7)
+                actionCompleted = false;
+                if (PlayerCardsDrawn < 2)
                 {
-                    if (CurrentGameState == GameState.DRAW1STPLAYERCARD)
-                        setCurrentGameState(GameState.DRAW2NDPLAYERCARD);
-                    else
-                    {
-                        if(CurrentGameState != GameState.EPIDEMIC)
-                            setCurrentGameState(GameState.DRAWINFECTCARDS);
-                    }
+                    actionsInitiated = false;
+                }
+                else if (CurrentPlayer.PlayerCardsInHand.Count < 7 && PlayerCardsDrawn == 2)
+                {
+                    if (CurrentGameState != GameState.EPIDEMIC)
+                        setCurrentGameState(GameState.DRAWINFECTCARDS);
+
                 }
             }
         }
@@ -146,14 +139,7 @@ public class Game : MonoBehaviour
                 {
                     epidemicGameState = EpidemicGameState.EPIDEMICINTENSIFY;
                     Timeline.theTimeline.addEvent(new EIntensify());
-                    if (previousGameState == GameState.DRAW1STPLAYERCARD)
-                        setCurrentGameState(GameState.DRAW2NDPLAYERCARD);
-                    else if (previousGameState == GameState.DRAW2NDPLAYERCARD)
-                        setCurrentGameState(GameState.DRAWINFECTCARDS);
-                    else
-                    {
-                        Debug.Log("I am stuck and should not be here!");
-                    }
+                    setCurrentGameState(previousGameState);
                 }
             }
         }
@@ -167,7 +153,7 @@ public class Game : MonoBehaviour
         }
         else if (CurrentGameState == GameState.DRAWINFECTCARDS)
         {
-            if (numberOfDrawnInfectCards < InfectionRateValues[InfectionRate])
+            if (NumberOfDrawnInfectCards < InfectionRateValues[InfectionRate] && !turnEnded)
             {
                 if (actionsInitiated == false)
                 {
@@ -176,7 +162,6 @@ public class Game : MonoBehaviour
                 }
                 if (actionCompleted == true)
                 {
-                    numberOfDrawnInfectCards++;
                     actionsInitiated = false;
                     actionCompleted = false;
                 }
@@ -185,8 +170,8 @@ public class Game : MonoBehaviour
             {
                 if (!turnEnded)
                 {
-                    Timeline.theTimeline.addEvent(new PEndTurn());
                     turnEnded = true;
+                    Timeline.theTimeline.addEvent(new PEndTurn());
                 }
             }
         }
@@ -204,13 +189,17 @@ public class Game : MonoBehaviour
 
     internal void setCurrentGameState(GameState state)
     {
+        
         turnEnded = false;
         previousGameState = CurrentGameState;
         CurrentGameState = state;
         actionsInitiated = false;
         actionCompleted = false;
-        if(state == GameState.PLAYERACTIONS)
-            numberOfDrawnInfectCards = 0;
+        if (state == GameState.PLAYERACTIONS)
+        {
+            PlayerCardsDrawn = 0;
+            NumberOfDrawnInfectCards = 0;
+        }
 
         if (state == GameState.EPIDEMIC)
             epidemicGameState = EpidemicGameState.EPIDEMICINCREASE;
@@ -230,5 +219,48 @@ public class Game : MonoBehaviour
                 BlueCubesOnBoard += increment;
                 break;
         }
+    }
+
+    public int DistanceFromCity(int cityID1, int cityID2)
+    {
+        if(cityID1 == cityID2)
+            return 0;
+
+        int distance = 0;
+        HashSet<int> citiesToVisit = new HashSet<int>();
+        HashSet<int> citiesVisited = new HashSet<int>();
+        bool foundConnection = false;
+
+        HashSet<int> newCitiesToVisit = new HashSet<int>();
+
+        newCitiesToVisit.UnionWith(Cities[cityID2].city.neighbors);
+
+        for (int i = 0; i < Cities.Length; i++)
+        {
+            distance++;
+            citiesToVisit = new HashSet<int>(newCitiesToVisit);
+            newCitiesToVisit.RemoveWhere(citiesVisited.Contains);
+            citiesVisited.UnionWith(citiesToVisit);
+
+            if (citiesVisited.Contains(Game.theGame.CurrentPlayer.GetCurrentCity()))
+            {
+                foundConnection = true;
+                break;
+            }
+
+            foreach (int city in citiesToVisit)
+            {
+                foreach (int neighbor in Game.theGame.Cities[city].city.neighbors)
+                {
+                    newCitiesToVisit.Add(neighbor);
+                }
+            }
+        }
+
+        if (foundConnection)
+        {
+            return distance;
+        }
+        else return -1;
     }
 }

@@ -39,7 +39,7 @@ public class Player
 
 
     public Roles Role { get; set; }
-    public int ActionsRemaining { get; internal set; }
+    public int ActionsRemaining { get; private set; }
 
     public bool roleActionUsed = false;
 
@@ -55,6 +55,20 @@ public class Player
         YellowCardsInHand = new List<int>();
         BlueCardsInHand = new List<int>();
         EventCardsInHand = new List<int>();
+    }
+
+    public void DecreaseActionsRemaining(int decrement)
+    {
+        ActionsRemaining -= decrement;
+        if (Game.theGame.CurrentPlayer.ActionsRemaining == 0)
+        {
+            game.setCurrentGameState(Game.GameState.DRAWPLAYERCARDS);
+        }
+    }
+
+    public void ResetActionsRemaining()
+    {
+        ActionsRemaining = 4;
     }
 
     public void AddCardToHand(int card)

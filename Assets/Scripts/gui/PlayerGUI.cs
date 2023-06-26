@@ -324,8 +324,12 @@ public class PlayerGUI : MonoBehaviour
                 {
                     if (PlayerModel.PlayerCardsInHand.Contains(PlayerModel.GetCurrentCity()))
                         Timeline.theTimeline.addEvent(new PShareKnowledge(this, GameGUI.currentPlayerPad()));
-                    else Timeline.theTimeline.addEvent(new PShareKnowledge(GameGUI.currentPlayerPad(),this));
+                    else Timeline.theTimeline.addEvent(new PShareKnowledge(GameGUI.currentPlayerPad(), this));
                 }
+            }
+            else if (ActionSelected == ActionTypes.CharacterAction && PlayerModel.Role == Player.Roles.Pilot)
+            {
+                Timeline.theTimeline.addEvent(new PPilotFlyToCity(pilotCitySelected, pawnPilotSelected.PlayerModel));
             }
         }
 
@@ -517,7 +521,7 @@ public class PlayerGUI : MonoBehaviour
                 }
                 else
                 {
-                    if (AddCardAndTestforCure(cardClickedScript))
+                    if (AddCardAndTestForCure(cardClickedScript))
                     { 
                             cardsState = CardGUIStates.CardsExpandedCureActionSelected;
                             ContextButtons[1].SetActive(true);
@@ -530,7 +534,116 @@ public class PlayerGUI : MonoBehaviour
 
     }
 
-    private bool AddCardAndTestforCure(CityCardDisplay cardClickedScript)
+    public void CityClicked(City city)
+    {
+        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID
+            && _player.ActionsRemaining > 0 && city.cubesInCity())
+        {
+            Timeline.theTimeline.addEvent(new PTreatDisease(city));
+        }
+        else if (ActionSelected == ActionTypes.CharacterAction && PlayerModel.Role == Player.Roles.Pilot)
+        {
+            City cityToMoveTo = game.Cities[city.city.cityID];
+            City cityToMoveFrom = game.Cities[_player.GetCurrentCity()];
+
+            int distance = game.DistanceFromCity(cityToMoveFrom.city.cityID, cityToMoveTo.city.cityID);
+
+            if (distance > 0 && distance < 3)
+            {
+                pilotCitySelected = city.city.cityID;
+
+                if (flyLine != null) Destroy(flyLine);
+                if (flyLine2 != null) Destroy(flyLine2);
+
+                cityToMoveFrom.PawnsInCity[_player.Position].gameObject.GetComponent<Outline>().enabled = true;
+                CreateLineBetweenCities(cityToMoveTo, cityToMoveFrom);
+
+                int counterPlayers = 0;
+                foreach (Player player in cityToMoveFrom.PlayersInCity)
+                {
+                    if (player != PlayerModel)
+                    {
+                        GameObject pawn = pilotPawnsTagAlong[counterPlayers];
+                        pawn.SetActive(true);
+                        Pawn pawnScript = pawn.GetComponent<Pawn>();
+                        pawnScript.SetRoleAndPlayer(player);
+                        pawnScript.IsInterfaceElement = true;
+                        counterPlayers++;
+                    }
+                }
+
+                if (pawnPilotSelected != null)
+                    CreateLineBetweenGameObjects(cityToMoveTo.gameObject, getPawnInCurrentCity(pawnPilotSelected).gameObject, gui.roleCards[(int)pawnPilotSelected.PawnRole]);
+
+                ContextButtons[1].SetActive(true);
+                ContextButtons[0].SetActive(true);
+                changeContextText();
+            }
+
+        }
+    }
+
+    internal void CubeClicked(City city, VirusName virusName)
+    {
+        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID 
+            && _player.ActionsRemaining > 0 && city.cubesInCity())
+        {
+            Timeline.theTimeline.addEvent(new PTreatDisease(city, virusName));
+        }
+        else if(cardsState == CardGUIStates.CardsExpandedVirologistAction)
+        {
+            foreach (int card in PlayerModel.CityCardsInHand)
+            {
+                if (game.Cities[card].city.virusInfo.virusName == virusName)
+                {
+                    Timeline.theTimeline.addEvent(new PTreatDisease(city, virusName));
+                    PlayerModel.roleActionUsed = true;
+                    ClearSelectedAction();
+                    break;
+                }
+            }
+        }
+    }
+
+    internal void PawnClicked(Pawn pawn)
+    {
+        foreach (GameObject pawnObject in pilotPawnsTagAlong)
+        {
+            pawnObject.GetComponent<Outline>().enabled = false;
+        }
+
+        if (flyLine2 != null)
+        {
+            Destroy(flyLine2);
+        }
+
+        if (pawn != pawnPilotSelected)
+        {
+            pawn.GetComponent<Outline>().enabled = true;
+            pawnPilotSelected = pawn;
+            CreateLineBetweenGameObjects(game.Cities[pilotCitySelected].gameObject, getPawnInCurrentCity(pawn).gameObject, gui.roleCards[(int)pawn.PawnRole]);
+        }
+        else
+        {
+            pawnPilotSelected = null;
+
+        }
+        changeContextText();
+    }
+
+    private Pawn getPawnInCurrentCity(Pawn pawn)
+    {
+        foreach (Pawn pawnInCity in PlayerModel.GetCurrentCityScript().PawnsInCity)
+        {
+            if(pawnInCity.PawnRole == pawn.PawnRole)
+                return pawnInCity;
+        }
+        return null;
+    }
+
+    #endregion
+
+    private bool AddCardAndTestForCure(CityCardDisplay cardClickedScript)
     {
         bool virologist = PlayerModel.Role == Player.Roles.Virologist;
         VirusName cardClickedVirusName = cardClickedScript.CityCardData.virusInfo.virusName;
@@ -541,7 +654,7 @@ public class PlayerGUI : MonoBehaviour
         int numBlueCards = 0;
         const int MAX_CARDS = 5;
         const int MAX_SAME_COLOR_CARDS = 4;
-        
+
         foreach (int card in selectedCards)
         {
             switch (game.Cities[card].city.virusInfo.virusName)
@@ -570,12 +683,12 @@ public class PlayerGUI : MonoBehaviour
                 }
                 else
                 {
-                    if(selectedCards.Count < 4) toAdd = true;
+                    if (selectedCards.Count < 4) toAdd = true;
                     else
                     {
-                        if(numYellowCards == 3 && !game.YellowCure) toAdd = true;
+                        if (numYellowCards == 3 && !game.YellowCure) toAdd = true;
                         else if (numBlueCards == 3 && !game.BlueCure) toAdd = true;
-                        else if(numRedCards > 2 && !game.RedCure) toAdd = true;
+                        else if (numRedCards > 2 && !game.RedCure) toAdd = true;
                     }
                 }
                 break;
@@ -638,97 +751,6 @@ public class PlayerGUI : MonoBehaviour
         return false;
     }
 
-    public void CityClicked(City city)
-    {
-        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID
-            && _player.ActionsRemaining > 0 && city.cubesInCity())
-        {
-            Timeline.theTimeline.addEvent(new PTreatDisease(city));
-        }
-        else if (ActionSelected == ActionTypes.CharacterAction && PlayerModel.Role == Player.Roles.Pilot)
-        {
-            pilotCitySelected = city.city.cityID;
-
-            if (flyLine != null) Destroy(flyLine);
-            if(flyLine2 != null) Destroy (flyLine2);
-            
-            City cityToMoveTo = game.Cities[city.city.cityID];
-            City cityToMoveFrom = game.Cities[_player.GetCurrentCity()];
-
-            cityToMoveFrom.PawnsInCity[_player.Position].gameObject.GetComponent<Outline>().enabled = true;
-            CreateLineBetweenCities(cityToMoveTo, cityToMoveFrom);
-
-            int counterPlayers = 0;
-            foreach(Player player in cityToMoveFrom.PlayersInCity)
-            {
-                if(player != PlayerModel)
-                {
-                    GameObject pawn = pilotPawnsTagAlong[counterPlayers];
-                    pawn.SetActive(true);
-                    Pawn pawnScript = pawn.GetComponent<Pawn>();
-                    pawnScript.SetRoleAndPlayer(player);
-                    pawnScript.IsInterfaceElement = true;
-                    counterPlayers++;
-                }
-            }
-
-            if(pawnPilotSelected != null)
-                CreateLineBetweenGameObjects(cityToMoveTo.gameObject, getPawnInCurrentCity(pawnPilotSelected).gameObject, gui.roleCards[(int)pawnPilotSelected.PawnRole]);
-
-            ContextButtons[1].SetActive(true);
-            ContextButtons[0].SetActive(true);
-
-        }
-    }
-
-    internal void CubeClicked(City city, VirusName virusName)
-    {
-        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID 
-            && _player.ActionsRemaining > 0 && city.cubesInCity())
-        {
-            Timeline.theTimeline.addEvent(new PTreatDisease(city, virusName));
-        }
-        else if(cardsState == CardGUIStates.CardsExpandedVirologistAction)
-        {
-            foreach (int card in PlayerModel.CityCardsInHand)
-            {
-                if (game.Cities[card].city.virusInfo.virusName == virusName)
-                {
-                    Timeline.theTimeline.addEvent(new PTreatDisease(city, virusName));
-                    PlayerModel.roleActionUsed = true;
-                    ClearSelectedAction();
-                    break;
-                }
-            }
-        }
-    }
-
-    internal void PawnClicked(Pawn pawn)
-    {
-        pawnPilotSelected = pawn;
-        if (flyLine2 != null)
-        {
-            Destroy(flyLine2);
-        }
-
-        City cityToMoveTo = game.Cities[pilotCitySelected];
-
-        pawn.GetComponent<Outline>().enabled = true;
-        CreateLineBetweenGameObjects(cityToMoveTo.gameObject, getPawnInCurrentCity(pawn).gameObject, gui.roleCards[(int)pawn.PawnRole]);
-    }
-
-    private Pawn getPawnInCurrentCity(Pawn pawn)
-    {
-        foreach (Pawn pawnInCity in PlayerModel.GetCurrentCityScript().PawnsInCity)
-        {
-            if(pawnInCity.PawnRole == pawn.PawnRole)
-                return pawnInCity;
-        }
-        return null;
-    }
-
-    #endregion
-
     private void disableAllActions()
     {
         MoveAction.SetActive(false);
@@ -783,11 +805,17 @@ public class PlayerGUI : MonoBehaviour
         pilotCitySelected = -1;
         if (flyLine != null) Destroy(flyLine);
         flyLine = null;
+        
         if (flyLine2 != null) Destroy(flyLine2);
         flyLine2 = null;
-        if(pawnPilotSelected != null) Destroy(pawnPilotSelected);
+
         pawnPilotSelected = null;
-        foreach (GameObject pawn in pilotPawnsTagAlong) pawn.SetActive(false);
+        foreach (GameObject pawn in pilotPawnsTagAlong)
+        {
+            pawn.GetComponent<Outline>().enabled = false;
+            pawn.SetActive(false);
+        }
+        
         changeContextText();
     }
 
@@ -917,7 +945,7 @@ public class PlayerGUI : MonoBehaviour
         {
             if(cardsState == CardGUIStates.CardsExpandedFlyActionToSelect)
             {
-                additionalMessage += "Pick a card";
+                additionalMessage += "Pick a card to fly to";
             }
             else if(cardsState == CardGUIStates.CardsExpandedFlyActionSelected)
             {
@@ -961,12 +989,10 @@ public class PlayerGUI : MonoBehaviour
                 else
                 {
                     if (pawnPilotSelected != null)
-                        additionalMessage += "Complete move?";
+                        additionalMessage += "Bring pawn along?";
                     else
                     {
-                        if (game.Cities[pilotCitySelected].PlayersInCity.Count > 1)
-                            additionalMessage += "Touch pawn?";
-                        else additionalMessage += "Complete move?";
+                        additionalMessage += "Complete move?";
                     }
                 }
             }

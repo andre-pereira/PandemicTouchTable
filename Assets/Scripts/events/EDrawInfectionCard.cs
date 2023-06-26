@@ -28,8 +28,9 @@ internal class EDrawInfectionCard : EngineEvent
 
     public override void Do(Timeline timeline)
     {
-        if (fromTheTop)
-            numberOfCityToInfect = theGame.InfectionCards.Pop();
+        if(numberOfCubes == 1) theGame.NumberOfDrawnInfectCards++;
+        
+        if (fromTheTop) numberOfCityToInfect = theGame.InfectionCards.Pop();
         else
         {
             numberOfCityToInfect = theGame.InfectionCards[0];

@@ -65,11 +65,7 @@ internal class PCureDisease : PlayerEvent
                 break;
         }
 
-        game.CurrentPlayer.ActionsRemaining -= 1;
-        if (game.CurrentPlayer.ActionsRemaining == 0)
-        {
-            game.setCurrentGameState(Game.GameState.DRAW1STPLAYERCARD);
-        }
+        _player.DecreaseActionsRemaining(1);
         _playerGui.ActionSelected = ActionTypes.None;
     }
 
