@@ -9,6 +9,7 @@ using UnityEditor;
 using Unity.VisualScripting;
 using System.ComponentModel;
 using static ENUMS;
+using static Game;
 
 public class PlayerGUI : MonoBehaviour
 {
@@ -528,6 +529,29 @@ public class PlayerGUI : MonoBehaviour
                     }
 
                 }
+            }
+        }
+        else
+        {
+            if (cardClicked == 24)
+            {
+                theGame.InEvent = EventState.CALLTOMOBILIZE;
+                Timeline.theTimeline.addEvent(new PCallToMobilize());
+            }
+            else if (cardClicked == 25)
+            {
+                theGame.InEvent = EventState.FORECAST;
+                Timeline.theTimeline.addEvent(new PForecast());
+            }
+            else if (cardClicked == 26) 
+            {
+                theGame.MobileHospitalPlayedBy = PlayerModel;
+                Timeline.theTimeline.addEvent(new PMobileHospital());
+            }
+            else if (cardClicked == 27)
+            {
+                theGame.InEvent = EventState.RESOURCEPLANNING;
+                Timeline.theTimeline.addEvent(new PResourcePlanning());
             }
         }
 

@@ -22,14 +22,18 @@ public class PTreatDisease : PlayerEvent
     public override void Do(Timeline timeline)
     {
         VirusName? virus = city.firstVirusFoundInCity();
+
         if (defaultClick)
             virus = virusName;
+        
         virus = city.firstVirusFoundInCity();
+        
         if (virus != null)
         {
             city.incrementNumberOfCubes((VirusName)virus, -1);
             game.incrementNumberOfCubesOnBoard((VirusName)virus, 1);
         }
+
         _player.DecreaseActionsRemaining(1);
     }
 

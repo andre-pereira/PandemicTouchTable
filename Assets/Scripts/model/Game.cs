@@ -27,6 +27,14 @@ public class Game : MonoBehaviour
         GAME_OVER
     }
 
+    public enum EventState
+    {
+        NOTINEVENT,
+        FORECAST,
+        RESOURCEPLANNING,
+        CALLTOMOBILIZE
+    }
+
     public enum EpidemicGameState
     {
 
@@ -70,6 +78,9 @@ public class Game : MonoBehaviour
     public bool BlueCure = false;
     private bool turnEnded = false;
 
+    public EventState InEvent = EventState.NOTINEVENT;
+    public Player MobileHospitalPlayedBy = null;
+
     public City[] Cities { get; internal set; }
 
     public void init()
@@ -99,9 +110,10 @@ public class Game : MonoBehaviour
 
     public void Update()
     {
+        if (InEvent != EventState.NOTINEVENT) return;
+
         if (PlayerList.getAllPlayers().Any(player => player.PlayerCardsInHand.Count > 6)) return;
         
-
         if (CurrentGameState == GameState.DRAWPLAYERCARDS)
         {
             if (actionsInitiated == false)
@@ -197,6 +209,7 @@ public class Game : MonoBehaviour
         actionCompleted = false;
         if (state == GameState.PLAYERACTIONS)
         {
+            MobileHospitalPlayedBy = null;
             PlayerCardsDrawn = 0;
             NumberOfDrawnInfectCards = 0;
         }

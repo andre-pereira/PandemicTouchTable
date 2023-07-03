@@ -18,6 +18,8 @@ public class Player
     public List<int> BlueCardsInHand { get; private set; }
     public List<int> EventCardsInHand { get; private set; }
 
+    public bool MobileHospitalActivated = false;
+
     public enum Roles
     {
         [Description("Containment Specialist")]
@@ -66,10 +68,6 @@ public class Player
         }
     }
 
-    public void ResetActionsRemaining()
-    {
-        ActionsRemaining = 4;
-    }
 
     public void AddCardToHand(int card)
     {
@@ -148,6 +146,7 @@ public class Player
     {
         ActionsRemaining = 4;
         roleActionUsed = false;
+        MobileHospitalActivated = false;
         playerGui.ClearSelectedAction();
     }
 }

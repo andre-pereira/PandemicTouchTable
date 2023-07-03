@@ -34,7 +34,7 @@ internal class EInitializeFirstPlayer : EngineEvent
 
         PlayerList.setOrderToClockwiseWithStartAt(startPlayer);
         theGame.CurrentPlayer = startPlayer;
-        startPlayer.ResetActionsRemaining();
+        startPlayer.ResetTurn();
     }
 
     public override float Act(bool qUndo = false)
