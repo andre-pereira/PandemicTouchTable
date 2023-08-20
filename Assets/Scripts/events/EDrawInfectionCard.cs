@@ -127,7 +127,7 @@ internal class EDrawInfectionCard : EngineEvent
     public override float Act(bool qUndo = false)
     {
         GameObject cardToAddObject = Object.Instantiate(gui.InfectionCardPrefab, gui.InfectionDeck.transform.position, gui.PlayerDeck.transform.rotation, gui.InfectionDiscard.transform);
-        cardToAddObject.GetComponent<InfectionCardDisplay>().cityCardData = cityToInfect.city;
+        cardToAddObject.GetComponent<InfectionCardDisplay>().CityCardData = cityToInfect.city;
         //cardToAddObject.transform.position = gui.PlayerDeck.transform.position;
         //cardToAddObject.transform.rotation = gui.PlayerDeck.transform.rotation;
 

@@ -21595,7 +21595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bae47974ec1bff44b256317b1ed4168, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AnimationTimingMultiplier: 2
+  AnimationTimingMultiplier: 100
   BigTextMessage: {fileID: 956547152}
   ContextButtonTextures:
   - {fileID: 21300000, guid: fae8314865b5ea14f8303979dfc96c9c, type: 3}

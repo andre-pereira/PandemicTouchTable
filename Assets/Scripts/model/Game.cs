@@ -30,6 +30,10 @@ public class Game : MonoBehaviour
     public enum EventState
     {
         NOTINEVENT,
+        CONFIRMINGFORECAST,
+        CONFIRMINGRESOURCEPLANNING,
+        CONFIRMINGCALLTOMOBILIZE,
+        CONFIRMINGMOBILEHOSPITAL,
         FORECAST,
         RESOURCEPLANNING,
         CALLTOMOBILIZE

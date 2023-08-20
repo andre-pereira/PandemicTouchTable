@@ -10,6 +10,9 @@ using Unity.VisualScripting;
 using System.ComponentModel;
 using static ENUMS;
 using static Game;
+using UnityEngine.Diagnostics;
+using Newtonsoft.Json.Linq;
+using UnityEditor.Experimental.GraphView;
 
 public class PlayerGUI : MonoBehaviour
 {
@@ -42,6 +45,7 @@ public class PlayerGUI : MonoBehaviour
     public GameObject PlayerCards;
     private List<GameObject> cardsInHand;
 
+    public GameObject ActionsContainer;
     public GameObject MoveAction;
     private Image MoveActionBackground;
     public GameObject FlyAction;
@@ -58,6 +62,11 @@ public class PlayerGUI : MonoBehaviour
     public GameObject[] ContextButtons;
     private ContextButtonStates contextButtonState;
 
+    public GameObject [] ForeCastEventCards;
+    private List<int> ForeCastEventCardsIDs = new List<int>();
+    private int ForeCastEventCardSelected = -1;
+
+    public EventState pInEvent = EventState.NOTINEVENT;
 
     public Player PlayerModel
     {
@@ -108,6 +117,7 @@ public class PlayerGUI : MonoBehaviour
 
     public GameObject[] pilotPawnsTagAlong;
     private Pawn pawnPilotSelected = null;
+    private HorizontalLayoutGroup layout;
 
     #endregion
 
@@ -128,6 +138,7 @@ public class PlayerGUI : MonoBehaviour
         _player = null;
         cardsInHand = new List<GameObject>();
         roleCard.RoleCardData = GameGUI.gui.roleCards[(int)PlayerModel.Role];
+        roleCard.gameObject.SetActive(true);
         Color targeColor = roleCard.RoleCardData.roleColor;
         targeColor.a = GameGUI.gui.playerUIOpacity;
         GetComponent<Image>().color = targeColor;
@@ -138,62 +149,222 @@ public class PlayerGUI : MonoBehaviour
 
         playerNameText.text = PlayerModel.Name;
         selectedCards = new List<int>();
+
+        layout = PlayerCards.GetComponent<HorizontalLayoutGroup>();
     }
 
     public void draw()
     {
         if (_isAnimating) return;
         if (PlayerModel == null) return;
+        
+        createCardsInHand();
 
+        if (_player.PlayerCardsInHand.Count > 6)
+        {
+            drawHandleDiscard();
+        }
+        else if (cardsState != CardGUIStates.None || PlayerModel != game.CurrentPlayer)
+        {
+            if (_player.PlayerCardsInHand.Count <= 6)
+            {
+                if (cardsState == CardGUIStates.CardsDiscarding)
+                {
+                    cardsState = CardGUIStates.None;
+                }
+                changeHorizontalLayout(option: 2);
+            }
+        }
+        else
+        {
+            changeHorizontalLayout(option: 3);
+        }
+
+        if (pInEvent != EventState.NOTINEVENT) drawEventHandling();
+            else if (PlayerModel == game.CurrentPlayer) ownTurnActionHandling();
+            else notMyTurnHandling();
+
+        changeContextText();
+    }
+
+    private void notMyTurnHandling()
+    {
+        enableOwnTurnActions(false);
+        if (cardsState == CardGUIStates.CardsExpandedShareAction)
+        {
+            if (PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
+                getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
+        }
+    }
+
+    private void createCardsInHand()
+    {
         cardsInHand.Clear();
         PlayerCards.DestroyChildrenImmediate();
-
-        HorizontalLayoutGroup layout = PlayerCards.GetComponent<HorizontalLayoutGroup>();
 
         foreach (int cardToAdd in _player.PlayerCardsInHand)
         {
             cardsInHand.Add(AddPlayerCardToTransform(cardToAdd, PlayerCards.transform, true));
+            
+        }
+    }
+
+    private void drawHandleDiscard()
+    {
+        changeHorizontalLayout(option: 1);
+        cardsState = CardGUIStates.CardsDiscarding;
+        if (selectedCards.Count > 0)
+        {
+            ContextButtons[1].SetActive(false);
+            if (selectedCards[0] < 24)
+            {
+                getCardInHand(selectedCards[0]).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
+            }
+            else
+            {
+                getCardInHand(selectedCards[0]).GetComponent<EventCardDisplay>().border.gameObject.SetActive(true);
+                ContextButtons[1].SetActive(true);
+            }
+            ContextButtons[2].SetActive(true);
+        }
+    }
+
+    private void drawEventHandling()
+    {
+        if(pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE || pInEvent == EventState.CONFIRMINGRESOURCEPLANNING ||
+            pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL|| pInEvent == EventState.CONFIRMINGFORECAST)
+        {
+            ContextButtons[0].SetActive(true);
+            ContextButtons[1].SetActive(true);
+        }
+        else if(pInEvent == EventState.FORECAST)
+        {
+            ContextButtons[0].SetActive(false);
+            ContextButtons[1].SetActive(true);
+            ContextButtons[2].SetActive(false);
+            ContextButtons[3].SetActive(true);
+            ContextButtons[4].SetActive(true);
+
+            PlayerCards.SetActive(false);
+            roleCard.gameObject.SetActive(false);
+
+            ForeCastEventCards[0].transform.parent.gameObject.SetActive(true);
+
+            for (int i = 0; i < ForeCastEventCards.Length; i++)
+            {
+                if (i <= ForeCastEventCardsIDs.Count - 1)
+                {
+                    CityCard infoCard = theGame.Cities[ForeCastEventCardsIDs[i]].city;
+                    InfectionCardDisplay cardDisplay = ForeCastEventCards[i].GetComponentInChildren<InfectionCardDisplay>();
+                    cardDisplay.CityCardData = infoCard;
+                    ForeCastEventCards[i].SetActive(true);
+
+                    if (infoCard.cityID == ForeCastEventCardSelected)
+                    {
+                        cardDisplay.border.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        cardDisplay.border.gameObject.SetActive(false);
+                    }
+                }
+                else ForeCastEventCards[i].SetActive(false);
+            }
+
         }
 
-        if (_player.PlayerCardsInHand.Count > 6)
+    }
+
+
+    private void ownTurnActionHandling()
+    {
+        bool moveAction = false;
+        bool flyAction = false;
+        bool charterAction = false;
+        bool findCureAction = false;
+        bool treatAction = false;
+        bool shareAction = false;
+
+        //changeContextText(true);
+        if (PlayerModel.ActionsRemaining > 0)
+        {
+            if (cardsState == CardGUIStates.None)
+            {
+                moveAction = true;
+                List<int>[] cardsOfEachColor = new List<int>[3];
+                foreach (int card in PlayerModel.CityCardsInHand)
+                {
+                    if (card != PlayerModel.GetCurrentCity())
+                        flyAction = true;
+                    else
+                        charterAction = true;
+                }
+
+                if (PlayerModel.GetCurrentCityScript().cubesInCity())
+                    treatAction = true;
+
+                if (ableToFindCure())
+                    if (PlayerModel.GetCurrentCity() == game.InitialCityID)
+                        findCureAction = true;
+
+                playersToShareGUI.Clear();
+
+                int countOtherPlayerInCity = 0;
+                foreach (Player player in PlayerModel.GetCurrentCityScript().PlayersInCity)
+                {
+                    if (player != _player)
+                    {
+                        countOtherPlayerInCity++;
+                        if (player.PlayerCardsInHand.Contains(_player.GetCurrentCity()) || _player.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
+                        {
+                            shareAction = true;
+                            playersToShareGUI.Add(GameGUI.playerPadForPosition(player.Position));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (cardsState == CardGUIStates.CardsExpandedFlyActionToSelect || cardsState == CardGUIStates.CardsExpandedCharterActionToSelect
+                    || cardsState == CardGUIStates.CardsExpandedCureActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction
+                    || cardsState == CardGUIStates.CardsExpandedVirologistAction)
+                {
+                    ContextButtons[0].SetActive(true);
+                    if (cardsState == CardGUIStates.CardsExpandedCharterActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction)
+                    {
+                        getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
+                    }
+                }
+            }
+        }
+
+        MoveAction.SetActive(moveAction);
+        FlyAction.SetActive(flyAction);
+        TreatAction.SetActive(treatAction);
+        CharterAction.SetActive(charterAction);
+        FindCureAction.SetActive(findCureAction);
+        ShareAction.SetActive(shareAction);
+    }
+
+    private void changeHorizontalLayout(int option)
+    {
+        if (option == 1)
         {
             layout.gameObject.transform.localScale = new Vector3(0.86f, 0.86f, 1f);
             layout.padding.left = -695;
             layout.spacing = 31f;
             layout.childForceExpandWidth = false;
             layout.childControlWidth = false;
-            cardsState = CardGUIStates.CardsDiscarding;
-            if (selectedCards.Count > 0)
-            {
-                ContextButtons[1].SetActive(false);
-                if (selectedCards[0] < 24)
-                {
-                    getCardInHand(selectedCards[0]).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
-                }
-                else
-                {
-                    getCardInHand(selectedCards[0]).GetComponent<EventCardDisplay>().border.gameObject.SetActive(true);
-                    ContextButtons[1].SetActive(true);
-                }
-                ContextButtons[2].SetActive(true);
-            }
         }
-        else if (cardsState != CardGUIStates.None || PlayerModel != game.CurrentPlayer)
+        else if (option == 2)
         {
-            if (_player.PlayerCardsInHand.Count <= 6)
-            {
-                if(cardsState == CardGUIStates.CardsDiscarding)
-                {
-                    cardsState = CardGUIStates.None;
-                }
-                layout.gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
-                layout.spacing = 30;
-                layout.padding.left = -585;
-                layout.childForceExpandWidth = false;
-                layout.childControlWidth = false;
-            }
+            layout.gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
+            layout.spacing = 30;
+            layout.padding.left = -585;
+            layout.childForceExpandWidth = false;
+            layout.childControlWidth = false;
         }
-        else
+        else if (option == 3)
         {
             layout.gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
             layout.spacing = 22.5f;
@@ -201,90 +372,6 @@ public class PlayerGUI : MonoBehaviour
             layout.childForceExpandWidth = true;
             layout.childControlWidth = true;
         }
-
-
-        if(PlayerModel == game.CurrentPlayer)
-        {
-            bool moveAction = false;
-            bool flyAction = false;
-            bool charterAction = false;
-            bool findCureAction = false;
-            bool treatAction = false;
-            bool shareAction = false;
-
-            //changeContextText(true);
-            if (PlayerModel.ActionsRemaining > 0)
-            {
-                if (cardsState == CardGUIStates.None)
-                {
-                    moveAction = true;
-                    List<int>[] cardsOfEachColor = new List<int>[3];
-                    foreach (int card in PlayerModel.CityCardsInHand)
-                    {
-                        if (card != PlayerModel.GetCurrentCity())
-                            flyAction = true;
-                        else
-                            charterAction = true;
-                    }
-
-                    if (PlayerModel.GetCurrentCityScript().cubesInCity())
-                        treatAction = true;
-
-                    if (ableToFindCure())
-                        if (PlayerModel.GetCurrentCity() == game.InitialCityID)
-                            findCureAction = true;
-
-                    playersToShareGUI.Clear();
-
-                    int countOtherPlayerInCity = 0;
-                    foreach (Player player in PlayerModel.GetCurrentCityScript().PlayersInCity)
-                    {
-                        if (player != _player)
-                        {
-                            countOtherPlayerInCity++;
-                            if (player.PlayerCardsInHand.Contains(_player.GetCurrentCity()) || _player.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
-                            {
-                                shareAction = true;
-                                playersToShareGUI.Add(GameGUI.playerPadForPosition(player.Position));
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (cardsState == CardGUIStates.CardsExpandedFlyActionToSelect || cardsState == CardGUIStates.CardsExpandedCharterActionToSelect
-                        || cardsState == CardGUIStates.CardsExpandedCureActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction
-                        || cardsState == CardGUIStates.CardsExpandedVirologistAction)
-                    {
-                        ContextButtons[0].SetActive(true);
-                        if (cardsState == CardGUIStates.CardsExpandedCharterActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction)
-                        {
-                            getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
-                        }
-                    }
-                }
-            }
-
-            MoveAction.SetActive(moveAction);
-            FlyAction.SetActive(flyAction);
-            TreatAction.SetActive(treatAction);
-            CharterAction.SetActive(charterAction);
-            FindCureAction.SetActive(findCureAction);
-            ShareAction.SetActive(shareAction);
-            //ClearSelectedAction();
-
-        }
-        else
-        {
-            disableAllActions();
-            if (cardsState == CardGUIStates.CardsExpandedShareAction)
-            {
-                if (PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
-                    getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
-            }
-        }
-
-        changeContextText();
     }
 
     private bool ableToFindCure()
@@ -303,57 +390,166 @@ public class PlayerGUI : MonoBehaviour
 
     #region Buttons
 
+    public void ForecastInfectionCardClicked(int position)
+    {
+        ForeCastEventCardSelected = ForeCastEventCardsIDs[position];
+        draw();
+    }
+
     public void ContextButtonClicked(int buttonType)
     {
         if(buttonType == 2)
         {
-            Timeline.theTimeline.addEvent(new PDiscardCard(selectedCards[0],this));
+            DiscardButtonClicked();
         }
         if (buttonType == 1)
         {
-            if (cardsState == CardGUIStates.CardsExpandedFlyActionSelected)
-            {
-                Timeline.theTimeline.addEvent(new PFlyToCity(selectedCards[0]));
-            }
-            else if (cardsState == CardGUIStates.CardsExpandedCureActionSelected)
-            {
-                Timeline.theTimeline.addEvent(new PCureDisease(selectedCards));
-            }
-            else if (cardsState == CardGUIStates.CardsExpandedShareAction)
-            {
-                if (this != GameGUI.currentPlayerPad())
-                {
-                    if (PlayerModel.PlayerCardsInHand.Contains(PlayerModel.GetCurrentCity()))
-                        Timeline.theTimeline.addEvent(new PShareKnowledge(this, GameGUI.currentPlayerPad()));
-                    else Timeline.theTimeline.addEvent(new PShareKnowledge(GameGUI.currentPlayerPad(), this));
-                }
-            }
-            else if (ActionSelected == ActionTypes.CharacterAction && PlayerModel.Role == Player.Roles.Pilot)
-            {
-                Timeline.theTimeline.addEvent(new PPilotFlyToCity(pilotCitySelected, pawnPilotSelected.PlayerModel));
-            }
+            AcceptButtonClicked();
         }
 
-        if(buttonType == 0 && ActionSelected == ActionTypes.Share)
+        if (buttonType == 0)
         {
-            foreach (PlayerGUI playerGUI in playersToShareGUI)
-            {
-                playerGUI.ActionSelected = ActionTypes.None;
-                playerGUI.ContextButtonClicked(0);
-                
-            }
-
+            CloseButtonClicked();
         }
 
-        if(this != GameGUI.currentPlayerPad())
+        if (this != GameGUI.currentPlayerPad() && pInEvent == EventState.NOTINEVENT)
         {
             GameGUI.currentPlayerPad().ClearSelectedAction();
             GameGUI.currentPlayerPad().draw();
         }
 
+        if (buttonType == 3)
+        {
+            LeftArrowButtonClicked();
+        }
+
+        if (buttonType == 4)
+        {
+            RigtArrowButtonClicked();
+        }
+
         cardsState = CardGUIStates.None;
         ClearSelectedAction();
         draw();
+    }
+
+    private void RigtArrowButtonClicked()
+    {
+        ContextButtons[5].SetActive(false);
+        if(pInEvent == EventState.FORECAST)
+        {
+            int index = ForeCastEventCardsIDs.IndexOf(ForeCastEventCardSelected);
+
+            int temp = ForeCastEventCardsIDs[index];
+            if (index == ForeCastEventCardsIDs.Count - 1)
+            {
+                ForeCastEventCardsIDs.RemoveAt(index);
+                ForeCastEventCardsIDs.Insert(0, temp);
+            }
+            else
+            {
+                ForeCastEventCardsIDs[index] = ForeCastEventCardsIDs[index + 1];
+                ForeCastEventCardsIDs[index + 1] = temp;
+            }
+        }
+        draw();
+    }
+
+    private void LeftArrowButtonClicked()
+    {
+        ContextButtons[5].SetActive(false);
+        if (pInEvent == EventState.FORECAST)
+        {
+            int index = ForeCastEventCardsIDs.IndexOf(ForeCastEventCardSelected);
+
+            int temp = ForeCastEventCardsIDs[index];
+            if (index == 0)
+            {
+                ForeCastEventCardsIDs.RemoveAt(index);
+                ForeCastEventCardsIDs.Add(temp);
+            }
+            else
+            {
+                ForeCastEventCardsIDs[index] = ForeCastEventCardsIDs[index - 1];
+                ForeCastEventCardsIDs[index - 1] = temp;
+            }
+        }
+        draw();
+    }
+
+    private void CloseButtonClicked()
+    {
+        if (ActionSelected == ActionTypes.Share)
+        {
+            foreach (PlayerGUI playerGUI in playersToShareGUI)
+            {
+                playerGUI.ActionSelected = ActionTypes.None;
+                playerGUI.ContextButtonClicked(0);
+
+            }
+        }
+        pInEvent = EventState.NOTINEVENT;
+    }
+
+    private void AcceptButtonClicked()
+    {
+        if (pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE) CallToMobilizeEventAccepted(); 
+        else if (pInEvent == EventState.CONFIRMINGRESOURCEPLANNING) ResourcePlanningEventAccepted();
+        else if (pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL) MobileHospitalEventAccepted(); 
+        else if (pInEvent == EventState.CONFIRMINGFORECAST) ForecastEventAccepted();
+        else if (pInEvent == EventState.FORECAST)
+        {
+            ClearForecastEventVariables();
+            gui.draw();
+            return;
+        }
+
+        if (cardsState == CardGUIStates.CardsExpandedFlyActionSelected)
+        {
+            Timeline.theTimeline.addEvent(new PFlyToCity(selectedCards[0]));
+        }
+        else if (cardsState == CardGUIStates.CardsExpandedCureActionSelected)
+        {
+            Timeline.theTimeline.addEvent(new PCureDisease(selectedCards));
+        }
+        else if (cardsState == CardGUIStates.CardsExpandedShareAction)
+        {
+            if (this != GameGUI.currentPlayerPad())
+            {
+                if (PlayerModel.PlayerCardsInHand.Contains(PlayerModel.GetCurrentCity()))
+                    Timeline.theTimeline.addEvent(new PShareKnowledge(this, GameGUI.currentPlayerPad()));
+                else Timeline.theTimeline.addEvent(new PShareKnowledge(GameGUI.currentPlayerPad(), this));
+            }
+        }
+        else if (ActionSelected == ActionTypes.CharacterAction && PlayerModel.Role == Player.Roles.Pilot)
+        {
+            Timeline.theTimeline.addEvent(new PPilotFlyToCity(pilotCitySelected, pawnPilotSelected.PlayerModel));
+        }
+    }
+
+    private void DiscardButtonClicked()
+    {
+        Timeline.theTimeline.addEvent(new PDiscardCard(selectedCards[0], this));
+    }
+
+    private void ClearForecastEventVariables()
+    {
+        ForeCastEventCardsIDs.Reverse();
+        foreach (var item in ForeCastEventCardsIDs)
+        {
+            theGame.InfectionCards.Add(item);
+        }
+        
+        ForeCastEventCards[0].transform.parent.gameObject.SetActive(false);
+        ForeCastEventCardsIDs.Clear();
+        ForeCastEventCardSelected = -1;
+        ChangeEvent(EventState.NOTINEVENT);
+    }
+
+    private void ChangeEvent(EventState state)
+    {
+        theGame.InEvent = state;
+        pInEvent = state;
     }
 
     public void ActionButtonClicked(int action)
@@ -467,6 +663,7 @@ public class PlayerGUI : MonoBehaviour
                 cardsState = CardGUIStates.CardsExpanded;
                 ContextButtons[0].SetActive(true);
                 draw();
+                return;
             }
         }
         if (cardClicked < 24)
@@ -533,29 +730,65 @@ public class PlayerGUI : MonoBehaviour
         }
         else
         {
-            if (cardClicked == 24)
+            if (pInEvent == EventState.NOTINEVENT)
             {
-                theGame.InEvent = EventState.CALLTOMOBILIZE;
-                Timeline.theTimeline.addEvent(new PCallToMobilize());
-            }
-            else if (cardClicked == 25)
-            {
-                theGame.InEvent = EventState.FORECAST;
-                Timeline.theTimeline.addEvent(new PForecast());
-            }
-            else if (cardClicked == 26) 
-            {
-                theGame.MobileHospitalPlayedBy = PlayerModel;
-                Timeline.theTimeline.addEvent(new PMobileHospital());
-            }
-            else if (cardClicked == 27)
-            {
-                theGame.InEvent = EventState.RESOURCEPLANNING;
-                Timeline.theTimeline.addEvent(new PResourcePlanning());
+                if (cardClicked == 24)      pInEvent = EventState.CONFIRMINGCALLTOMOBILIZE;
+                else if (cardClicked == 25) pInEvent = EventState.CONFIRMINGFORECAST;
+                else if (cardClicked == 26) pInEvent = EventState.CONFIRMINGMOBILEHOSPITAL;
+                else if (cardClicked == 27) pInEvent = EventState.CONFIRMINGRESOURCEPLANNING;
+                if(pInEvent != EventState.NOTINEVENT)
+                {
+                    selectedCards.Add(cardClicked);
+                    draw();
+                }
             }
         }
 
 
+    }
+
+    private void CallToMobilizeEventAccepted()
+    {
+        ChangeEvent(EventState.CALLTOMOBILIZE);
+        Timeline.theTimeline.addEvent(new PCallToMobilize());
+    }
+
+    private void ForecastEventAccepted()
+    {
+        int numberOfCardsInDeck = theGame.InfectionCards.Count;
+        if (numberOfCardsInDeck > 0)
+        {
+            //remove card from hand
+            PlayerModel.PlayerCardsInHand.Remove(25);
+
+            //add card to discard pile
+            theGame.InfectionCardsDiscard.Add(25);
+
+            for (int i = 0; i < Math.Min(6, numberOfCardsInDeck); i++)
+            {
+                ForeCastEventCardsIDs.Add(theGame.InfectionCards.Pop());
+            }
+
+            ForeCastEventCardSelected = ForeCastEventCardsIDs[0];
+
+            ActionsContainer.SetActive(false);
+            ChangeEvent(EventState.FORECAST);
+
+            gui.draw();
+            draw();
+        }
+    }
+
+    private void MobileHospitalEventAccepted()
+    {
+        theGame.MobileHospitalPlayedBy = PlayerModel;
+        Timeline.theTimeline.addEvent(new PMobileHospital());
+    }
+
+    private void ResourcePlanningEventAccepted()
+    {
+        ChangeEvent(EventState.RESOURCEPLANNING);
+        Timeline.theTimeline.addEvent(new PResourcePlanning());
     }
 
     public void CityClicked(City city)
@@ -775,14 +1008,14 @@ public class PlayerGUI : MonoBehaviour
         return false;
     }
 
-    private void disableAllActions()
+    private void enableOwnTurnActions(bool enabled)
     {
-        MoveAction.SetActive(false);
-        FlyAction.SetActive(false);
-        CharterAction.SetActive(false);
-        TreatAction.SetActive(false);
-        ShareAction.SetActive(false);
-        FindCureAction.SetActive(false);
+        MoveAction.SetActive(enabled);
+        FlyAction.SetActive(enabled);
+        CharterAction.SetActive(enabled);
+        TreatAction.SetActive(enabled);
+        ShareAction.SetActive(enabled);
+        FindCureAction.SetActive(enabled);
     }
 
     private void CreateMovingPawn(City currentCity)
@@ -825,6 +1058,9 @@ public class PlayerGUI : MonoBehaviour
         ContextButtons[0].SetActive(false);
         ContextButtons[1].SetActive(false);
         ContextButtons[2].SetActive(false);
+        ContextButtons[3].SetActive(false);
+        ContextButtons[4].SetActive(false);
+        ContextButtons[5].SetActive(false);
 
         pilotCitySelected = -1;
         if (flyLine != null) Destroy(flyLine);
@@ -840,6 +1076,10 @@ public class PlayerGUI : MonoBehaviour
             pawn.SetActive(false);
         }
         
+        roleCard.gameObject.SetActive(true);
+        ActionsContainer.SetActive(true);
+        PlayerCards.SetActive(true);
+
         changeContextText();
     }
 
@@ -850,6 +1090,14 @@ public class PlayerGUI : MonoBehaviour
         {
             cardToAddObject = Instantiate(gui.EventCardPrefab, transform);
             cardToAddObject.GetComponent<EventCardDisplay>().EventCardData = gui.Events[cardToAdd - 24];
+            if(selectedCards.Contains(cardToAdd))
+            {
+                cardToAddObject.GetComponent<EventCardDisplay>().border.gameObject.SetActive(true);
+            }
+            else
+            {
+                cardToAddObject.GetComponent<EventCardDisplay>().border.gameObject.SetActive(false);
+            }
             
         }
         else
@@ -923,8 +1171,21 @@ public class PlayerGUI : MonoBehaviour
 
     private void changeContextText()
     {
+        if (pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE || pInEvent == EventState.CONFIRMINGRESOURCEPLANNING ||
+            pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL || pInEvent == EventState.CONFIRMINGFORECAST)
+        {
+            CurrentInstructionText.text = "Playing Event Card\nDo you confirm?";
+            return;
+        }
+        else if (pInEvent == EventState.FORECAST)
+        {
+            CurrentInstructionText.text = "Forecasting Event\nSelect any card.\nUse arrows to move.";
+            return;
+        }
+
         if (game.CurrentPlayer != _player)
         {
+
             if(cardsState == CardGUIStates.CardsDiscarding)
             {
                 CurrentInstructionText.text = "Discard a card";
@@ -1041,6 +1302,7 @@ public class PlayerGUI : MonoBehaviour
         _isAnimating = false;
         draw();
     }
+
 
 }
 

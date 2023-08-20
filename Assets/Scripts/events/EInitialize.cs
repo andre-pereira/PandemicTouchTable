@@ -49,6 +49,10 @@ public class EInitialize : EngineEvent
         theGame.PlayerCards = Enumerable.Range(0, 28).ToList();
         theGame.PlayerCards.Shuffle();
 
+        //TODO: remove this
+        for (int i = 0; i < 4; ++i)
+            theGame.PlayerCards.Add(25);
+
         theGame.InfectionCards = Enumerable.Range(0, 24).ToList();
         theGame.InfectionCards.Shuffle();
 

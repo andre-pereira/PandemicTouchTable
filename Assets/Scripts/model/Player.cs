@@ -148,5 +148,6 @@ public class Player
         roleActionUsed = false;
         MobileHospitalActivated = false;
         playerGui.ClearSelectedAction();
+        playerGui.ActionsContainer.SetActive(true);
     }
 }

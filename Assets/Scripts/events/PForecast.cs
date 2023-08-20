@@ -8,7 +8,7 @@ public class PForecast : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
-        throw new System.NotImplementedException();
+        //throw new System.NotImplementedException();
     }
 
     public override float Act(bool qUndo = false)

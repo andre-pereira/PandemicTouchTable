@@ -341,6 +341,7 @@ public class GameGUI : MonoBehaviour
             DebugText.text += "Cards State: " + currentPlayerPad().cardsState + "\n";
             DebugText.text += "Cards in Hand: " + string.Join(", ", currentPlayerPad().PlayerModel.PlayerCardsInHand) + "\n";
         }
+        DebugText.text += "Infection Cards in Deck: " + string.Join(", ", theGame.InfectionCards.Skip(theGame.InfectionCards.Count-8)) + "\n";
         //add debug text to check if an animation is running
         //DebugText.text += "Animation running?: " + Timeline.theTimeline.isAnimationRunning() + "\n";
     }
