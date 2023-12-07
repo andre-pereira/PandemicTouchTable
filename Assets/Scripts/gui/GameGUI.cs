@@ -210,6 +210,14 @@ public class GameGUI : MonoBehaviour
             item.gameObject.DestroyChildrenImmediate();
         }
 
+        PlayerDeckDiscard.DestroyChildrenImmediate();
+        if(theGame.PlayerCardsDiscard.Count > 0)
+        {
+            //add last card to discard pile
+            theGame.AddPlayerCardToTransform(theGame.PlayerCardsDiscard.Last(), PlayerDeckDiscard.transform, false);
+        }
+
+                    
         Instantiate(InfectionRateMarkerPrefab, InfectionRateMarkerTransforms[theGame.InfectionRate].position, InfectionRateMarkerTransforms[theGame.InfectionRate].rotation, InfectionRateMarkerTransforms[theGame.InfectionRate]);
         Instantiate(OutbreakMarkerPrefab, OutbreakMarkerTransforms[theGame.OutbreakCounter].position, OutbreakMarkerTransforms[theGame.OutbreakCounter].rotation, OutbreakMarkerTransforms[theGame.OutbreakCounter]);
 

@@ -49,8 +49,7 @@ internal class PCureDisease : PlayerEvent
     {
         for (int i = 0; i < selectedCards.Count; i++)
         {
-            _player.RemoveCardInHand(selectedCards[i]);
-            game.PlayerCardsDiscard.Add(selectedCards[i]);
+            _player.RemoveCardInHand(selectedCards[i], true);
         }
         switch (virusName)
         {
@@ -75,15 +74,15 @@ internal class PCureDisease : PlayerEvent
         _playerGui.draw();
         for (int i = 0; i < selectedCards.Count; i++)
         {
-            GameObject cardToAddObject = _playerGui.AddPlayerCardToTransform(selectedCards[i], gui.PlayerDeckDiscard.transform, false);
+            GameObject cardToAddObject = game.AddPlayerCardToTransform(selectedCards[i], gameGUI.PlayerDeckDiscard.transform, false, _playerGui);
             cardToAddObject.transform.position = originalCardPositions[i];
             cardToAddObject.transform.rotation = originalCardRotations[i];
-            sequence.Join(cardToAddObject.transform.DOMove(gui.PlayerDeckDiscard.transform.position, ANIMATIONDURATION));
-            sequence.Join(cardToAddObject.transform.DORotate(gui.PlayerDeckDiscard.transform.eulerAngles, ANIMATIONDURATION));
+            sequence.Join(cardToAddObject.transform.DOMove(gameGUI.PlayerDeckDiscard.transform.position, ANIMATIONDURATION));
+            sequence.Join(cardToAddObject.transform.DORotate(gameGUI.PlayerDeckDiscard.transform.eulerAngles, ANIMATIONDURATION));
         }
-        sequence.Append(gui.VialTokens[(int)virusName].transform.DOMove(gui.VialTokensTransforms[(int)virusName].transform.position, ANIMATIONDURATION).OnComplete(() =>
+        sequence.Append(gameGUI.VialTokens[(int)virusName].transform.DOMove(gameGUI.VialTokensTransforms[(int)virusName].transform.position, ANIMATIONDURATION).OnComplete(() =>
             {
-                gui.drawBoard();
+                gameGUI.drawBoard();
             }));
         return sequence.Duration();
     }

@@ -19,9 +19,8 @@ internal class PCharterEvent : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
-        _player.RemoveCardInHand(flyFrom.city.cityID);
+        _player.RemoveCardInHand(flyFrom.city.cityID,true);
         _player.UpdateCurrentCity(flyTo.city.cityID,true);
-        game.PlayerCardsDiscard.Add(flyFrom.city.cityID);
         _player.DecreaseActionsRemaining(1);
         _playerGui.ActionSelected = ActionTypes.None;
     }
@@ -33,14 +32,14 @@ internal class PCharterEvent : PlayerEvent
         flyTo.draw();
         //gui.drawBoard();
         Sequence sequence = DOTween.Sequence();
-        GameObject cardToAddObject = _playerGui.AddPlayerCardToTransform(flyFrom.city.cityID, gui.PlayerDeckDiscard.transform, false);
+        GameObject cardToAddObject = game.AddPlayerCardToTransform(flyFrom.city.cityID, gameGUI.PlayerDeckDiscard.transform, false, _playerGui);
         cardToAddObject.transform.position = originalCardPosition;
         cardToAddObject.transform.rotation = originalCardRotation;
-        sequence.Append(cardToAddObject.transform.DOMove(gui.PlayerDeckDiscard.transform.position, ANIMATIONDURATION));
-        sequence.Join(cardToAddObject.transform.DORotate(gui.PlayerDeckDiscard.transform.eulerAngles, ANIMATIONDURATION));
+        sequence.Append(cardToAddObject.transform.DOMove(gameGUI.PlayerDeckDiscard.transform.position, ANIMATIONDURATION));
+        sequence.Join(cardToAddObject.transform.DORotate(gameGUI.PlayerDeckDiscard.transform.eulerAngles, ANIMATIONDURATION));
         sequence.AppendCallback(() =>
         {
-            gui.drawBoard();
+            gameGUI.drawBoard();
             //_playerGui.draw();
         });
 

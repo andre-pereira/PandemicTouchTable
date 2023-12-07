@@ -42,7 +42,7 @@ internal class PContainSpecialistRemoveWhenEntering : PlayerEvent
     {
         city.draw();
         _playerGui.draw();
-        gui.drawBoard();
+        gameGUI.drawBoard();
         return 0f;
     }
 }

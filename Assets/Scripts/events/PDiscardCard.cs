@@ -22,8 +22,7 @@ internal class PDiscardCard : PlayerEvent
         GameObject objectToDiscard = playerGui.getCardInHand(cardToDiscard);
         objectToDiscardPosition = objectToDiscard.transform.position;
         objectToDiscardRotation = objectToDiscard.transform.rotation;
-        playerGui.PlayerModel.RemoveCardInHand(cardToDiscard);
-        game.PlayerCardsDiscard.Add(cardToDiscard);
+        playerGui.PlayerModel.RemoveCardInHand(cardToDiscard, true);
         game.actionCompleted = true;
     }
 
@@ -34,19 +33,19 @@ internal class PDiscardCard : PlayerEvent
         GameObject cardToDiscardObject;
         if(cardToDiscard <24)
         {
-            cardToDiscardObject= Object.Instantiate(gui.CityCardPrefab, objectToDiscardPosition, objectToDiscardRotation, gui.AnimationCanvas.transform);
-            cardToDiscardObject.GetComponent<CityCardDisplay>().CityCardData = gui.Cities[cardToDiscard].GetComponent<City>().city;
+            cardToDiscardObject= Object.Instantiate(gameGUI.CityCardPrefab, objectToDiscardPosition, objectToDiscardRotation, gameGUI.AnimationCanvas.transform);
+            cardToDiscardObject.GetComponent<CityCardDisplay>().CityCardData = gameGUI.Cities[cardToDiscard].GetComponent<City>().city;
         }
         else
         {
-            cardToDiscardObject = Object.Instantiate(gui.EventCardPrefab, objectToDiscardPosition, objectToDiscardRotation, gui.AnimationCanvas.transform);
-            cardToDiscardObject.GetComponent<EventCardDisplay>().EventCardData = gui.Events[cardToDiscard - 24];
+            cardToDiscardObject = Object.Instantiate(gameGUI.EventCardPrefab, objectToDiscardPosition, objectToDiscardRotation, gameGUI.AnimationCanvas.transform);
+            cardToDiscardObject.GetComponent<EventCardDisplay>().EventCardData = gameGUI.Events[cardToDiscard - 24];
         }
-        sequence.Append(cardToDiscardObject.transform.DOMove(gui.PlayerDeckDiscard.transform.position, ANIMATIONDURATION));
-        sequence.Join(cardToDiscardObject.transform.DORotate(gui.PlayerDeckDiscard.transform.eulerAngles, ANIMATIONDURATION));
+        sequence.Append(cardToDiscardObject.transform.DOMove(gameGUI.PlayerDeckDiscard.transform.position, ANIMATIONDURATION));
+        sequence.Join(cardToDiscardObject.transform.DORotate(gameGUI.PlayerDeckDiscard.transform.eulerAngles, ANIMATIONDURATION));
         sequence.AppendCallback(() =>
         {
-            gui.drawBoard();
+            gameGUI.drawBoard();
         });
         return sequence.Duration();
     }

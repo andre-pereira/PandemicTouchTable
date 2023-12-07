@@ -5,9 +5,15 @@ using System.Linq;
 using System;
 using static ENUMS;
 using static GameGUI;
+using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
+
+    public const int CALLTOMOBILIZEINDEX = 24;
+    private const int FORECASTINDEX = 25;
+    private const int RESOURCEPLANNINGINDEX = 26;
+    private const int MOBILEHOSPITALINDEX = 27;
 
     public enum PlayerPrefSettings
     {
@@ -82,7 +88,7 @@ public class Game : MonoBehaviour
     public bool BlueCure = false;
     private bool turnEnded = false;
 
-    public EventState InEvent = EventState.NOTINEVENT;
+    private EventState InEventCard = EventState.NOTINEVENT;
     public Player MobileHospitalPlayedBy = null;
 
     public City[] Cities { get; internal set; }
@@ -114,7 +120,20 @@ public class Game : MonoBehaviour
 
     public void Update()
     {
-        if (InEvent != EventState.NOTINEVENT) return;
+        
+        if (InEventCard == EventState.CALLTOMOBILIZE)
+        {
+            //for all players check if they are done with this event
+            if (PlayerList.getAllPlayers().All(player => player.playerGui.eventExecuted == true))
+            {
+                InEventCard = EventState.NOTINEVENT;
+                foreach (Player player in PlayerList.getAllPlayers())
+                {
+                    player.playerGui.ChangeToInEvent(EventState.NOTINEVENT);
+                }
+            }
+        }
+        else if (InEventCard != EventState.NOTINEVENT) return;
 
         if (PlayerList.getAllPlayers().Any(player => player.PlayerCardsInHand.Count > 6)) return;
         
@@ -124,7 +143,7 @@ public class Game : MonoBehaviour
             {
                 actionsInitiated = true;
                 Debug.Log("Draw Player Card: " + CurrentGameState);
-                Timeline.theTimeline.addEvent(new EDealCardToPlayer(CurrentPlayer));
+                Timeline.theTimeline.addEvent(new PDealCard(CurrentPlayer));
             }
             if(actionCompleted == true)
             {
@@ -259,7 +278,7 @@ public class Game : MonoBehaviour
             newCitiesToVisit.RemoveWhere(citiesVisited.Contains);
             citiesVisited.UnionWith(citiesToVisit);
 
-            if (citiesVisited.Contains(Game.theGame.CurrentPlayer.GetCurrentCity()))
+            if (citiesVisited.Contains(cityID1))
             {
                 foundConnection = true;
                 break;
@@ -279,5 +298,70 @@ public class Game : MonoBehaviour
             return distance;
         }
         else return -1;
+    }
+
+    internal void ChangeToInEvent(EventState state)
+    {
+        InEventCard = state;
+        if(state == EventState.CALLTOMOBILIZE)
+        {
+            foreach (Player player in PlayerList.getAllPlayers())
+            {
+                player.playerGui.ChangeToInEvent(state);
+                int pawnNumber = 0;
+                foreach (var item in player.GetCurrentCityScript().PawnsInCity)
+                {
+                    if (item != null)
+                    {
+                        if (item.PlayerModel.Role == player.Role)
+                            break;
+                        pawnNumber++;
+                    }
+                }
+                Vector3[] MovingPawnTranslations = new Vector3 [4] { new Vector3(0, 0, 0), new Vector3(0, 0.5f, 0), new Vector3(0, -0.5f, 0), new Vector3(1, 0, 0) }; 
+                player.playerGui.CreateMovingPawn(MovingPawnTranslations[pawnNumber]);            
+            }
+        }
+    }
+
+    public GameObject AddPlayerCardToTransform(int cardToAdd, Transform transform, bool withButtonComponent, PlayerGUI pGUI = null, Transform adjustTransform = null)
+    {
+        GameObject cardToAddObject;
+        if (cardToAdd > 23)
+        {
+            cardToAddObject = Instantiate(gui.EventCardPrefab, transform);
+            cardToAddObject.GetComponent<EventCardDisplay>().EventCardData = gui.Events[cardToAdd - 24];
+            if (pGUI != null)
+            {
+                if (pGUI.selectedCards.Contains(cardToAdd))
+                {
+                    cardToAddObject.GetComponent<EventCardDisplay>().border.gameObject.SetActive(true);
+                }
+                else
+                {
+                    cardToAddObject.GetComponent<EventCardDisplay>().border.gameObject.SetActive(false);
+                }
+            }
+
+        }
+        else
+        {
+            cardToAddObject = Instantiate(gui.CityCardPrefab, transform);
+            cardToAddObject.GetComponent<CityCardDisplay>().CityCardData = Cities[cardToAdd].city;
+
+        }
+        if (withButtonComponent)
+        {
+            var buttonComponent = cardToAddObject.AddComponent<Button>();
+            buttonComponent.onClick.AddListener(() => pGUI.CardInHandClicked(cardToAdd));
+        }
+
+        if (adjustTransform != null)
+        {
+            cardToAddObject.transform.rotation = adjustTransform.rotation;
+            cardToAddObject.transform.position = adjustTransform.position;
+        }
+
+        return cardToAddObject;
     }
 }

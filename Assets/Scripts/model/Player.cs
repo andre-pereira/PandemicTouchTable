@@ -4,6 +4,7 @@ using System.Linq;
 using System;
 using System.ComponentModel;
 using JetBrains.Annotations;
+using static Game;
 
 public class Player
 {
@@ -118,7 +119,7 @@ public class Player
         }
     }
 
-    internal void RemoveCardInHand(int cityID)
+    internal void RemoveCardInHand(int cityID, bool addToDiscardPile = false)
     {
         PlayerCardsInHand.Remove(cityID);
         if (cityID < 24) {
@@ -140,9 +141,13 @@ public class Player
         }
         else
             EventCardsInHand.Remove(cityID);
+
+        if (addToDiscardPile)
+            game.PlayerCardsDiscard.Add(cityID);
     }
 
-    internal void ResetTurn()
+
+        internal void ResetTurn()
     {
         ActionsRemaining = 4;
         roleActionUsed = false;

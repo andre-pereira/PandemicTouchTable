@@ -33,7 +33,7 @@ public class PShareKnowledge : PlayerEvent
     public override float Act(bool qUndo = false)
     {
         playerFrom.draw();
-        GameObject cityCardCopy = Object.Instantiate(gui.CityCardPrefab, initialPosition, initialRotation, gui.AnimationCanvas.transform);
+        GameObject cityCardCopy = Object.Instantiate(gameGUI.CityCardPrefab, initialPosition, initialRotation, gameGUI.AnimationCanvas.transform);
         CityCardDisplay cityCardCopyDisplay = cityCardCopy.GetComponent<CityCardDisplay>();
         Sequence sequence = DOTween.Sequence();
         cityCardCopyDisplay.CityCardData = cardData;

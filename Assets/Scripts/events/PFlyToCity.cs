@@ -24,9 +24,8 @@ public class PFlyToCity : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
-        _player.RemoveCardInHand(flyTo);
+        _player.RemoveCardInHand(flyTo, true);
         _player.UpdateCurrentCity(flyTo, true);
-        game.PlayerCardsDiscard.Add(flyTo);
         _player.DecreaseActionsRemaining(1);
     }
 
@@ -34,14 +33,15 @@ public class PFlyToCity : PlayerEvent
     {
         _playerGui.draw();
         DG.Tweening.Sequence sequence = DOTween.Sequence();
-        GameObject cardToAddObject = _playerGui.AddPlayerCardToTransform(flyTo, gui.PlayerDeckDiscard.transform, false);
+        GameObject cardToAddObject = game.AddPlayerCardToTransform(flyTo, gameGUI.PlayerDeckDiscard.transform, false, _playerGui);
         cardToAddObject.transform.position = originalCardPosition;
         cardToAddObject.transform.rotation = originalCardRotation;
-        sequence.Append(cardToAddObject.transform.DOMove(gui.PlayerDeckDiscard.transform.position, ANIMATIONDURATION));
-        sequence.Join(cardToAddObject.transform.DORotate(gui.PlayerDeckDiscard.transform.eulerAngles, ANIMATIONDURATION));
+        sequence.Append(cardToAddObject.transform.DOMove(gameGUI.PlayerDeckDiscard.transform.position, ANIMATIONDURATION));
+        sequence.Join(cardToAddObject.transform.DORotate(gameGUI.PlayerDeckDiscard.transform.eulerAngles, ANIMATIONDURATION));
         sequence.AppendCallback(() =>
         {
-            gui.drawBoard();
+            GameObject.Destroy(cardToAddObject);
+            gameGUI.drawBoard();
         });
         
         //Sequence sequence = DOTween.Sequence();
@@ -56,7 +56,7 @@ public class PFlyToCity : PlayerEvent
         City cityToMoveTo = Game.theGame.Cities[flyTo];
         currentCity.removePawn(_player);
         currentCity.draw();
-        GameObject movingPawn = Object.Instantiate(gui.PawnPrefab, currentCity.transform.position, currentCity.transform.rotation, gui.AnimationCanvas.transform);
+        GameObject movingPawn = Object.Instantiate(gameGUI.PawnPrefab, currentCity.transform.position, currentCity.transform.rotation, gameGUI.AnimationCanvas.transform);
         movingPawn.GetComponent<Image>().color = _playerGui.roleCard.RoleCardData.roleColor;
         movingPawn.GetComponent<Outline>().enabled = true;
         sequence.Append(movingPawn.transform.DOMove(cityToMoveTo.transform.position, ANIMATIONDURATION).OnComplete(() =>

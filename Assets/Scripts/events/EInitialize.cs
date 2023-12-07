@@ -51,7 +51,7 @@ public class EInitialize : EngineEvent
 
         //TODO: remove this
         for (int i = 0; i < 4; ++i)
-            theGame.PlayerCards.Add(25);
+            theGame.PlayerCards.Add(24);
 
         theGame.InfectionCards = Enumerable.Range(0, 24).ToList();
         theGame.InfectionCards.Shuffle();
@@ -61,7 +61,7 @@ public class EInitialize : EngineEvent
         {
             for (int i = 0; i < numCardsToDeal; ++i)
             {
-                Timeline.theTimeline.addEvent(new EDealCardToPlayer(player));
+                Timeline.theTimeline.addEvent(new PDealCard(player));
             }
         }
 

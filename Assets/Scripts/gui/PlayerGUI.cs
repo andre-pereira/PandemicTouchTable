@@ -24,9 +24,9 @@ public class PlayerGUI : MonoBehaviour
 
     bool _isAnimating = false;
     List<int> _drawnCards = new List<int>();
-    private GameObject movingPawn = null;
+    internal GameObject movingPawn = null;
     public CardGUIStates cardsState { get; private set; }
-    private List<int> selectedCards;
+    public List<int> selectedCards;
     private GameObject flyLine;
     private GameObject flyLine2;
     private List<PlayerGUI> playersToShareGUI;
@@ -66,7 +66,18 @@ public class PlayerGUI : MonoBehaviour
     private List<int> ForeCastEventCardsIDs = new List<int>();
     private int ForeCastEventCardSelected = -1;
 
-    public EventState pInEvent = EventState.NOTINEVENT;
+    private EventState pInEvent = EventState.NOTINEVENT;
+    
+    public EventState PInEventCard
+    {
+        get { return pInEvent; }
+        set 
+        {
+            pInEvent = value;
+            eventExecuted = false;
+        }
+    }
+    internal bool eventExecuted = false;
 
     public Player PlayerModel
     {
@@ -204,7 +215,7 @@ public class PlayerGUI : MonoBehaviour
 
         foreach (int cardToAdd in _player.PlayerCardsInHand)
         {
-            cardsInHand.Add(AddPlayerCardToTransform(cardToAdd, PlayerCards.transform, true));
+            cardsInHand.Add(game.AddPlayerCardToTransform(cardToAdd, PlayerCards.transform, true, this));
             
         }
     }
@@ -272,7 +283,11 @@ public class PlayerGUI : MonoBehaviour
             }
 
         }
-
+        else if (pInEvent == EventState.CALLTOMOBILIZE)
+        {
+            ContextButtons[0].SetActive(false);
+            ContextButtons[1].SetActive(!eventExecuted);
+        }
     }
 
 
@@ -488,7 +503,7 @@ public class PlayerGUI : MonoBehaviour
 
             }
         }
-        pInEvent = EventState.NOTINEVENT;
+        PInEventCard = EventState.NOTINEVENT;
     }
 
     private void AcceptButtonClicked()
@@ -497,6 +512,12 @@ public class PlayerGUI : MonoBehaviour
         else if (pInEvent == EventState.CONFIRMINGRESOURCEPLANNING) ResourcePlanningEventAccepted();
         else if (pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL) MobileHospitalEventAccepted(); 
         else if (pInEvent == EventState.CONFIRMINGFORECAST) ForecastEventAccepted();
+        else if (pInEvent == EventState.CALLTOMOBILIZE)
+        {
+            eventExecuted = true;
+            DestroyMovingPawn();
+            draw();
+        }
         else if (pInEvent == EventState.FORECAST)
         {
             ClearForecastEventVariables();
@@ -543,13 +564,7 @@ public class PlayerGUI : MonoBehaviour
         ForeCastEventCards[0].transform.parent.gameObject.SetActive(false);
         ForeCastEventCardsIDs.Clear();
         ForeCastEventCardSelected = -1;
-        ChangeEvent(EventState.NOTINEVENT);
-    }
-
-    private void ChangeEvent(EventState state)
-    {
-        theGame.InEvent = state;
-        pInEvent = state;
+        PInEventCard = EventState.NOTINEVENT;
     }
 
     public void ActionButtonClicked(int action)
@@ -567,7 +582,7 @@ public class PlayerGUI : MonoBehaviour
             case 0: //move
                 ActionSelected = ActionTypes.Move;
                 MoveActionBackground.color = new Color(1f, 1f, 1f, .25f);
-                CreateMovingPawn(currentCity);
+                CreateMovingPawn();
                 break;
             case 1: //fly
                 ActionSelected = ActionTypes.Fly;
@@ -579,7 +594,7 @@ public class PlayerGUI : MonoBehaviour
                 ActionSelected = ActionTypes.Charter;
                 CharterActionBackground.color = new Color(1f, 1f, 1f, .25f);
                 cardsState = CardGUIStates.CardsExpandedCharterActionToSelect;
-                CreateMovingPawn(currentCity);
+                CreateMovingPawn();
                 draw();
                 break;
             case 3: //treat
@@ -640,7 +655,7 @@ public class PlayerGUI : MonoBehaviour
         changeContextText();
     }
 
-    private void CardInHandClicked(int cardClicked)
+    public void CardInHandClicked(int cardClicked)
     {
         CityCardDisplay cardClickedScript = null;
         EventCardDisplay eventCardDisplay = null;
@@ -749,8 +764,7 @@ public class PlayerGUI : MonoBehaviour
 
     private void CallToMobilizeEventAccepted()
     {
-        ChangeEvent(EventState.CALLTOMOBILIZE);
-        Timeline.theTimeline.addEvent(new PCallToMobilize());
+        Timeline.theTimeline.addEvent(new PCallToMobilizeCardPlayed(this.PlayerModel));
     }
 
     private void ForecastEventAccepted()
@@ -772,7 +786,7 @@ public class PlayerGUI : MonoBehaviour
             ForeCastEventCardSelected = ForeCastEventCardsIDs[0];
 
             ActionsContainer.SetActive(false);
-            ChangeEvent(EventState.FORECAST);
+            PInEventCard = EventState.FORECAST;
 
             gui.draw();
             draw();
@@ -787,7 +801,7 @@ public class PlayerGUI : MonoBehaviour
 
     private void ResourcePlanningEventAccepted()
     {
-        ChangeEvent(EventState.RESOURCEPLANNING);
+        PInEventCard = EventState.RESOURCEPLANNING;
         Timeline.theTimeline.addEvent(new PResourcePlanning());
     }
 
@@ -1018,11 +1032,15 @@ public class PlayerGUI : MonoBehaviour
         FindCureAction.SetActive(enabled);
     }
 
-    private void CreateMovingPawn(City currentCity)
+    public void CreateMovingPawn(Vector3? translation = null)
     {
-        currentCity.removePawn(game.CurrentPlayer);
+        City currentCity = PlayerModel.GetCurrentCityScript();
+        currentCity.removePawn(PlayerModel);
         currentCity.draw();
-        movingPawn = Instantiate(gui.PawnPrefab, currentCity.transform.position, currentCity.transform.rotation, gui.AnimationCanvas.transform);
+        if(translation == null)
+            movingPawn = Instantiate(gui.PawnPrefab, currentCity.transform.position, currentCity.transform.rotation, gui.AnimationCanvas.transform);
+        else
+            movingPawn = Instantiate(gui.PawnPrefab, currentCity.transform.position + (Vector3)translation, currentCity.transform.rotation, gui.AnimationCanvas.transform);
         movingPawn.GetComponent<Pawn>().CanMove = true;
         movingPawn.GetComponent<Pawn>().SetRoleAndPlayer(PlayerModel);
         movingPawn.GetComponent<Outline>().enabled = true;
@@ -1039,10 +1057,7 @@ public class PlayerGUI : MonoBehaviour
 
         if (movingPawn != null)
         {
-            Destroy(movingPawn);
-            City currentCity = game.Cities[PlayerModel.GetCurrentCity()];
-            currentCity.addPawn(game.CurrentPlayer);
-            currentCity.draw();
+            DestroyMovingPawn();
         }
         MoveActionBackground.color = new Color(.2f, .2f, .2f, .2f);
         FlyActionBackground.color = new Color(.2f, .2f, .2f, .2f);
@@ -1083,35 +1098,13 @@ public class PlayerGUI : MonoBehaviour
         changeContextText();
     }
 
-    public GameObject AddPlayerCardToTransform(int cardToAdd, Transform transform, bool withButtonComponent)
+    private void DestroyMovingPawn()
     {
-        GameObject cardToAddObject;
-        if (cardToAdd > 23)
-        {
-            cardToAddObject = Instantiate(gui.EventCardPrefab, transform);
-            cardToAddObject.GetComponent<EventCardDisplay>().EventCardData = gui.Events[cardToAdd - 24];
-            if(selectedCards.Contains(cardToAdd))
-            {
-                cardToAddObject.GetComponent<EventCardDisplay>().border.gameObject.SetActive(true);
-            }
-            else
-            {
-                cardToAddObject.GetComponent<EventCardDisplay>().border.gameObject.SetActive(false);
-            }
-            
-        }
-        else
-        {
-            cardToAddObject = Instantiate(gui.CityCardPrefab, transform);
-            cardToAddObject.GetComponent<CityCardDisplay>().CityCardData = game.Cities[cardToAdd].city;
-
-        }
-        if (withButtonComponent)
-        {
-            var buttonComponent = cardToAddObject.AddComponent<Button>();
-            buttonComponent.onClick.AddListener(() => CardInHandClicked(cardToAdd));
-        }
-        return cardToAddObject;
+        Destroy(movingPawn);
+        movingPawn = null;
+        City currentCity = game.Cities[PlayerModel.GetCurrentCity()];
+        currentCity.addPawn(PlayerModel);
+        currentCity.draw();
     }
 
     private void CreateLineBetweenCities(City cityToMoveTo, City cityToMoveFrom)
@@ -1179,7 +1172,16 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (pInEvent == EventState.FORECAST)
         {
-            CurrentInstructionText.text = "Forecasting Event\nSelect any card.\nUse arrows to move.";
+            CurrentInstructionText.text = "Event - Forecasting \nSelect any card.\nUse arrows to move";
+            return;
+        }
+        else if (pInEvent == EventState.CALLTOMOBILIZE)
+        {
+            if(movingPawn != null)
+                CurrentInstructionText.text = "Event - Call to Mobilize \nMove 1-2 or accept to stay";
+            else
+                CurrentInstructionText.text = "Event - Call to Mobilize \nWaiting";
+            
             return;
         }
 
@@ -1303,6 +1305,12 @@ public class PlayerGUI : MonoBehaviour
         draw();
     }
 
+
+    internal void ChangeToInEvent(EventState state)
+    {
+        PInEventCard = state;
+        draw();
+    }
 
 }
 

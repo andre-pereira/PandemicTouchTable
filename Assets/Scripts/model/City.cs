@@ -119,6 +119,7 @@ public class City : MonoBehaviour
 
     public void removePawn(Player player)
     {
+        //remove a player and then sort the list so that null values are not first
         PlayersInCity.Remove(player);
     }
 
