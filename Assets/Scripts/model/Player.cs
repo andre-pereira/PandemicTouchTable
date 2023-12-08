@@ -19,8 +19,6 @@ public class Player
     public List<int> BlueCardsInHand { get; private set; }
     public List<int> EventCardsInHand { get; private set; }
 
-    public bool MobileHospitalActivated = false;
-
     public enum Roles
     {
         [Description("Containment Specialist")]
@@ -117,6 +115,14 @@ public class Player
             if (Role == Roles.ContainmentSpecialist)
                 Timeline.theTimeline.addEvent(new PContainSpecialistRemoveWhenEntering(cityID));
         }
+        if(theGame.MobileHospitalPlayer != null)
+        {
+            if (game.Cities[cityID].cubesInCity())
+            {
+                theGame.ChangeToInEvent(EventState.EXECUTINGMOBILEHOSPITAL);
+                theGame.MobileHospitalPlayer.playerGui.ChangeToInEvent(EventState.EXECUTINGMOBILEHOSPITAL);
+            }
+        }
     }
 
     internal void RemoveCardInHand(int cityID, bool addToDiscardPile = false)
@@ -147,11 +153,10 @@ public class Player
     }
 
 
-        internal void ResetTurn()
+    internal void ResetTurn()
     {
         ActionsRemaining = 4;
         roleActionUsed = false;
-        MobileHospitalActivated = false;
         playerGui.ClearSelectedAction();
         playerGui.ActionsContainer.SetActive(true);
     }

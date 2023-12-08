@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using static GameGUI;
 using static Game;
+using static ENUMS;
 
 [System.Serializable]
 public class EInitialize : EngineEvent
@@ -51,7 +52,7 @@ public class EInitialize : EngineEvent
 
         //TODO: remove this
         for (int i = 0; i < 4; ++i)
-            theGame.PlayerCards.Add(24);
+            theGame.PlayerCards.Add(26);
 
         theGame.InfectionCards = Enumerable.Range(0, 24).ToList();
         theGame.InfectionCards.Shuffle();
@@ -73,6 +74,14 @@ public class EInitialize : EngineEvent
         Timeline.theTimeline.addEvent(new EDrawInfectionCard(1, true));
         Timeline.theTimeline.addEvent(new EDrawInfectionCard(1, true));
         Timeline.theTimeline.addEvent(new EInitializeFirstPlayer());
+
+        //foreach city add a cube of each color
+        foreach (City city in theGame.Cities)
+        {
+            city.incrementNumberOfCubes(VirusName.Yellow, 1);
+            city.incrementNumberOfCubes(VirusName.Red, 1);
+            city.incrementNumberOfCubes(VirusName.Blue, 1);
+        }
     }
 
 

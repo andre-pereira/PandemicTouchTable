@@ -26,8 +26,6 @@ public class PTreatDisease : PlayerEvent
         if (defaultClick)
             virus = virusName;
         
-        virus = city.firstVirusFoundInCity();
-        
         if (virus != null)
         {
             city.incrementNumberOfCubes((VirusName)virus, -1);

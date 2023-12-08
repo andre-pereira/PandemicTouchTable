@@ -170,7 +170,7 @@ public class City : MonoBehaviour
 
     private void cubeClicked(VirusName virusName)
     {
-        GameGUI.currentPlayerPad().CubeClicked(this, virusName);
+        theGame.CubeClicked(this, virusName);
     }
 
     public void Clicked()

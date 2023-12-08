@@ -18,6 +18,7 @@ public class PlayerGUI : MonoBehaviour
 {
 
     #region Properties and Fields
+    internal bool Waiting = false;
     private const string WaitForYourTurnText = "Wait for your turn.";
     GameGUI gui;
     Game game;
@@ -288,6 +289,11 @@ public class PlayerGUI : MonoBehaviour
             ContextButtons[0].SetActive(false);
             ContextButtons[1].SetActive(!eventExecuted);
         }
+        else if (pInEvent == EventState.EXECUTINGMOBILEHOSPITAL)
+        {
+            ContextButtons[0].SetActive(false);
+            ContextButtons[1].SetActive(false);
+        }
     }
 
 
@@ -301,7 +307,7 @@ public class PlayerGUI : MonoBehaviour
         bool shareAction = false;
 
         //changeContextText(true);
-        if (PlayerModel.ActionsRemaining > 0)
+        if (PlayerModel.ActionsRemaining > 0 && !Waiting)
         {
             if (cardsState == CardGUIStates.None)
             {
@@ -657,6 +663,8 @@ public class PlayerGUI : MonoBehaviour
 
     public void CardInHandClicked(int cardClicked)
     {
+        if(Waiting) return;
+
         CityCardDisplay cardClickedScript = null;
         EventCardDisplay eventCardDisplay = null;
 
@@ -795,8 +803,7 @@ public class PlayerGUI : MonoBehaviour
 
     private void MobileHospitalEventAccepted()
     {
-        theGame.MobileHospitalPlayedBy = PlayerModel;
-        Timeline.theTimeline.addEvent(new PMobileHospital());
+        Timeline.theTimeline.addEvent(new PMobileHospitalCardPlayed(PlayerModel));
     }
 
     private void ResourcePlanningEventAccepted()
@@ -1049,8 +1056,8 @@ public class PlayerGUI : MonoBehaviour
     public void ClearSelectedAction()
     {
         selectedCards.Clear();
-        
-        if(flyLine!=null)
+
+        if (flyLine != null)
         {
             Destroy(flyLine);
         }
@@ -1066,21 +1073,16 @@ public class PlayerGUI : MonoBehaviour
         ShareActionBackground.color = new Color(.2f, .2f, .2f, .2f);
         FindCureActionBackground.color = new Color(.2f, .2f, .2f, .2f);
         roleCardBackground.GetComponent<Outline>().enabled = false;
-        
+
         ActionSelected = ActionTypes.None;
         cardsState = CardGUIStates.None;
 
-        ContextButtons[0].SetActive(false);
-        ContextButtons[1].SetActive(false);
-        ContextButtons[2].SetActive(false);
-        ContextButtons[3].SetActive(false);
-        ContextButtons[4].SetActive(false);
-        ContextButtons[5].SetActive(false);
+        ClearContextButtons();
 
         pilotCitySelected = -1;
         if (flyLine != null) Destroy(flyLine);
         flyLine = null;
-        
+
         if (flyLine2 != null) Destroy(flyLine2);
         flyLine2 = null;
 
@@ -1090,12 +1092,22 @@ public class PlayerGUI : MonoBehaviour
             pawn.GetComponent<Outline>().enabled = false;
             pawn.SetActive(false);
         }
-        
+
         roleCard.gameObject.SetActive(true);
         ActionsContainer.SetActive(true);
         PlayerCards.SetActive(true);
 
         changeContextText();
+    }
+
+    public void ClearContextButtons()
+    {
+        ContextButtons[0].SetActive(false);
+        ContextButtons[1].SetActive(false);
+        ContextButtons[2].SetActive(false);
+        ContextButtons[3].SetActive(false);
+        ContextButtons[4].SetActive(false);
+        ContextButtons[5].SetActive(false);
     }
 
     private void DestroyMovingPawn()
@@ -1164,7 +1176,12 @@ public class PlayerGUI : MonoBehaviour
 
     private void changeContextText()
     {
-        if (pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE || pInEvent == EventState.CONFIRMINGRESOURCEPLANNING ||
+        if (Waiting && pInEvent != EventState.EXECUTINGMOBILEHOSPITAL)
+        {
+            CurrentInstructionText.text = "Waiting...";
+            return;
+        }
+        else if (pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE || pInEvent == EventState.CONFIRMINGRESOURCEPLANNING ||
             pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL || pInEvent == EventState.CONFIRMINGFORECAST)
         {
             CurrentInstructionText.text = "Playing Event Card\nDo you confirm?";
@@ -1182,6 +1199,11 @@ public class PlayerGUI : MonoBehaviour
             else
                 CurrentInstructionText.text = "Event - Call to Mobilize \nWaiting";
             
+            return;
+        }
+        else if (pInEvent == EventState.EXECUTINGMOBILEHOSPITAL)
+        {
+            CurrentInstructionText.text = "Event - Mobile Hospital \nRemove a cube.";
             return;
         }
 
