@@ -4,18 +4,16 @@ using static AnimationTemplates;
 
 public class PMobileHospitalCardPlayed : PlayerEvent
 { 
-    private float ANIMATIONDURATION = 1f;
-
     public PMobileHospitalCardPlayed(Player player) : base(player)
     {
     }
 
     public override void Do(Timeline timeline)
     {
-        _player.RemoveCardInHand(MOBILEHOSPITALINDEX, true);
         theGame.MobileHospitalPlayer = _player;
         theGame.ChangeToInEvent(EventState.NOTINEVENT);
         _player.playerGui.ChangeToInEvent(EventState.NOTINEVENT);
+        _player.RemoveCardInHand(MOBILEHOSPITALINDEX, true);
     }
 
     public override float Act(bool qUndo = false)

@@ -20,7 +20,7 @@ public class PlayerGUI : MonoBehaviour
     #region Properties and Fields
     internal bool Waiting = false;
     private const string WaitForYourTurnText = "Wait for your turn.";
-    GameGUI gui;
+    GameGUI gameGui;
     Game game;
 
     bool _isAnimating = false;
@@ -64,8 +64,8 @@ public class PlayerGUI : MonoBehaviour
     private ContextButtonStates contextButtonState;
 
     public GameObject [] ForeCastEventCards;
-    private List<int> ForeCastEventCardsIDs = new List<int>();
-    private int ForeCastEventCardSelected = -1;
+    internal List<int> ForeCastEventCardsIDs = new List<int>();
+    internal int ForeCastEventCardSelected = -1;
 
     private EventState pInEvent = EventState.NOTINEVENT;
     
@@ -135,7 +135,7 @@ public class PlayerGUI : MonoBehaviour
 
     public void init()
     {
-        gui = GameGUI.gui;
+        gameGui = GameGUI.gui;
         game = Game.theGame;
         
         ActionSelected = ActionTypes.None;
@@ -527,7 +527,7 @@ public class PlayerGUI : MonoBehaviour
         else if (pInEvent == EventState.FORECAST)
         {
             ClearForecastEventVariables();
-            gui.draw();
+            gameGui.draw();
             return;
         }
 
@@ -777,28 +777,29 @@ public class PlayerGUI : MonoBehaviour
 
     private void ForecastEventAccepted()
     {
-        int numberOfCardsInDeck = theGame.InfectionCards.Count;
-        if (numberOfCardsInDeck > 0)
-        {
-            //remove card from hand
-            PlayerModel.PlayerCardsInHand.Remove(25);
+        Timeline.theTimeline.addEvent(new PForecastCardPlayed(PlayerModel));
+        //int numberOfCardsInDeck = theGame.InfectionCards.Count;
+        //if (numberOfCardsInDeck > 0)
+        //{
+        //    //remove card from hand
+        //    PlayerModel.PlayerCardsInHand.Remove(25);
 
-            //add card to discard pile
-            theGame.InfectionCardsDiscard.Add(25);
+        //    //add card to discard pile
+        //    theGame.InfectionCardsDiscard.Add(25);
 
-            for (int i = 0; i < Math.Min(6, numberOfCardsInDeck); i++)
-            {
-                ForeCastEventCardsIDs.Add(theGame.InfectionCards.Pop());
-            }
+        //    for (int i = 0; i < Math.Min(6, numberOfCardsInDeck); i++)
+        //    {
+        //        ForeCastEventCardsIDs.Add(theGame.InfectionCards.Pop());
+        //    }
 
-            ForeCastEventCardSelected = ForeCastEventCardsIDs[0];
+        //    ForeCastEventCardSelected = ForeCastEventCardsIDs[0];
 
-            ActionsContainer.SetActive(false);
-            PInEventCard = EventState.FORECAST;
+        //    ActionsContainer.SetActive(false);
+        //    PInEventCard = EventState.FORECAST;
 
-            gui.draw();
-            draw();
-        }
+        //    gameGui.draw();
+        //    draw();
+        //}
     }
 
     private void MobileHospitalEventAccepted()
@@ -808,8 +809,7 @@ public class PlayerGUI : MonoBehaviour
 
     private void ResourcePlanningEventAccepted()
     {
-        PInEventCard = EventState.RESOURCEPLANNING;
-        Timeline.theTimeline.addEvent(new PResourcePlanning());
+        Timeline.theTimeline.addEvent(new PResourcePlanningCardPlayed(PlayerModel));
     }
 
     public void CityClicked(City city)
@@ -851,7 +851,7 @@ public class PlayerGUI : MonoBehaviour
                 }
 
                 if (pawnPilotSelected != null)
-                    CreateLineBetweenGameObjects(cityToMoveTo.gameObject, getPawnInCurrentCity(pawnPilotSelected).gameObject, gui.roleCards[(int)pawnPilotSelected.PawnRole]);
+                    CreateLineBetweenGameObjects(cityToMoveTo.gameObject, getPawnInCurrentCity(pawnPilotSelected).gameObject, gameGui.roleCards[(int)pawnPilotSelected.PawnRole]);
 
                 ContextButtons[1].SetActive(true);
                 ContextButtons[0].SetActive(true);
@@ -899,7 +899,7 @@ public class PlayerGUI : MonoBehaviour
         {
             pawn.GetComponent<Outline>().enabled = true;
             pawnPilotSelected = pawn;
-            CreateLineBetweenGameObjects(game.Cities[pilotCitySelected].gameObject, getPawnInCurrentCity(pawn).gameObject, gui.roleCards[(int)pawn.PawnRole]);
+            CreateLineBetweenGameObjects(game.Cities[pilotCitySelected].gameObject, getPawnInCurrentCity(pawn).gameObject, gameGui.roleCards[(int)pawn.PawnRole]);
         }
         else
         {
@@ -1045,9 +1045,9 @@ public class PlayerGUI : MonoBehaviour
         currentCity.removePawn(PlayerModel);
         currentCity.draw();
         if(translation == null)
-            movingPawn = Instantiate(gui.PawnPrefab, currentCity.transform.position, currentCity.transform.rotation, gui.AnimationCanvas.transform);
+            movingPawn = Instantiate(gameGui.PawnPrefab, currentCity.transform.position, currentCity.transform.rotation, gameGui.AnimationCanvas.transform);
         else
-            movingPawn = Instantiate(gui.PawnPrefab, currentCity.transform.position + (Vector3)translation, currentCity.transform.rotation, gui.AnimationCanvas.transform);
+            movingPawn = Instantiate(gameGui.PawnPrefab, currentCity.transform.position + (Vector3)translation, currentCity.transform.rotation, gameGui.AnimationCanvas.transform);
         movingPawn.GetComponent<Pawn>().CanMove = true;
         movingPawn.GetComponent<Pawn>().SetRoleAndPlayer(PlayerModel);
         movingPawn.GetComponent<Outline>().enabled = true;
@@ -1122,12 +1122,12 @@ public class PlayerGUI : MonoBehaviour
     private void CreateLineBetweenCities(City cityToMoveTo, City cityToMoveFrom)
     {
         flyLine = new GameObject("Line - FlyAction");
-        flyLine.transform.SetParent(gui.AnimationCanvas.transform, false);
+        flyLine.transform.SetParent(gameGui.AnimationCanvas.transform, false);
         flyLine.transform.position = cityToMoveFrom.PawnsInCity[_player.Position].transform.position;
         flyLine.AddComponent<LineRenderer>();
         LineRenderer lr = flyLine.GetComponent<LineRenderer>();
         lr.sortingLayerName = "Animation";
-        lr.material = gui.lineMaterial;
+        lr.material = gameGui.lineMaterial;
         lr.startColor = roleCard.RoleCardData.roleColor;
         lr.endColor = roleCard.RoleCardData.roleColor;
         lr.startWidth = 0.1f;
@@ -1139,12 +1139,12 @@ public class PlayerGUI : MonoBehaviour
     private void CreateLineBetweenGameObjects(GameObject one, GameObject two, RoleCard roleData)
     {
         flyLine2 = new GameObject("Line - FlyAction");
-        flyLine2.transform.SetParent(gui.AnimationCanvas.transform, false);
+        flyLine2.transform.SetParent(gameGui.AnimationCanvas.transform, false);
         flyLine2.transform.position = one.transform.position;
         flyLine2.AddComponent<LineRenderer>();
         LineRenderer lr = flyLine2.GetComponent<LineRenderer>();
         lr.sortingLayerName = "Animation";
-        lr.material = gui.lineMaterial;
+        lr.material = gameGui.lineMaterial;
         lr.startColor = roleData.roleColor;
         lr.endColor = roleData.roleColor;
         lr.startWidth = 0.1f;
@@ -1328,10 +1328,13 @@ public class PlayerGUI : MonoBehaviour
     }
 
 
-    internal void ChangeToInEvent(EventState state)
+    internal void ChangeToInEvent(EventState state, bool shouldDraw = true)
     {
         PInEventCard = state;
-        draw();
+        if (shouldDraw)
+            draw();
+        else
+            ClearContextButtons();
     }
 
 }

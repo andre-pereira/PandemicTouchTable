@@ -5,7 +5,6 @@ public class PTreatDisease : PlayerEvent
     private City city;
     private VirusName virusName;
     private bool defaultClick = true;
-    float ANIMATIONDURATION = 1f / GameGUI.gui.AnimationTimingMultiplier;
 
     public PTreatDisease(City city, VirusName virusName): base(Game.theGame.CurrentPlayer)
     {

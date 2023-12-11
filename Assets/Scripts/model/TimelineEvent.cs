@@ -5,28 +5,32 @@ using static AnimationTemplates;
 [System.Serializable]
 public abstract class TimelineEvent
 {
-  // These default values are great for Initialize and AddPlayer Events.
-  [Flags]
-  public enum Attribute
-  {
-    None = 0,
-    Undoable = 1,
-    ContinueUndo = 2
-  }
-  [JsonIgnore]
-  public bool QUndoable {
-    get { return (Flags & Attribute.Undoable) == Attribute.Undoable; }
-    set { if (value) Flags |= Attribute.Undoable; else Flags &= ~Attribute.Undoable; } }
-  [JsonIgnore]
-  public bool QContinueUndo
-  {
-    get { return (Flags & Attribute.ContinueUndo) == Attribute.ContinueUndo; }
-    set { if (value) Flags |= Attribute.ContinueUndo; else Flags &= ~Attribute.ContinueUndo; }
-  }
+    public float ANIMATIONDURATION = 1f / GameGUI.gui.AnimationTimingMultiplier;
 
-  public Attribute Flags = Attribute.None;
-  abstract public void Do(Timeline timeline);
-  public virtual float Act( bool qUndo = false ) { return 0; }
+    // These default values are great for Initialize and AddPlayer Events.
+    [Flags]
+    public enum Attribute
+    {
+        None = 0,
+        Undoable = 1,
+        ContinueUndo = 2
+    }
+    [JsonIgnore]
+    public bool QUndoable
+    {
+        get { return (Flags & Attribute.Undoable) == Attribute.Undoable; }
+        set { if (value) Flags |= Attribute.Undoable; else Flags &= ~Attribute.Undoable; }
+    }
+    [JsonIgnore]
+    public bool QContinueUndo
+    {
+        get { return (Flags & Attribute.ContinueUndo) == Attribute.ContinueUndo; }
+        set { if (value) Flags |= Attribute.ContinueUndo; else Flags &= ~Attribute.ContinueUndo; }
+    }
+
+    public Attribute Flags = Attribute.None;
+    abstract public void Do(Timeline timeline);
+    public virtual float Act(bool qUndo = false) { return 0; }
 }
 
 [System.Serializable]
