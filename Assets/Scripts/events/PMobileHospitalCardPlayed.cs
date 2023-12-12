@@ -18,7 +18,7 @@ public class PMobileHospitalCardPlayed : PlayerEvent
 
     public override float Act(bool qUndo = false)
     {
-        _playerGui.ClearContextButtons();
+        _playerGui.EnableContextButtons(false, false, false, false, false, false);
         Sequence sequence = HighlightCardAndMove(_playerGui.getCardInHand(MOBILEHOSPITALINDEX), gameGUI.PlayerDeckDiscard.transform, 3f, ANIMATIONDURATION);
         sequence.onComplete += () =>
         {

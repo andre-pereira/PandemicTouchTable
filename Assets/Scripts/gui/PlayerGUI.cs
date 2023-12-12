@@ -67,6 +67,11 @@ public class PlayerGUI : MonoBehaviour
     internal List<int> ForeCastEventCardsIDs = new List<int>();
     internal int ForeCastEventCardSelected = -1;
 
+    public GameObject[] ResourcePlanningEventCardsCities;
+    public GameObject[] ResourcePlanningEventCardsEvents;
+    internal List<int> ResourcePlanningEventCardsIDs = new List<int>();
+    internal int ResourcePlanningEventCardSelected = -1;
+
     private EventState pInEvent = EventState.NOTINEVENT;
     
     public EventState PInEventCard
@@ -246,16 +251,11 @@ public class PlayerGUI : MonoBehaviour
         if(pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE || pInEvent == EventState.CONFIRMINGRESOURCEPLANNING ||
             pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL|| pInEvent == EventState.CONFIRMINGFORECAST)
         {
-            ContextButtons[0].SetActive(true);
-            ContextButtons[1].SetActive(true);
+            EnableContextButtons(true, true, false, false, false, false);
         }
         else if(pInEvent == EventState.FORECAST)
         {
-            ContextButtons[0].SetActive(false);
-            ContextButtons[1].SetActive(true);
-            ContextButtons[2].SetActive(false);
-            ContextButtons[3].SetActive(true);
-            ContextButtons[4].SetActive(true);
+            EnableContextButtons(false, true, false, true, true, false);
 
             PlayerCards.SetActive(false);
             roleCard.gameObject.SetActive(false);
@@ -286,16 +286,74 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (pInEvent == EventState.CALLTOMOBILIZE)
         {
-            ContextButtons[0].SetActive(false);
-            ContextButtons[1].SetActive(!eventExecuted);
+            EnableContextButtons(false, !eventExecuted, false, false, false, false);
         }
         else if (pInEvent == EventState.EXECUTINGMOBILEHOSPITAL)
         {
-            ContextButtons[0].SetActive(false);
-            ContextButtons[1].SetActive(false);
+            EnableContextButtons(false, false, false, false, false, false);
+        }
+        else if (pInEvent == EventState.RESOURCEPLANNING)
+        {
+            EnableContextButtons(false, true, false, true, true, false);
+
+            PlayerCards.SetActive(false);
+            roleCard.gameObject.SetActive(false);
+
+            ResourcePlanningEventCardsCities[0].transform.parent.parent.gameObject.SetActive(true);
+
+            for (int i = 0; i < ResourcePlanningEventCardsCities.Length; i++)
+            {
+                if (i <= ResourcePlanningEventCardsIDs.Count - 1)
+                {
+                    if (ResourcePlanningEventCardsIDs[i] < 24)
+                    {
+                        ResourcePlanningEventCardsEvents[i].SetActive(false);
+                        CityCard infoCard = theGame.Cities[ResourcePlanningEventCardsIDs[i]].city;
+                        CityCardDisplay cardDisplay = ResourcePlanningEventCardsCities[i].GetComponentInChildren<CityCardDisplay>();
+                        cardDisplay.CityCardData = infoCard;
+                        ResourcePlanningEventCardsCities[i].SetActive(true);
+
+                        if (infoCard.cityID == ResourcePlanningEventCardSelected)
+                        {
+                            cardDisplay.border.gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            cardDisplay.border.gameObject.SetActive(false);
+                        }
+                    }
+                    else
+                    {
+                        ResourcePlanningEventCardsCities[i].SetActive(false);
+                        EventCard infoCard = GameGUI.gui.Events[ResourcePlanningEventCardsIDs[i] - 24];
+                        EventCardDisplay cardDisplay = ResourcePlanningEventCardsEvents[i].GetComponentInChildren<EventCardDisplay>();
+                        cardDisplay.EventCardData = infoCard;
+                        ResourcePlanningEventCardsEvents[i].SetActive(true);
+                        if (infoCard.eventID == ResourcePlanningEventCardSelected)
+                        {
+                            cardDisplay.border.gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            cardDisplay.border.gameObject.SetActive(false);
+                        }
+
+                    }
+                }
+                else ResourcePlanningEventCardsCities[i].SetActive(false);
+            }
         }
     }
 
+    public void EnableContextButtons(bool first, bool second, bool third, bool fourth, bool fifth, bool sixth)
+    {
+        ContextButtons[0].SetActive(first);
+        ContextButtons[1].SetActive(second);
+        ContextButtons[2].SetActive(third);
+        ContextButtons[3].SetActive(fourth);
+        ContextButtons[4].SetActive(fifth);
+        ContextButtons[5].SetActive(sixth);
+    }
 
     private void ownTurnActionHandling()
     {
@@ -417,6 +475,12 @@ public class PlayerGUI : MonoBehaviour
         draw();
     }
 
+    public void ResourcePlanningInfectionCardClicked(int position)
+    {
+        ResourcePlanningEventCardSelected = ResourcePlanningEventCardsIDs[position];
+        draw();
+    }
+
     public void ContextButtonClicked(int buttonType)
     {
         if(buttonType == 2)
@@ -473,6 +537,22 @@ public class PlayerGUI : MonoBehaviour
                 ForeCastEventCardsIDs[index + 1] = temp;
             }
         }
+        else if (pInEvent == EventState.RESOURCEPLANNING)
+        {
+            int index = ResourcePlanningEventCardsIDs.IndexOf(ResourcePlanningEventCardSelected);
+
+            int temp = ResourcePlanningEventCardsIDs[index];
+            if (index == ResourcePlanningEventCardsIDs.Count - 1)
+            {
+                ResourcePlanningEventCardsIDs.RemoveAt(index);
+                ResourcePlanningEventCardsIDs.Insert(0, temp);
+            }
+            else
+            {
+                ResourcePlanningEventCardsIDs[index] = ResourcePlanningEventCardsIDs[index + 1];
+                ResourcePlanningEventCardsIDs[index + 1] = temp;
+            }
+        }
         draw();
     }
 
@@ -495,6 +575,22 @@ public class PlayerGUI : MonoBehaviour
                 ForeCastEventCardsIDs[index - 1] = temp;
             }
         }
+        else if (pInEvent == EventState.RESOURCEPLANNING)
+        {
+            int index = ResourcePlanningEventCardsIDs.IndexOf(ResourcePlanningEventCardSelected);
+
+            int temp = ResourcePlanningEventCardsIDs[index];
+            if (index == 0)
+            {
+                ResourcePlanningEventCardsIDs.RemoveAt(index);
+                ResourcePlanningEventCardsIDs.Add(temp);
+            }
+            else
+            {
+                ResourcePlanningEventCardsIDs[index] = ResourcePlanningEventCardsIDs[index - 1];
+                ResourcePlanningEventCardsIDs[index - 1] = temp;
+            }
+        }
         draw();
     }
 
@@ -514,10 +610,10 @@ public class PlayerGUI : MonoBehaviour
 
     private void AcceptButtonClicked()
     {
-        if (pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE) CallToMobilizeEventAccepted(); 
-        else if (pInEvent == EventState.CONFIRMINGRESOURCEPLANNING) ResourcePlanningEventAccepted();
-        else if (pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL) MobileHospitalEventAccepted(); 
-        else if (pInEvent == EventState.CONFIRMINGFORECAST) ForecastEventAccepted();
+        if (pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE) Timeline.theTimeline.addEvent(new PCallToMobilizeCardPlayed(this.PlayerModel)); 
+        else if (pInEvent == EventState.CONFIRMINGRESOURCEPLANNING) Timeline.theTimeline.addEvent(new PResourcePlanningCardPlayed(PlayerModel));
+        else if (pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL) Timeline.theTimeline.addEvent(new PMobileHospitalCardPlayed(PlayerModel));
+        else if (pInEvent == EventState.CONFIRMINGFORECAST) Timeline.theTimeline.addEvent(new PForecastCardPlayed(PlayerModel));
         else if (pInEvent == EventState.CALLTOMOBILIZE)
         {
             eventExecuted = true;
@@ -526,8 +622,12 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (pInEvent == EventState.FORECAST)
         {
-            ClearForecastEventVariables();
-            gameGui.draw();
+            Timeline.theTimeline.addEvent(new PForecast(PlayerModel));
+            return;
+        }
+        else if (pInEvent == EventState.RESOURCEPLANNING)
+        {
+            Timeline.theTimeline.addEvent(new PResourcePlanning(PlayerModel));
             return;
         }
 
@@ -557,20 +657,6 @@ public class PlayerGUI : MonoBehaviour
     private void DiscardButtonClicked()
     {
         Timeline.theTimeline.addEvent(new PDiscardCard(selectedCards[0], this));
-    }
-
-    private void ClearForecastEventVariables()
-    {
-        ForeCastEventCardsIDs.Reverse();
-        foreach (var item in ForeCastEventCardsIDs)
-        {
-            theGame.InfectionCards.Add(item);
-        }
-        
-        ForeCastEventCards[0].transform.parent.gameObject.SetActive(false);
-        ForeCastEventCardsIDs.Clear();
-        ForeCastEventCardSelected = -1;
-        PInEventCard = EventState.NOTINEVENT;
     }
 
     public void ActionButtonClicked(int action)
@@ -621,8 +707,7 @@ public class PlayerGUI : MonoBehaviour
                 foreach (PlayerGUI playerGUI in playersToShareGUI)
                 {
                     playerGUI.cardsState = CardGUIStates.CardsExpandedShareAction;
-                    playerGUI.ContextButtons[0].SetActive(true);
-                    playerGUI.ContextButtons[1].SetActive(true);
+                    playerGUI.EnableContextButtons(true, true, false, false, false, false);
                     if (playerGUI.PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
                         playerGUI.getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
                     playerGUI.changeContextText();
@@ -770,48 +855,6 @@ public class PlayerGUI : MonoBehaviour
 
     }
 
-    private void CallToMobilizeEventAccepted()
-    {
-        Timeline.theTimeline.addEvent(new PCallToMobilizeCardPlayed(this.PlayerModel));
-    }
-
-    private void ForecastEventAccepted()
-    {
-        Timeline.theTimeline.addEvent(new PForecastCardPlayed(PlayerModel));
-        //int numberOfCardsInDeck = theGame.InfectionCards.Count;
-        //if (numberOfCardsInDeck > 0)
-        //{
-        //    //remove card from hand
-        //    PlayerModel.PlayerCardsInHand.Remove(25);
-
-        //    //add card to discard pile
-        //    theGame.InfectionCardsDiscard.Add(25);
-
-        //    for (int i = 0; i < Math.Min(6, numberOfCardsInDeck); i++)
-        //    {
-        //        ForeCastEventCardsIDs.Add(theGame.InfectionCards.Pop());
-        //    }
-
-        //    ForeCastEventCardSelected = ForeCastEventCardsIDs[0];
-
-        //    ActionsContainer.SetActive(false);
-        //    PInEventCard = EventState.FORECAST;
-
-        //    gameGui.draw();
-        //    draw();
-        //}
-    }
-
-    private void MobileHospitalEventAccepted()
-    {
-        Timeline.theTimeline.addEvent(new PMobileHospitalCardPlayed(PlayerModel));
-    }
-
-    private void ResourcePlanningEventAccepted()
-    {
-        Timeline.theTimeline.addEvent(new PResourcePlanningCardPlayed(PlayerModel));
-    }
-
     public void CityClicked(City city)
     {
         if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID
@@ -853,8 +896,7 @@ public class PlayerGUI : MonoBehaviour
                 if (pawnPilotSelected != null)
                     CreateLineBetweenGameObjects(cityToMoveTo.gameObject, getPawnInCurrentCity(pawnPilotSelected).gameObject, gameGui.roleCards[(int)pawnPilotSelected.PawnRole]);
 
-                ContextButtons[1].SetActive(true);
-                ContextButtons[0].SetActive(true);
+                EnableContextButtons(true, true, false, false, false, false);
                 changeContextText();
             }
 
@@ -1077,7 +1119,7 @@ public class PlayerGUI : MonoBehaviour
         ActionSelected = ActionTypes.None;
         cardsState = CardGUIStates.None;
 
-        ClearContextButtons();
+        EnableContextButtons(false, false, false, false, false, false);
 
         pilotCitySelected = -1;
         if (flyLine != null) Destroy(flyLine);
@@ -1098,16 +1140,6 @@ public class PlayerGUI : MonoBehaviour
         PlayerCards.SetActive(true);
 
         changeContextText();
-    }
-
-    public void ClearContextButtons()
-    {
-        ContextButtons[0].SetActive(false);
-        ContextButtons[1].SetActive(false);
-        ContextButtons[2].SetActive(false);
-        ContextButtons[3].SetActive(false);
-        ContextButtons[4].SetActive(false);
-        ContextButtons[5].SetActive(false);
     }
 
     private void DestroyMovingPawn()
@@ -1190,6 +1222,11 @@ public class PlayerGUI : MonoBehaviour
         else if (pInEvent == EventState.FORECAST)
         {
             CurrentInstructionText.text = "Event - Forecasting \nSelect any card.\nUse arrows to move";
+            return;
+        }
+        else if (pInEvent == EventState.RESOURCEPLANNING)
+        {
+            CurrentInstructionText.text = "Event - Resource Planning \nSelect any card.\nUse arrows to move";
             return;
         }
         else if (pInEvent == EventState.CALLTOMOBILIZE)
@@ -1333,8 +1370,8 @@ public class PlayerGUI : MonoBehaviour
         PInEventCard = state;
         if (shouldDraw)
             draw();
-        else
-            ClearContextButtons();
+        //else
+        //    ClearContextButtons();
     }
 
 }
