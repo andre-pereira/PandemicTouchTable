@@ -50,9 +50,9 @@ public class EInitialize : EngineEvent
         theGame.PlayerCards = Enumerable.Range(0, 28).ToList();
         theGame.PlayerCards.Shuffle();
 
-        //TODO: remove this
-        for (int i = 0; i < 4; ++i)
-            theGame.PlayerCards.Add(24+i);
+        ////TODO: remove this
+        //for (int i = 0; i < 4; ++i)
+        //    theGame.PlayerCards.Add(24+i);
 
         theGame.InfectionCards = Enumerable.Range(0, 24).ToList();
         theGame.InfectionCards.Shuffle();
@@ -75,13 +75,13 @@ public class EInitialize : EngineEvent
         Timeline.theTimeline.addEvent(new EDrawInfectionCard(1, true));
         Timeline.theTimeline.addEvent(new EInitializeFirstPlayer());
 
-        //foreach city add a cube of each color
-        foreach (City city in theGame.Cities)
-        {
-            city.incrementNumberOfCubes(VirusName.Yellow, 1);
-            city.incrementNumberOfCubes(VirusName.Red, 1);
-            city.incrementNumberOfCubes(VirusName.Blue, 1);
-        }
+        ////foreach city add a cube of each color
+        //foreach (City city in theGame.Cities)
+        //{
+        //    city.incrementNumberOfCubes(VirusName.Yellow, 1);
+        //    city.incrementNumberOfCubes(VirusName.Red, 1);
+        //    city.incrementNumberOfCubes(VirusName.Blue, 1);
+        //}
     }
 
 
