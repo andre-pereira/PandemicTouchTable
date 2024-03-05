@@ -609,7 +609,7 @@ public class PlayerGUI : MonoBehaviour
 
     private void AcceptButtonClicked()
     {
-        if (pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE) Timeline.theTimeline.addEvent(new PCallToMobilizeCardPlayed(this.PlayerModel)); 
+        if (pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE) Timeline.theTimeline.addEvent(new PCallToMobilizeCardPlayed(this.PlayerModel));
         else if (pInEvent == EventState.CONFIRMINGRESOURCEPLANNING) Timeline.theTimeline.addEvent(new PResourcePlanningCardPlayed(PlayerModel));
         else if (pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL) Timeline.theTimeline.addEvent(new PMobileHospitalCardPlayed(PlayerModel));
         else if (pInEvent == EventState.CONFIRMINGFORECAST) Timeline.theTimeline.addEvent(new PForecastCardPlayed(PlayerModel));
@@ -649,7 +649,14 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (ActionSelected == ActionTypes.CharacterAction && PlayerModel.Role == Player.Roles.Pilot)
         {
-            Timeline.theTimeline.addEvent(new PPilotFlyToCity(pilotCitySelected, pawnPilotSelected.PlayerModel));
+            if (pawnPilotSelected != null)
+            {
+                Timeline.theTimeline.addEvent(new PPilotFlyToCity(pilotCitySelected, pawnPilotSelected.PlayerModel));
+            }
+            else
+            {
+                Timeline.theTimeline.addEvent(new PPilotFlyToCity(pilotCitySelected, null));
+            }
         }
     }
 

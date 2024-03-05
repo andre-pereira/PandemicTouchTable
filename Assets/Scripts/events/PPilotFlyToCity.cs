@@ -5,15 +5,21 @@
     private int initialPlayerCity;
     private Player otherPlayer;
 
-    public PPilotFlyToCity(int pilotCitySelected, Player otherPlayer): base(Game.theGame.CurrentPlayer)
+    public PPilotFlyToCity(int pilotCitySelected, Player otherPlayer) : base(Game.theGame.CurrentPlayer)
     {
         this.pilotCitySelected = pilotCitySelected;
         this.otherPlayer = otherPlayer;
     }
 
+    public PPilotFlyToCity(int pilotCitySelected) : base(Game.theGame.CurrentPlayer)
+    {
+        this.pilotCitySelected = pilotCitySelected;
+        this.otherPlayer = null;
+    }
+
     public override void Do(Timeline timeline)
     {
-        initialPlayerCity = _player.GetCurrentCity(); 
+        initialPlayerCity = _player.GetCurrentCity();
         _player.UpdateCurrentCity(pilotCitySelected, true);
         if (otherPlayer != null)
         {
@@ -25,7 +31,7 @@
 
     public override float Act(bool qUndo = false)
     {
-        if(initialOtherPlayerCity != -1)
+        if (initialOtherPlayerCity != -1 && otherPlayer != null)
             Game.theGame.Cities[initialOtherPlayerCity].draw();
         Game.theGame.Cities[pilotCitySelected].draw();
         Game.theGame.Cities[initialPlayerCity].draw();
