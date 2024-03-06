@@ -144,26 +144,33 @@ public class Game : MonoBehaviour
         
         if (CurrentGameState == GameState.DRAWPLAYERCARDS)
         {
-            if (actionsInitiated == false)
+            Debug.Log("No more cards in the deck !");
+            //Debug.Log("Cards drawn = " + PlayerCardsDrawn);
+            if (PlayerCardsDrawn == 0 && (PlayerCards.Count == 1 || PlayerCards.Count == 0)) 
             {
-                actionsInitiated = true;
-                Debug.Log("Draw Player Card: " + CurrentGameState);
-                Timeline.theTimeline.addEvent(new PDealCard(CurrentPlayer));
+                setCurrentGameState(GameState.GAME_OVER);
             }
-            if(actionCompleted == true)
-            {
-                actionCompleted = false;
-                if (PlayerCardsDrawn < 2)
+            else {
+                if (actionsInitiated == false)
                 {
-                    actionsInitiated = false;
+                    actionsInitiated = true;
+                    Debug.Log("Draw Player Card: " + CurrentGameState + " Cards available: " + PlayerCards.Count);
+                    Timeline.theTimeline.addEvent(new PDealCard(CurrentPlayer));
                 }
-                else if (CurrentPlayer.PlayerCardsInHand.Count < 7 && PlayerCardsDrawn == 2)
+                if(actionCompleted == true)
                 {
-                    if (CurrentGameState != GameState.EPIDEMIC)
-                        setCurrentGameState(GameState.DRAWINFECTCARDS);
-
+                    actionCompleted = false;
+                    if (PlayerCardsDrawn < 2)
+                    {
+                        actionsInitiated = false;
+                    }
+                    else if (CurrentPlayer.PlayerCardsInHand.Count < 7 && PlayerCardsDrawn == 2)
+                    {
+                        if (CurrentGameState != GameState.EPIDEMIC)
+                            setCurrentGameState(GameState.DRAWINFECTCARDS);
+                    }
                 }
-            }
+            }   
         }
         else if (CurrentGameState == GameState.EPIDEMIC)
         {
