@@ -146,7 +146,7 @@ public class Game : MonoBehaviour
         {
             Debug.Log("No more cards in the deck !");
             //Debug.Log("Cards drawn = " + PlayerCardsDrawn);
-            if (PlayerCardsDrawn == 0 && (PlayerCards.Count == 1 || PlayerCards.Count == 0)) 
+            if (PlayerCardsDrawn == 0 && PlayerCards.Count < 2) 
             {
                 setCurrentGameState(GameState.GAME_OVER);
             }

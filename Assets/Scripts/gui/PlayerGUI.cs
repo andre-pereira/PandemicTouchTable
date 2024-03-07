@@ -378,8 +378,11 @@ public class PlayerGUI : MonoBehaviour
                         charterAction = true;
                 }
 
-                if (PlayerModel.GetCurrentCityScript().cubesInCity())
+                if (PlayerModel.GetCurrentCityScript().cubesInCity() || (_player.Role == Player.Roles.Virologist 
+                                                                         && !_player.secondRoleActionUsed)) 
+                {
                     treatAction = true;
+                }
 
                 if (ableToFindCure())
                     if (PlayerModel.GetCurrentCity() == game.InitialCityID)
@@ -863,11 +866,38 @@ public class PlayerGUI : MonoBehaviour
 
     public void CityClicked(City city)
     {
-        if (ActionSelected == ActionTypes.Treat && _player.GetCurrentCity() == city.city.cityID
-            && _player.ActionsRemaining > 0 && city.cubesInCity())
+        if (ActionSelected == ActionTypes.Treat && 
+            _player.GetCurrentCity() == city.city.cityID &&
+            _player.ActionsRemaining > 0 && city.cubesInCity())
         {
+
             Timeline.theTimeline.addEvent(new PTreatDisease(city));
+
+        } else if (ActionSelected == ActionTypes.Treat && _player.Role == Player.Roles.Virologist 
+                   && _player.ActionsRemaining > 0 && city.cubesInCity() && !_player.secondRoleActionUsed) {
+
+            Debug.Log("Treating City :", city);
+
+            VirusName? virusFound = city.firstVirusFoundInCity();
+            if (virusFound.HasValue)
+            {
+                VirusName virusColor = virusFound.Value;
+                Debug.Log("Virus color found in the city: " + virusColor);
+
+                if ((virusColor == VirusName.Red && _player.RedCardsInHand.Any()) ||
+                    (virusColor == VirusName.Yellow && _player.YellowCardsInHand.Any()) ||
+                    (virusColor == VirusName.Blue && _player.BlueCardsInHand.Any()))
+                {
+                    _player.secondRoleActionUsed = true;
+                    Timeline.theTimeline.addEvent(new PTreatDisease(city));
+                }
+            }
+
+            /*Debug.Log("Red Cards in hand ? " + _player.RedCardsInHand.Any());
+            Debug.Log("Yellow Cards in hand ? " + _player.YellowCardsInHand.Any());
+            Debug.Log("Blue Cards in hand ? " + _player.BlueCardsInHand.Any());*/
         }
+
         else if (ActionSelected == ActionTypes.CharacterAction && PlayerModel.Role == Player.Roles.Pilot)
         {
             City cityToMoveTo = game.Cities[city.city.cityID];
@@ -916,15 +946,17 @@ public class PlayerGUI : MonoBehaviour
         {
             Timeline.theTimeline.addEvent(new PTreatDisease(city, virusName));
         }
-        else if(cardsState == CardGUIStates.CardsExpandedVirologistAction)
+        else if( ActionSelected == ActionTypes.Treat && _player.Role == Player.Roles.Virologist 
+                                                     && _player.ActionsRemaining > 0 
+                                                     && city.cubesInCity() 
+                                                     && (!PlayerModel.secondRoleActionUsed))
         {
             foreach (int card in PlayerModel.CityCardsInHand)
             {
                 if (game.Cities[card].city.virusInfo.virusName == virusName)
                 {
                     Timeline.theTimeline.addEvent(new PTreatDisease(city, virusName));
-                    PlayerModel.roleActionUsed = true;
-                    ClearSelectedAction();
+                    PlayerModel.secondRoleActionUsed = true;
                     break;
                 }
             }

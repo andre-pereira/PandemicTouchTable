@@ -43,6 +43,7 @@ public class Player
     public int ActionsRemaining { get; private set; }
 
     public bool roleActionUsed = false;
+    public bool secondRoleActionUsed = false; // For virologist's second special ability
 
     public Player(int tablePositionId, Roles playerRole, string playerName)
     {
@@ -157,6 +158,7 @@ public class Player
     {
         ActionsRemaining = 4;
         roleActionUsed = false;
+        secondRoleActionUsed = false;
         playerGui.ClearSelectedAction();
         playerGui.ActionsContainer.SetActive(true);
     }
