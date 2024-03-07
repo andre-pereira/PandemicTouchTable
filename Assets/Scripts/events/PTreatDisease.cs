@@ -1,4 +1,5 @@
-﻿using static ENUMS;
+﻿using UnityEngine;
+using static ENUMS;
 
 public class PTreatDisease : PlayerEvent
 {
@@ -27,6 +28,11 @@ public class PTreatDisease : PlayerEvent
         
         if (virus != null)
         {
+            if (game.RedCure || game.BlueCure || game.YellowCure)
+            {
+                city.resetCubesOfColor((VirusName)virus);
+                Debug.Log("A cure has been found!");
+            }
             city.incrementNumberOfCubes((VirusName)virus, -1);
             game.incrementNumberOfCubesOnBoard((VirusName)virus, 1);
         }

@@ -73,10 +73,34 @@ public class City : MonoBehaviour
         return 0;
     }
 
-    public void resetCubes()
+    public void resetCubesOfColor(VirusName virusName)
+    {
+        switch (virusName)
+        {
+            case VirusName.Red:
+                resetRedCubes();
+                break;
+            case VirusName.Blue:
+                resetBlueCubes();
+                break;
+            case VirusName.Yellow:
+                resetYellowCubes();
+                break;
+        }
+    }
+    
+    private void resetRedCubes()
     {
         numberOfInfectionCubesRed = 0;
+    }
+
+    private void resetYellowCubes()
+    {
         numberOfInfectionCubesYellow = 0;
+    }
+
+    private void resetBlueCubes()
+    {
         numberOfInfectionCubesBlue = 0;
     }
 
