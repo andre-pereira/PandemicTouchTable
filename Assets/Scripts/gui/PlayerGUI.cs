@@ -457,16 +457,19 @@ public class PlayerGUI : MonoBehaviour
 
     private bool ableToFindCure()
     {
-        if (_player.Role != Player.Roles.Virologist)
-            return 
-                !game.RedCure && PlayerModel.RedCardsInHand.Count > 3 || 
-                !game.YellowCure && PlayerModel.YellowCardsInHand.Count > 3 || 
-                !game.BlueCure && PlayerModel.BlueCardsInHand.Count > 3;
-        else
-            return
-                    !game.RedCure && PlayerModel.RedCardsInHand.Count > 2 && PlayerModel.CityCardsInHand.Count > 4 ||
-                    !game.YellowCure && PlayerModel.YellowCardsInHand.Count > 2 && PlayerModel.CityCardsInHand.Count > 4 ||
-                    !game.BlueCure && PlayerModel.BlueCardsInHand.Count > 2 && PlayerModel.CityCardsInHand.Count > 4;
+        return (!game.RedCure && PlayerModel.RedCardsInHand.Count > 3) ||
+               (!game.YellowCure && PlayerModel.YellowCardsInHand.Count > 3) ||
+               (!game.BlueCure && PlayerModel.BlueCardsInHand.Count > 3) ||
+               isVirologistAbleToCure();
+    }
+
+    private bool isVirologistAbleToCure()
+    {
+        return _player.Role == Player.Roles.Virologist && PlayerModel.CityCardsInHand.Count >= 5 && (
+            (!game.RedCure && PlayerModel.RedCardsInHand.Count == 3) ||
+            (!game.YellowCure && PlayerModel.YellowCardsInHand.Count == 3) ||
+            (!game.BlueCure && PlayerModel.BlueCardsInHand.Count == 3)
+        );
     }
 
     #region Buttons
