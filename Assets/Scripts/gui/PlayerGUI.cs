@@ -73,6 +73,9 @@ public class PlayerGUI : MonoBehaviour
 
     private EventState pInEvent = EventState.NOTINEVENT;
     
+    private const int MAX_CARDS = 5;
+    private const int MAX_SAME_COLOR_CARDS = 4;
+    
     public EventState PInEventCard
     {
         get { return pInEvent; }
@@ -515,7 +518,7 @@ public class PlayerGUI : MonoBehaviour
 
         if (buttonType == 4)
         {
-            RigtArrowButtonClicked();
+            RightArrowButtonClicked();
         }
 
         cardsState = CardGUIStates.None;
@@ -523,7 +526,7 @@ public class PlayerGUI : MonoBehaviour
         draw();
     }
 
-    private void RigtArrowButtonClicked()
+    private void RightArrowButtonClicked()
     {
         ContextButtons[5].SetActive(false);
         if(pInEvent == EventState.FORECAST)
@@ -839,8 +842,9 @@ public class PlayerGUI : MonoBehaviour
                 }
                 else
                 {
-                    if (AddCardAndTestForCure(cardClickedScript))
+                    if (AddCardAndTestForCure(cardClickedScript)) //TODO: check how this works
                     { 
+                            Debug.Log("You can now cure the disease!");
                             cardsState = CardGUIStates.CardsExpandedCureActionSelected;
                             ContextButtons[1].SetActive(true);
                     }
@@ -1004,18 +1008,12 @@ public class PlayerGUI : MonoBehaviour
 
     #endregion
 
-    private bool AddCardAndTestForCure(CityCardDisplay cardClickedScript)
+    private void CountSelectedCardColors(out int numRedCards, out int numYellowCards, out int numBlueCards)
     {
-        bool virologist = PlayerModel.Role == Player.Roles.Virologist;
-        VirusName cardClickedVirusName = cardClickedScript.CityCardData.virusInfo.virusName;
-
-        int cardID = cardClickedScript.CityCardData.cityID;
-        int numRedCards = 0;
-        int numYellowCards = 0;
-        int numBlueCards = 0;
-        const int MAX_CARDS = 5;
-        const int MAX_SAME_COLOR_CARDS = 4;
-
+        numRedCards = 0;
+        numBlueCards = 0;
+        numYellowCards = 0;
+        
         foreach (int card in selectedCards)
         {
             switch (game.Cities[card].city.virusInfo.virusName)
@@ -1031,87 +1029,196 @@ public class PlayerGUI : MonoBehaviour
                     break;
             }
         }
+    }
+    /*
+     * Check whether the disease can be cured after selecting a card
+     * Returns true when curing the disease is possible, false otherwise
+     */
+    private bool AddCardAndTestForCure(CityCardDisplay cardClickedScript)
+    {
+        bool isVirologist = PlayerModel.Role == Player.Roles.Virologist;
+        VirusName cardClickedVirusName = cardClickedScript.CityCardData.virusInfo.virusName;
 
-        bool toAdd = false;
-        switch (cardClickedVirusName)
-        {
-            case VirusName.Red:
-                if (!virologist)
-                {
-                    if (game.RedCure)
-                        return false;
-                    if (numBlueCards == 0 && numYellowCards == 0 && numRedCards < MAX_SAME_COLOR_CARDS) toAdd = true;
-                }
-                else
-                {
-                    if (selectedCards.Count < 4) toAdd = true;
-                    else
-                    {
-                        if (numYellowCards == 3 && !game.YellowCure) toAdd = true;
-                        else if (numBlueCards == 3 && !game.BlueCure) toAdd = true;
-                        else if (numRedCards > 2 && !game.RedCure) toAdd = true;
-                    }
-                }
-                break;
-            case VirusName.Yellow:
-                if (!virologist)
-                {
-                    if (game.YellowCure)
-                        return false;
-                    if (numRedCards == 0 && numBlueCards == 0 && numYellowCards < MAX_SAME_COLOR_CARDS) toAdd = true;
-                }
-                else
-                {
-                    if (selectedCards.Count < 4) toAdd = true;
-                    else
-                    {
-                        if (numRedCards == 3 && !game.RedCure) toAdd = true;
-                        else if (numBlueCards == 3 && !game.BlueCure) toAdd = true;
-                        else if (numYellowCards > 2 && !game.YellowCure) toAdd = true;
-                    }
-                }
-                break;
-            case VirusName.Blue:
-                if (!virologist)
-                {
-                    if (game.BlueCure)
-                        return false;
-                    if (numRedCards == 0 && numYellowCards == 0 && numBlueCards < MAX_SAME_COLOR_CARDS) toAdd = true;
-                }
-                else
-                {
-                    if (selectedCards.Count < 4) toAdd = true;
-                    else
-                    {
-                        if (numRedCards == 3 && !game.RedCure) toAdd = true;
-                        else if (numYellowCards == 3 && !game.YellowCure) toAdd = true;
-                        else if (numBlueCards > 2 && !game.BlueCure) toAdd = true;
-                    }
-                }
-                break;
-        }
+        int cardID = cardClickedScript.CityCardData.cityID;
+        
 
-        if (toAdd)
+        CountSelectedCardColors(out int numRedCards, out int numYellowCards, out int numBlueCards);
+        
+        if (CanAddCard(cardClickedVirusName, numRedCards, numBlueCards, numYellowCards, isVirologist))
         {
             selectedCards.Add(cardID);
+            switch (cardClickedVirusName)
+            {
+                case VirusName.Red:
+                    numRedCards++;
+                    break;
+                case VirusName.Blue:
+                    numBlueCards++;
+                    break;
+                case VirusName.Yellow:
+                    numYellowCards++;
+                    break;
+            }
             getCardInHand(cardID).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
         }
+        
+        // Test if curing the disease if possible
+        return TestForCure(numRedCards, numBlueCards, numYellowCards, isVirologist);
+    }
 
-        if (!virologist)
+    private bool CanAddCard(VirusName cardClickedVirusName, int numRedCards, int numBlueCards,
+        int numYellowCards, bool isVirologist)
+    {
+        
+        int numCardsOfClickedColor =
+            GetNumCardsOfClickedColor(cardClickedVirusName, numRedCards, numBlueCards, numYellowCards);
+        int numCardsOfOtherColor =
+            GetNumCardsOfOtherColors(cardClickedVirusName, numRedCards, numBlueCards, numYellowCards);
+
+        int numOtherColors = 0;
+        switch (cardClickedVirusName)
         {
-            if (selectedCards.Count >= MAX_SAME_COLOR_CARDS) return true;
+            case VirusName.Blue:
+                if (numYellowCards > 0) numOtherColors++;
+                if (numRedCards > 0) numOtherColors++;
+                break;
+            case VirusName.Red:
+                if (numBlueCards > 0) numOtherColors++;
+                if (numYellowCards > 0) numOtherColors++;
+                break;
+            case VirusName.Yellow:
+                if (numRedCards > 0) numOtherColors++;
+                if (numBlueCards > 0) numOtherColors++;
+                break;
+        }
+
+        if (isVirologist)
+        {
+            if (numCardsOfClickedColor == 2 && IsCureAlreadyFound(cardClickedVirusName))
+            {
+                Debug.Log($"The {cardClickedVirusName} disease has already been cured." +
+                          $" As a virologist, you can't pick more than 2 of its cards");
+                return false;
+            }
         }
         else
         {
-            if (selectedCards.Count == MAX_CARDS) return true;
-            else if (selectedCards.Count == MAX_SAME_COLOR_CARDS)
+            if (IsCureAlreadyFound(cardClickedVirusName))
             {
-                if (numRedCards == MAX_SAME_COLOR_CARDS || numYellowCards == MAX_SAME_COLOR_CARDS || numBlueCards == MAX_SAME_COLOR_CARDS) return true;
+                Debug.Log($"Cure has already been found for {cardClickedVirusName}");
+                return false;
             }
         }
-        return false;
+
+        bool canAdd;
+        if (numCardsOfClickedColor == MAX_SAME_COLOR_CARDS && (numCardsOfOtherColor == 0)) canAdd = false;
+        else
+        {
+            if (isVirologist)
+            {
+               /* canAdd = ((numCardsOfClickedColor + numCardsOfOtherColor <= MAX_CARDS) 
+                          && (numCardsOfClickedColor != MAX_SAME_COLOR_CARDS - 1 || numCardsOfOtherColor != 2)) 
+                         || ((numCardsOfClickedColor < MAX_SAME_COLOR_CARDS) && (numCardsOfOtherColor == 0));*/
+               canAdd = ((numCardsOfClickedColor + numCardsOfOtherColor < MAX_CARDS) 
+                         && !((numCardsOfClickedColor == 3 && numCardsOfOtherColor == 2)
+                              || (numCardsOfClickedColor == 0 && numCardsOfOtherColor == 4 && numOtherColors == 1) 
+                              //numCardsOfClickedColor is updated when the card is added to selectedCards
+                              //numOtherColors is the number of colors of numCardsOfOtherColor
+                              || (numCardsOfClickedColor == 2 && numCardsOfOtherColor == 3)
+                              || (numCardsOfClickedColor == 4 && numCardsOfOtherColor == 0)))
+                         || ((numCardsOfClickedColor < MAX_SAME_COLOR_CARDS) && (numCardsOfOtherColor == 0));
+                Debug.Log($"Virologist {cardClickedVirusName}, card addition branch, canAdd: {canAdd}, " +
+                          $"numColor : {numOtherColors}");
+            }
+            else
+            {
+                canAdd = (numCardsOfClickedColor < MAX_SAME_COLOR_CARDS) && (numCardsOfOtherColor == 0);
+            }
+        }
+        
+        return canAdd;
     }
 
+    private bool TestForCure(int numRedCards, int numBlueCards, int numYellowCards, bool isVirologist)
+    {
+        bool isCurePossible = false;
+        if (!isVirologist)
+        {
+            if (selectedCards.Count == MAX_SAME_COLOR_CARDS) isCurePossible = true;
+        }
+        else
+        {
+            if ((selectedCards.Count == MAX_CARDS && (numRedCards == 3 && numBlueCards + numYellowCards == 2)
+                    || (numBlueCards == 3 && numRedCards + numYellowCards == 2)
+                    || (numYellowCards == 3 && numRedCards + numBlueCards == 2)) 
+                || (selectedCards.Count == MAX_SAME_COLOR_CARDS &&
+                    (numRedCards == MAX_SAME_COLOR_CARDS 
+                     || numYellowCards == MAX_SAME_COLOR_CARDS 
+                     || numBlueCards == MAX_SAME_COLOR_CARDS)))
+            {
+                isCurePossible = true; 
+            }
+        }
+        return isCurePossible;
+    }
+    
+    private bool IsCureAlreadyFound(VirusName virusName)
+    {
+        bool isCureFound = false;
+        switch (virusName)
+        {
+            case VirusName.Red:
+                isCureFound = game.RedCure;
+                break;
+            case VirusName.Blue:
+                isCureFound = game.BlueCure;
+                break;
+            case VirusName.Yellow:
+                isCureFound = game.YellowCure;
+                break;
+        }
+
+        return isCureFound;
+    }
+
+    private int GetNumCardsOfClickedColor(VirusName virusName, int numRedCards, int numBlueCards, int numYellowCards)
+    {
+        int numCardsOfClickedColor = 0;
+        switch (virusName)
+        {
+            case VirusName.Red:
+                numCardsOfClickedColor = numRedCards;
+                break;
+            case VirusName.Blue:
+                numCardsOfClickedColor = numBlueCards;
+                break;
+            case VirusName.Yellow:
+                numCardsOfClickedColor = numYellowCards;
+                break;
+        }
+
+        return numCardsOfClickedColor;
+    }
+
+    private int GetNumCardsOfOtherColors(VirusName virusName, int numRedCards, int numBlueCards, int numYellowCards)
+    {
+        int numCardsOfOtherColors = 0;
+        switch (virusName)
+        {
+            case VirusName.Red:
+                numCardsOfOtherColors = numBlueCards + numYellowCards;
+                break;
+            case VirusName.Blue:
+                numCardsOfOtherColors = numRedCards + numYellowCards;
+                break;
+            case VirusName.Yellow:
+                numCardsOfOtherColors = numBlueCards + numRedCards;
+                break;
+        }
+
+        return numCardsOfOtherColors;
+    }
+    
     private void enableOwnTurnActions(bool enabled)
     {
         MoveAction.SetActive(enabled);
