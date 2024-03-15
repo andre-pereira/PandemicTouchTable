@@ -28,7 +28,9 @@ public class PTreatDisease : PlayerEvent
         
         if (virus != null)
         {
-            if (game.RedCure || game.BlueCure || game.YellowCure)
+            if ((game.RedCure && virus == VirusName.Red)
+                || (game.BlueCure && virus == VirusName.Blue) 
+                || (game.YellowCure && virus == VirusName.Yellow))
             {
                 city.resetCubesOfColor((VirusName)virus);
                 Debug.Log("A cure has been found!");
