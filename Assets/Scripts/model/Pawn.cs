@@ -65,23 +65,24 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
     public void OnEndDrag(PointerEventData eventData)
     {
         PlayerGUI pGUI = currentPlayerPad();
-        if (endedInCity != null && endedInCity.city.cityID != theGame.CurrentPlayer.GetCurrentCity())
+        
+        if (endedInCity != null && endedInCity.city.cityID != PlayerModel.GetCurrentCity())
         {
             if (pGUI.ActionSelected == ActionTypes.Charter)
             {
                 Timeline.theTimeline.addEvent(new PCharterEvent(endedInCity));
                 Destroy(gameObject);
-                return;
             }
             else
             {
-                int distance = theGame.DistanceFromCity(this.PlayerModel.GetCurrentCity(), endedInCity.city.cityID);
+                int distance = theGame.DistanceFromCity(PlayerModel.GetCurrentCity(), endedInCity.city.cityID);
                 if (pGUI.PInEventCard == EventState.CALLTOMOBILIZE)
                 {
                     if(distance > 0 && distance <= 2)
                     {
-                        Timeline.theTimeline.addEvent(new PMobilizeEvent(this.PlayerModel, endedInCity.city.cityID));
-                        Destroy(this.gameObject);
+                        // check the distance from the city (<=2) when doing a call to mobilize
+                        Timeline.theTimeline.addEvent(new PMobilizeEvent(PlayerModel, endedInCity.city.cityID));
+                        Destroy(gameObject);
                     }
                     else rectTransform.localPosition = initialPosition;
                 }
@@ -90,7 +91,7 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
                     if (distance > 0 && distance <= pGUI.PlayerModel.ActionsRemaining)
                     {
                         Timeline.theTimeline.addEvent(new PMoveEvent(endedInCity.city.cityID, distance));
-                        Destroy(this.gameObject);
+                        Destroy(gameObject);
                     }
                     else rectTransform.localPosition = initialPosition;
                 }
@@ -103,13 +104,13 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
     public void OnBeginDrag(PointerEventData eventData)
     {
         initialPosition = rectTransform.localPosition;
-        initialCityID = theGame.CurrentPlayer.GetCurrentCity();
+        initialCityID = PlayerModel.GetCurrentCity();
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         if (IsInterfaceElement)
-            theGame.CurrentPlayer.playerGui.PawnClicked(this);
+            PlayerModel.playerGui.PawnClicked(this);
     }
 
     internal void SetRoleAndPlayer(Player player)
