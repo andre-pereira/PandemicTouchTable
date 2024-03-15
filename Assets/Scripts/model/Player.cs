@@ -161,5 +161,7 @@ public class Player
         secondRoleActionUsed = false;
         playerGui.ClearSelectedAction();
         playerGui.ActionsContainer.SetActive(true);
+        
+        theGame.MobileHospitalPlayer = null;
     }
 }
