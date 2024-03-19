@@ -21,15 +21,16 @@ internal class EIntensify : EngineEvent
     public override float Act(bool qUndo = false)
     {
         gui.InfectionDiscard.DestroyChildrenImmediate();
-        GameObject backCard = Object.Instantiate(gui.InfectionCardBackPrefab, gui.InfectionDiscard.transform.position, gui.PlayerDeck.transform.rotation, gui.InfectionDiscard.transform);
+        GameObject backCard = Object.Instantiate(gui.InfectionCardBackPrefab, gui.InfectionDiscard.transform.position, gui.InfectionDeck.transform.rotation, gui.InfectionDiscard.transform);
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(backCard.transform.DOShakeRotation(ANIMATIONDURATION, new Vector3(0f, 0f, 3f), 10, 90, false));
+        backCard.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        sequence.Append(backCard.transform.DOShakeRotation(ANIMATIONDURATION, new Vector3(0f, 0f, 2f), 10, 90, false));
         sequence.Append(backCard.transform.DOMove(gui.InfectionDeck.transform.position, ANIMATIONDURATION));
         sequence.AppendCallback(() =>
         {
             Object.Destroy(backCard);
             gui.draw();
-            gui.EpidemicCardBoard.enabled = false;
+            gui.EpidemicCardBoard.enabled = true;
         });
 
         return sequence.Duration();

@@ -151,13 +151,13 @@ public class Game : MonoBehaviour
                 setCurrentGameState(GameState.GAME_OVER);
             }
             else {
-                if (actionsInitiated == false)
+                if (!actionsInitiated)
                 {
                     actionsInitiated = true;
                     Debug.Log("Draw Player Card: " + CurrentGameState + " Cards available: " + PlayerCards.Count);
                     Timeline.theTimeline.addEvent(new PDealCard(CurrentPlayer));
                 }
-                if(actionCompleted == true)
+                if(actionCompleted)
                 {
                     actionCompleted = false;
                     if (PlayerCardsDrawn < 2)
