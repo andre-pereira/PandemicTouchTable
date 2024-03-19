@@ -19,7 +19,7 @@ internal class EOutbreak : EngineEvent
 
     public override void Do(Timeline timeline)
     {
-        theGame.setCurrentGameState(GameState.OUTBREAK);
+        theGame.setCurrentGameState(GameState.OUTBREAK); // TODO: needs refactoring, not MVC compliant
         quarantineSpecialistExceptions = new List<int>();
         foreach (Player player in PlayerList.Players)
         {
@@ -33,6 +33,7 @@ internal class EOutbreak : EngineEvent
         bool recurrentOutbreak = false;
         
         theGame.OutbreakTracker.Add(originOfOutbreak.city.cityID);
+        theGame.OutbreakCounter++;
         
         foreach (int neighbor in originOfOutbreak.city.neighbors)
         {
