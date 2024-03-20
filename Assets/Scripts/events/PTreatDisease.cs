@@ -32,11 +32,15 @@ public class PTreatDisease : PlayerEvent
                 || (game.BlueCure && virus == VirusName.Blue) 
                 || (game.YellowCure && virus == VirusName.Yellow))
             {
+                game.incrementNumberOfCubesOnBoard((VirusName) virus, city.getNumberOfCubes((VirusName) virus));
                 city.resetCubesOfColor((VirusName)virus);
-                Debug.Log("A cure has been found!");
+                //Debug.Log("A cure has been found!");
             }
-            city.incrementNumberOfCubes((VirusName)virus, -1);
-            game.incrementNumberOfCubesOnBoard((VirusName)virus, 1);
+            else
+            {
+                city.incrementNumberOfCubes((VirusName)virus, -1);
+                game.incrementNumberOfCubesOnBoard((VirusName)virus, 1); 
+            }
         }
 
         _player.DecreaseActionsRemaining(1);
