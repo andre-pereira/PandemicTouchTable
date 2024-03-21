@@ -13,7 +13,8 @@ internal class EIntensify : EngineEvent
 
     public override void Do(Timeline timeline)
     {
-        theGame.InfectionCardsDiscard.Shuffle();
+        theGame.InfectionCardsDiscard.Shuffle(theGame.infectionCardsRandomGeneratorState);
+        theGame.infectionCardsRandomGeneratorState = Random.state;
         theGame.InfectionCards.AddRange(theGame.InfectionCardsDiscard);
         theGame.InfectionCardsDiscard.Clear();
     }

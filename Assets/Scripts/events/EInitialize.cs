@@ -1,17 +1,17 @@
-using JetBrains.Annotations;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using static GameGUI;
 using static Game;
-using static ENUMS;
 
 [System.Serializable]
 public class EInitialize : EngineEvent
 {
-    public int? Seed;
+    
+    private int PlayerCardsSeed;
+    private int InfectionCardsSeed;
 
+    
     public EInitialize()
     {
         QUndoable = false;
@@ -37,9 +37,17 @@ public class EInitialize : EngineEvent
 
     public void initializeSeeds()
     {
-        if (!Seed.HasValue)
-            Seed = Mathf.Abs(System.DateTime.UtcNow.Ticks.GetHashCode());
-        UnityEngine.Random.InitState(Seed.Value);
+        int randomSeed = Mathf.Abs(System.DateTime.UtcNow.Ticks.GetHashCode());
+        
+        PlayerCardsSeed = theGame.PlayerCardsSeed == -1 ? randomSeed : theGame.PlayerCardsSeed;
+
+        InfectionCardsSeed = theGame.InfectionCardsSeed == -1 ? randomSeed : theGame.InfectionCardsSeed;
+
+        Random.InitState(PlayerCardsSeed);
+        theGame.playerCardsRandomGeneratorState = Random.state;
+        
+        Random.InitState(InfectionCardsSeed);
+        theGame.infectionCardsRandomGeneratorState = Random.state;
     }
 
     public void initializeModel()
@@ -48,14 +56,16 @@ public class EInitialize : EngineEvent
 
         //0 to 23 are city cards and 24 to 27 are event cards
         theGame.PlayerCards = Enumerable.Range(0, 28).ToList();
-        theGame.PlayerCards.Shuffle();
+        theGame.PlayerCards.Shuffle(theGame.playerCardsRandomGeneratorState);
+        theGame.playerCardsRandomGeneratorState = Random.state;
 
         ////TODO: remove this
         //for (int i = 0; i < 4; ++i)
         //    theGame.PlayerCards.Add(24+i);
 
         theGame.InfectionCards = Enumerable.Range(0, 24).ToList();
-        theGame.InfectionCards.Shuffle();
+        theGame.InfectionCards.Shuffle(theGame.infectionCardsRandomGeneratorState);
+        theGame.infectionCardsRandomGeneratorState = Random.state;
 
         int numCardsToDeal = PlayerList.Players.Count == 2 ? 3 : 2;
         foreach (Player player in PlayerList.Players)

@@ -1,12 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 using System.Linq;
-using System;
 using static ENUMS;
 using static GameGUI;
 using UnityEngine.UI;
-using Unity.VisualScripting;
+using Random = UnityEngine.Random;
 
 public class Game : MonoBehaviour
 {
@@ -58,6 +56,12 @@ public class Game : MonoBehaviour
         EPIDEMICINTENSIFY
     }
 
+    public int PlayerCardsSeed = -1; // -1 randomizes the game
+    public int InfectionCardsSeed = -1; // -1 randomizes the game
+    
+    public Random.State playerCardsRandomGeneratorState;
+    public Random.State infectionCardsRandomGeneratorState;
+    
     public int InfectionRate = 0;
     public int[] InfectionRateValues = new int[] { 2, 2, 3, 4 };
     public int NumberOfDrawnInfectCards = 0;
@@ -182,7 +186,7 @@ public class Game : MonoBehaviour
             }
             else if (epidemicGameState == EpidemicGameState.EPIDEMICINFECT)
             {
-                if (actionCompleted == true)
+                if (actionCompleted)
                 {
                     epidemicGameState = EpidemicGameState.EPIDEMICINTENSIFY;
                     Timeline.theTimeline.addEvent(new EIntensify());
@@ -192,7 +196,7 @@ public class Game : MonoBehaviour
         }
         else if (CurrentGameState == GameState.OUTBREAK)
         {
-            if (actionCompleted == true)
+            if (actionCompleted)
             {
                 OutbreakTracker.Clear();
                 setCurrentGameState(GameState.DRAWINFECTCARDS);
@@ -202,12 +206,12 @@ public class Game : MonoBehaviour
         {
             if (NumberOfDrawnInfectCards < InfectionRateValues[InfectionRate] && !turnEnded)
             {
-                if (actionsInitiated == false)
+                if (!actionsInitiated)
                 {
                     actionsInitiated = true;
                     Timeline.theTimeline.addEvent(new EDrawInfectionCard(1, true));
                 }
-                if (actionCompleted == true)
+                if (actionCompleted)
                 {
                     actionsInitiated = false;
                     actionCompleted = false;

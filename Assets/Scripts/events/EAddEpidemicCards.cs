@@ -54,9 +54,10 @@ internal class EAddEpidemicCards : EngineEvent
         part3.Add(28);
 
         // Shuffle each part
-        part1.Shuffle();
-        part2.Shuffle();
-        part3.Shuffle();
+        part1.Shuffle(theGame.playerCardsRandomGeneratorState);
+        part2.Shuffle(theGame.playerCardsRandomGeneratorState);
+        part3.Shuffle(theGame.playerCardsRandomGeneratorState);
+        theGame.playerCardsRandomGeneratorState = Random.state;
 
         // Join them back together
         var finalList = new List<int>();

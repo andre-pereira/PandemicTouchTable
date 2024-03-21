@@ -24,11 +24,6 @@ public class PlayerList : MonoBehaviour
         thePlayerList = null;
     }
 
-    public static void shuffle()
-    {
-        Players.Shuffle();
-    }
-
     public static Player playerAtPosition(int position)
     {
         return Players.Find(p => p.Position == position);

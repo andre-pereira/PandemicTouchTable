@@ -41,7 +41,8 @@ internal class EDrawInfectionCard : EngineEvent
         {
             theGame.InfectionCards = theGame.InfectionCardsDiscard;
             theGame.InfectionCardsDiscard = new List<int>();
-            theGame.InfectionCards.Shuffle();
+            theGame.InfectionCards.Shuffle(theGame.infectionCardsRandomGeneratorState);
+            theGame.infectionCardsRandomGeneratorState = Random.state;
         }
 
         cityToInfect = theGame.Cities[numberOfCityToInfect];
