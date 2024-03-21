@@ -30,6 +30,7 @@ internal class EOutbreak : EngineEvent
             }
         }
 
+        Debug.Log("Do of EOutbreak, OutbreakTracker before addition:" + string.Join(", ", theGame.OutbreakTracker));
         bool recurrentOutbreak = false;
         
         theGame.OutbreakTracker.Add(originOfOutbreak.city.cityID);
@@ -42,16 +43,22 @@ internal class EOutbreak : EngineEvent
             if (quarantineSpecialistExceptions.Contains(neighborCity.city.cityID))
                 continue;
 
-            infectCities.Add(neighbor);
-            if (neighborCity.incrementNumberOfCubes(originOfOutbreak.city.virusInfo.virusName, 1))
+            if (!theGame.OutbreakTracker.Contains(neighborCity.city.cityID))
             {
-                if (theGame.OutbreakTracker.Contains(neighborCity.city.cityID) == false)
+                infectCities.Add(neighbor);
+                if (neighborCity.incrementNumberOfCubes(originOfOutbreak.city.virusInfo.virusName,
+                        1)) // True when Outbreak happens 
                 {
                     Timeline.theTimeline.addEvent(new EOutbreak(neighborCity));
                     recurrentOutbreak = true;
                 }
+
             }
         }
+        
+        Debug.Log("Do of EOutbreak, OutbreakTracker after addition:" + string.Join(", ", theGame.OutbreakTracker) +
+                  " infectCities = " + string.Join(", ", infectCities));
+        
         if(!recurrentOutbreak)
             theGame.actionCompleted = true;
     }
@@ -59,31 +66,40 @@ internal class EOutbreak : EngineEvent
     public override float Act(bool qUndo = false)
     {
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(originOfOutbreak.transform.DOShakeRotation(ANIMATIONDURATION, new Vector3(0f, 0f, 3f), 10, 90, false));
-        List<GameObject> listCubes = new List<GameObject>();
-        foreach (int neighbor in infectCities)
+        
+        if (infectCities.Any())
         {
-            //City neighborCity = gui.Cities[neighbor].GetComponent<City>();
-            if(quarantineSpecialistExceptions.Contains(neighbor) || theGame.OutbreakTracker.Contains(neighbor))
-                continue;
+            sequence.Append(originOfOutbreak.transform.DOShakeRotation(ANIMATIONDURATION, new Vector3(0f, 0f, 3f), 10,
+                90, false));
+            List<GameObject> listCubes = new List<GameObject>();
+            foreach (int neighbor in infectCities)
+            {
+                //City neighborCity = gui.Cities[neighbor].GetComponent<City>();
+                if (quarantineSpecialistExceptions.Contains(neighbor))
+                    continue;
 
-            GameObject cube = Object.Instantiate(gui.cubePrefab, originOfOutbreak.transform.position, originOfOutbreak.transform.rotation, gui.AnimationCanvas.transform);
-            cube.GetComponent<Cube>().virusInfo = originOfOutbreak.city.virusInfo;
-            listCubes.Add(cube);
-            sequence.Join(cube.transform.DOMove(gui.Cities[neighbor].transform.position, ANIMATIONDURATION));
+                GameObject cube = Object.Instantiate(gui.cubePrefab, originOfOutbreak.transform.position,
+                    originOfOutbreak.transform.rotation, gui.AnimationCanvas.transform);
+                cube.GetComponent<Cube>().virusInfo = originOfOutbreak.city.virusInfo;
+                listCubes.Add(cube);
+                sequence.Join(cube.transform.DOMove(gui.Cities[neighbor].transform.position, ANIMATIONDURATION));
+            }
+
+            sequence.AppendCallback(() =>
+            {
+                foreach (GameObject cube in listCubes)
+                {
+                    Object.Destroy(cube);
+                }
+
+                foreach (int neighbor in originOfOutbreak.city.neighbors)
+                {
+                    City neighborCity = gui.Cities[neighbor].GetComponent<City>();
+                    neighborCity.draw();
+                }
+            });
         }
-        sequence.AppendCallback(() =>
-        {
-            foreach (GameObject cube in listCubes)
-            {
-                Object.Destroy(cube);
-            }
-            foreach (int neighbor in originOfOutbreak.city.neighbors)
-            {
-                City neighborCity = gui.Cities[neighbor].GetComponent<City>();
-                neighborCity.draw();
-            }
-        });
+
         return sequence.Duration();
     }
 }
