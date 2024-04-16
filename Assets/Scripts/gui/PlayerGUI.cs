@@ -2,16 +2,8 @@
 using System.Linq;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine.Events;
-using DG.Tweening;
-using System;
-using UnityEditor;
-using Unity.VisualScripting;
-using System.ComponentModel;
 using static ENUMS;
 using static Game;
-using UnityEngine.Diagnostics;
-using Newtonsoft.Json.Linq;
 
 public class PlayerGUI : MonoBehaviour
 {
@@ -68,6 +60,8 @@ public class PlayerGUI : MonoBehaviour
 
     public GameObject[] ResourcePlanningEventCardsCities;
     public GameObject[] ResourcePlanningEventCardsEvents;
+    public GameObject[] ResourcePlanningEventCardsEpidemic;
+    
     internal List<int> ResourcePlanningEventCardsIDs = new List<int>();
     internal int ResourcePlanningEventCardSelected = -1;
 
@@ -174,32 +168,30 @@ public class PlayerGUI : MonoBehaviour
 
     public void draw()
     {
-        if (_isAnimating) return;
-        if (PlayerModel == null) return;
+        if (_isAnimating || PlayerModel == null) return;
         
         createCardsInHand();
-
         if (_player.PlayerCardsInHand.Count > 6)
         {
             drawHandleDiscard();
         }
         else if (cardsState != CardGUIStates.None || PlayerModel != game.CurrentPlayer)
         {
-            if (_player.PlayerCardsInHand.Count <= 6)
+            if (cardsState == CardGUIStates.CardsDiscarding)
             {
-                if (cardsState == CardGUIStates.CardsDiscarding)
-                {
-                    cardsState = CardGUIStates.None;
-                }
-                changeHorizontalLayout(option: 2);
+                cardsState = CardGUIStates.None;
             }
+            changeHorizontalLayout(option: 2);
         }
         else
         {
             changeHorizontalLayout(option: 3);
         }
-
-        if (pInEvent != EventState.NOTINEVENT) drawEventHandling();
+        
+        if (pInEvent != EventState.NOTINEVENT && _player.PlayerCardsInHand.Count <= 6)
+        {
+            drawEventHandling();
+        }
             else if (PlayerModel == game.CurrentPlayer) ownTurnActionHandling();
             else notMyTurnHandling();
 
@@ -302,13 +294,15 @@ public class PlayerGUI : MonoBehaviour
             roleCard.gameObject.SetActive(false);
 
             ResourcePlanningEventCardsCities[0].transform.parent.parent.gameObject.SetActive(true);
-
+            
             for (int i = 0; i < ResourcePlanningEventCardsCities.Length; i++)
             {
                 if (i <= ResourcePlanningEventCardsIDs.Count - 1)
                 {
                     if (ResourcePlanningEventCardsIDs[i] < 24)
                     {
+                        ResourcePlanningEventCardsEpidemic[i].SetActive(false);
+                        
                         ResourcePlanningEventCardsEvents[i].SetActive(false);
                         CityCard infoCard = theGame.Cities[ResourcePlanningEventCardsIDs[i]].city;
                         CityCardDisplay cardDisplay = ResourcePlanningEventCardsCities[i].GetComponentInChildren<CityCardDisplay>();
@@ -324,8 +318,10 @@ public class PlayerGUI : MonoBehaviour
                             cardDisplay.border.gameObject.SetActive(false);
                         }
                     }
-                    else
+                    else if (ResourcePlanningEventCardsIDs[i] < 28)
                     {
+                        ResourcePlanningEventCardsEpidemic[i].SetActive(false);
+
                         ResourcePlanningEventCardsCities[i].SetActive(false);
                         EventCard infoCard = GameGUI.gui.Events[ResourcePlanningEventCardsIDs[i] - 24];
                         EventCardDisplay cardDisplay = ResourcePlanningEventCardsEvents[i].GetComponentInChildren<EventCardDisplay>();
@@ -341,8 +337,25 @@ public class PlayerGUI : MonoBehaviour
                         }
 
                     }
+                    else if (ResourcePlanningEventCardsIDs[i] == 28)
+                    {
+                        ResourcePlanningEventCardsCities[i].SetActive(false);
+
+                        EpidemicCardDisplay cardDisplay = ResourcePlanningEventCardsEpidemic[i]
+                            .GetComponentInChildren<EpidemicCardDisplay>();
+                        
+                        ResourcePlanningEventCardsEpidemic[i].SetActive(true);
+                        
+                        if (ResourcePlanningEventCardSelected == 28)
+                        {
+                            cardDisplay.border.gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            cardDisplay.border.gameObject.SetActive(false);
+                        }
+                    }
                 }
-                else ResourcePlanningEventCardsCities[i].SetActive(false);
             }
         }
     }
@@ -618,10 +631,19 @@ public class PlayerGUI : MonoBehaviour
 
     private void AcceptButtonClicked()
     {
-        if (pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE) Timeline.theTimeline.addEvent(new PCallToMobilizeCardPlayed(this.PlayerModel));
+        if (pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE) Timeline.theTimeline.addEvent(new PCallToMobilizeCardPlayed(PlayerModel));
         else if (pInEvent == EventState.CONFIRMINGRESOURCEPLANNING) Timeline.theTimeline.addEvent(new PResourcePlanningCardPlayed(PlayerModel));
         else if (pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL) Timeline.theTimeline.addEvent(new PMobileHospitalCardPlayed(PlayerModel));
         else if (pInEvent == EventState.CONFIRMINGFORECAST) Timeline.theTimeline.addEvent(new PForecastCardPlayed(PlayerModel));
+        
+        else if (pInEvent == EventState.NOTINEVENT && cardsState == CardGUIStates.CardsDiscarding)
+        {
+            if (selectedCards[0] == 24) Timeline.theTimeline.addEvent(new PCallToMobilizeCardPlayed(PlayerModel));
+            if (selectedCards[0] == 25) Timeline.theTimeline.addEvent(new PForecastCardPlayed(PlayerModel));
+            if (selectedCards[0] == 26) Timeline.theTimeline.addEvent(new PMobileHospitalCardPlayed(PlayerModel));
+            if (selectedCards[0] == 27) Timeline.theTimeline.addEvent(new PResourcePlanningCardPlayed(PlayerModel));
+        }
+        
         else if (pInEvent == EventState.CALLTOMOBILIZE)
         {
             eventExecuted = true;
@@ -854,7 +876,7 @@ public class PlayerGUI : MonoBehaviour
         }
         else
         {
-            if (pInEvent == EventState.NOTINEVENT)
+            if (pInEvent == EventState.NOTINEVENT && cardsState != CardGUIStates.CardsDiscarding)
             {
                 if (cardClicked == 24)      pInEvent = EventState.CONFIRMINGCALLTOMOBILIZE;
                 else if (cardClicked == 25) pInEvent = EventState.CONFIRMINGFORECAST;
