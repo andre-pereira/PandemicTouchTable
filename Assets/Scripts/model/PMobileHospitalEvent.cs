@@ -1,4 +1,5 @@
-﻿using static ENUMS;
+﻿using UnityEngine;
+using static ENUMS;
 using static Game;
 
 public class PMobileHospitalEvent : PlayerEvent
@@ -26,14 +27,21 @@ public class PMobileHospitalEvent : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
-        city.incrementNumberOfCubes((VirusName)virusName, -1);
-        game.incrementNumberOfCubesOnBoard((VirusName)virusName, 1);
+        /*Debug.Log("Player of Mobile Hospital = " + game.CurrentPlayer.Name);
+        Debug.Log("In the city :" + game.CurrentPlayer.GetCurrentCity() + " cityID=" + city.city.cityID + " theGame.InEventCard = " + theGame.InEventCard);*/
 
-        theGame.MobileHospitalPlayer.playerGui.ChangeToInEvent(EventState.NOTINEVENT);
-        theGame.ChangeToInEvent(EventState.NOTINEVENT);
-        theGame.RemovePlayersWait();
-        theGame.MobileHospitalPlayer.playerGui.CubeClicked(city, virusName);
+        if (city.city.cityID == game.CurrentPlayer.GetCurrentCity() && theGame.InEventCard == EventState.EXECUTINGMOBILEHOSPITAL)
+        {
+            //Debug.Log("In the city :" + game.CurrentPlayer.GetCurrentCity() + " city.getInstanceID=" + city.GetInstanceID());
+            city.incrementNumberOfCubes((VirusName)virusName, -1);
+            game.incrementNumberOfCubesOnBoard((VirusName)virusName, 1);
 
+            theGame.MobileHospitalPlayer.playerGui.ChangeToInEvent(EventState.NOTINEVENT);
+            theGame.ChangeToInEvent(EventState.NOTINEVENT);
+            theGame.RemovePlayersWait();
+            theGame.CubeClicked(city, virusName);
+
+        }
 
     }
 }

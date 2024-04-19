@@ -97,7 +97,7 @@ public class Game : MonoBehaviour
     public bool BlueCure = false;
     private bool turnEnded = false;
 
-    private EventState InEventCard = EventState.NOTINEVENT;
+    public EventState InEventCard = EventState.NOTINEVENT;
 
     public City[] Cities { get; internal set; }
 
