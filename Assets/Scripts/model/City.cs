@@ -12,20 +12,20 @@ public class City : MonoBehaviour
     public static readonly float[][] offsetCubesRed = new float[][]
     {
         new float[] { 0.61f, -0.42f },
-        new float[] { 0.81f, -0.62f },
+        new float[] { 0.61f, -0.62f },
         new float[] { 0.61f, -0.82f }
     };
 
     public static readonly float[][] offsetCubesYellow = new float[][]
     {
         new float[] { 0.38f, -0.48f },
-        new float[] { 0.30f, -0.68f },
-        new float[] { 0.39f, -0.98f }
+        new float[] { 0.38f, -0.68f },
+        new float[] { 0.38f, -0.88f }
     };
     public static readonly float[][] offsetCubesBlue = new float[][]
     {
         new float[] { 0.15f, -0.42f },
-        new float[] { 0.0f, -0.62f },
+        new float[] { 0.15f, -0.62f },
         new float[] { 0.15f, -0.82f }
     };
 
