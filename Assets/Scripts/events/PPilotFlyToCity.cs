@@ -11,12 +11,6 @@
         this.otherPlayer = otherPlayer;
     }
 
-    public PPilotFlyToCity(int pilotCitySelected) : base(Game.theGame.CurrentPlayer)
-    {
-        this.pilotCitySelected = pilotCitySelected;
-        this.otherPlayer = null;
-    }
-
     public override void Do(Timeline timeline)
     {
         initialPlayerCity = _player.GetCurrentCity();

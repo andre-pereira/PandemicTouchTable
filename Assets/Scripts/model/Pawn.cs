@@ -110,7 +110,8 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
     public void OnPointerClick(PointerEventData eventData)
     {
         if (IsInterfaceElement)
-            PlayerModel.playerGui.PawnClicked(this);
+            theGame.CurrentPlayer.playerGui.PawnClicked(this);
+            //PlayerModel.playerGui.PawnClicked(this);
     }
 
     internal void SetRoleAndPlayer(Player player)
