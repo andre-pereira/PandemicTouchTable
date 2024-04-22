@@ -15,5 +15,5 @@ MonoBehaviour:
   roleName: Quarantine Specialist
   roleText: Do not place cubes on your city or cities connected to it. Does not apply
     during setup or the "Infect" step of an Epidemic.
-  roleColor: {r: 0.34751886, g: 0.6509434, b: 0.23028658, a: 1}
+  roleColor: {r: 0.400436, g: 0.9245283, b: 0.19624424, a: 1}
   mainArtwork: {fileID: 21300000, guid: 56ff3f058fab3244086b7e6c52d813a6, type: 3}

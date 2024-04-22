@@ -39,6 +39,8 @@ public class GameGUI : MonoBehaviour
     public Image EpidemicCardBoard;
 
     public GameObject CureVialPrefab;
+    
+
 
     //public GameObject LoadOverlay;
     public GameObject BackgroundCanvas;
@@ -47,6 +49,8 @@ public class GameGUI : MonoBehaviour
     public GameObject TokenCanvas;
     public GameObject PlayerCanvas;
     public GameObject AnimationCanvas;
+    public GameObject GameEndWin;
+    public GameObject GameEndLose;
 
     public List<PlayerGUI> PlayerPads;
     public RoleCard[] roleCards;
