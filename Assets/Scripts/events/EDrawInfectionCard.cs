@@ -69,6 +69,7 @@ internal class EDrawInfectionCard : EngineEvent
         {
             if (checkIfNoMoreCubesExist(cityToInfect))
             {
+                Timeline.theTimeline.clearPendingEvents();
                 Timeline.theTimeline.addEvent(new EGameOver(GameOverReasons.NoMoreCubesOfAColor));
                 return;
             }
@@ -98,6 +99,7 @@ internal class EDrawInfectionCard : EngineEvent
                 theGame.RedCubesOnBoard-= numberOfCubes;
                 if (theGame.RedCubesOnBoard < 0)
                 {
+                    Timeline.theTimeline.clearPendingEvents();
                     Timeline.theTimeline.addEvent(new EGameOver(GameOverReasons.NoMoreCubesOfAColor));
                     gameOver = true;
                 }
@@ -106,6 +108,7 @@ internal class EDrawInfectionCard : EngineEvent
                 theGame.YellowCubesOnBoard -= numberOfCubes;
                 if (theGame.YellowCubesOnBoard < 0)
                 {
+                    Timeline.theTimeline.clearPendingEvents();
                     Timeline.theTimeline.addEvent(new EGameOver(GameOverReasons.NoMoreCubesOfAColor));
                     gameOver = true;
                 }
@@ -114,6 +117,7 @@ internal class EDrawInfectionCard : EngineEvent
                 theGame.BlueCubesOnBoard -= numberOfCubes;
                 if (theGame.BlueCubesOnBoard < 0)
                 {
+                    Timeline.theTimeline.clearPendingEvents();
                     Timeline.theTimeline.addEvent(new EGameOver(GameOverReasons.NoMoreCubesOfAColor));
                     gameOver = true;
                 }

@@ -84,6 +84,11 @@ public class Timeline : MonoBehaviour
             Debug.Log("Control::addEvent - Warning: There are " + myPendingEvents.Count + " pending events.");
     }
 
+    public void clearPendingEvents()
+    {
+        myPendingEvents.Clear();
+    }
+
     float _executeDelay = 0;
     public void executeEvent(TimelineEvent e)
     {

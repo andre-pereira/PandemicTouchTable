@@ -15,24 +15,26 @@ public class EIncreaseOutbreak : EngineEvent
     public override void Do(Timeline timeline)
     {
         theGame.OutbreakCounter++;
-        if(theGame.OutbreakCounter == 4)
+        if(theGame.OutbreakCounter >= 4)
         {
+            Timeline.theTimeline.clearPendingEvents();
             timeline.addEvent(new EGameOver(GameOverReasons.TooManyOutbreaks));
         }
     }
 
     public override float Act(bool qUndo = false)
     {
-        Transform moveFrom = gui.OutbreakMarkerTransforms[theGame.OutbreakCounter - 1];
+
+        Transform moveFrom = gui.OutbreakMarkerTransforms[theGame.OutbreakCounter -1];
         Transform moveTo = gui.OutbreakMarkerTransforms[theGame.OutbreakCounter];
         moveFrom.gameObject.DestroyChildrenImmediate();
         GameObject marker = Object.Instantiate(gui.OutbreakMarkerPrefab, moveFrom.position, moveFrom.rotation, gui.AnimationCanvas.transform);
-        marker.transform.DOMove(moveTo.transform.position, ANIMATIONDURATION).OnComplete(() => 
+        marker.transform.DOMove(moveTo.transform.position, ANIMATIONDURATION).OnComplete(() =>
         {
             Object.Destroy(marker);
             gui.drawBoard();
         });
-        
+
         return ANIMATIONDURATION;
     }
 
