@@ -34,7 +34,8 @@ internal class EOutbreak : EngineEvent
         bool recurrentOutbreak = false;
         
         theGame.OutbreakTracker.Add(originOfOutbreak.city.cityID);
-        theGame.OutbreakCounter++;
+        Timeline.theTimeline.addEvent(new EIncreaseOutbreak());
+        //theGame.OutbreakCounter++;
         
         foreach (int neighbor in originOfOutbreak.city.neighbors)
         {
