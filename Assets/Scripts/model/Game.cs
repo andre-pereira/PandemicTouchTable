@@ -5,6 +5,7 @@ using static ENUMS;
 using static GameGUI;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using static UnityEditor.ShaderData;
 
 public class Game : MonoBehaviour
 {
@@ -202,7 +203,8 @@ public class Game : MonoBehaviour
                 setCurrentGameState(GameState.DRAWINFECTCARDS);
             }
         }
-        else if (CurrentGameState == GameState.DRAWINFECTCARDS)
+
+            else if (CurrentGameState == GameState.DRAWINFECTCARDS)
         {
             if (NumberOfDrawnInfectCards < InfectionRateValues[InfectionRate] && !turnEnded)
             {
