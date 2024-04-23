@@ -27,14 +27,14 @@ internal class PContainSpecialistRemoveWhenEntering : PlayerEvent
 
         if (yellowCount >= 2)
         {
-            city.incrementNumberOfCubes(VirusName.Red, -1);
-            game.incrementNumberOfCubesOnBoard(VirusName.Red, 1);
+            city.incrementNumberOfCubes(VirusName.Yellow, -1);
+            game.incrementNumberOfCubesOnBoard(VirusName.Yellow, 1);
         }
 
         if (blueCount >= 2)
         {
-            city.incrementNumberOfCubes(VirusName.Red, -1);
-            game.incrementNumberOfCubesOnBoard(VirusName.Red, 1);
+            city.incrementNumberOfCubes(VirusName.Blue, -1);
+            game.incrementNumberOfCubesOnBoard(VirusName.Blue, 1);
         }
     }
 
