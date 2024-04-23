@@ -303,11 +303,12 @@ public class PlayerGUI : MonoBehaviour
                     if (ResourcePlanningEventCardsIDs[i] < 24)
                     {
                         ResourcePlanningEventCardsEpidemic[i].SetActive(false);
-                        
                         ResourcePlanningEventCardsEvents[i].SetActive(false);
+                        
                         CityCard infoCard = theGame.Cities[ResourcePlanningEventCardsIDs[i]].city;
                         CityCardDisplay cardDisplay = ResourcePlanningEventCardsCities[i].GetComponentInChildren<CityCardDisplay>();
                         cardDisplay.CityCardData = infoCard;
+                        
                         ResourcePlanningEventCardsCities[i].SetActive(true);
 
                         if (infoCard.cityID == ResourcePlanningEventCardSelected)
@@ -322,12 +323,14 @@ public class PlayerGUI : MonoBehaviour
                     else if (ResourcePlanningEventCardsIDs[i] < 28)
                     {
                         ResourcePlanningEventCardsEpidemic[i].SetActive(false);
-
                         ResourcePlanningEventCardsCities[i].SetActive(false);
+                        
                         EventCard infoCard = GameGUI.gui.Events[ResourcePlanningEventCardsIDs[i] - 24];
                         EventCardDisplay cardDisplay = ResourcePlanningEventCardsEvents[i].GetComponentInChildren<EventCardDisplay>();
                         cardDisplay.EventCardData = infoCard;
+                        
                         ResourcePlanningEventCardsEvents[i].SetActive(true);
+                        
                         if (infoCard.eventID == ResourcePlanningEventCardSelected)
                         {
                             cardDisplay.border.gameObject.SetActive(true);
@@ -341,6 +344,7 @@ public class PlayerGUI : MonoBehaviour
                     else if (ResourcePlanningEventCardsIDs[i] == 28)
                     {
                         ResourcePlanningEventCardsCities[i].SetActive(false);
+                        ResourcePlanningEventCardsEvents[i].SetActive(false);
 
                         EpidemicCardDisplay cardDisplay = ResourcePlanningEventCardsEpidemic[i]
                             .GetComponentInChildren<EpidemicCardDisplay>();
