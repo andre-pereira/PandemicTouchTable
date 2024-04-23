@@ -11,7 +11,7 @@ public class PMobileHospitalCardPlayed : PlayerEvent
     public override void Do(Timeline timeline)
     {
         theGame.MobileHospitalPlayer = _player;
-        theGame.ChangeToInEvent(EventState.NOTINEVENT);
+        /*theGame.ChangeToInEvent(EventState.NOTINEVENT);*/
         _player.playerGui.ChangeToInEvent(EventState.NOTINEVENT);
         _player.RemoveCardInHand(MOBILEHOSPITALINDEX, true);
     }

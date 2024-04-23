@@ -40,9 +40,13 @@ public class EInitialize : EngineEvent
         int randomSeed = Mathf.Abs(System.DateTime.UtcNow.Ticks.GetHashCode());
         
         PlayerCardsSeed = theGame.PlayerCardsSeed == -1 ? randomSeed : theGame.PlayerCardsSeed;
+        
+        Debug.Log("PlayerCardsSeed = " + PlayerCardsSeed);
 
         InfectionCardsSeed = theGame.InfectionCardsSeed == -1 ? randomSeed : theGame.InfectionCardsSeed;
 
+        Debug.Log("InfectionCardsSeed = " + InfectionCardsSeed);
+        
         Random.InitState(PlayerCardsSeed);
         theGame.playerCardsRandomGeneratorState = Random.state;
         

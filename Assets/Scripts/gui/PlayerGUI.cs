@@ -69,7 +69,8 @@ public class PlayerGUI : MonoBehaviour
     
     private const int MAX_CARDS = 5;
     private const int MAX_SAME_COLOR_CARDS = 4;
-    
+
+    public bool callToMobilizePending = false;
     public EventState PInEventCard
     {
         get { return pInEvent; }
@@ -1312,7 +1313,7 @@ public class PlayerGUI : MonoBehaviour
         changeContextText();
     }
 
-    private void DestroyMovingPawn()
+    public void DestroyMovingPawn()
     {
         Destroy(movingPawn);
         movingPawn = null;
@@ -1408,7 +1409,7 @@ public class PlayerGUI : MonoBehaviour
             
             return;
         }
-        else if (pInEvent == EventState.EXECUTINGMOBILEHOSPITAL)
+        if (theGame.MobileHospitalInExecution && theGame.MobileHospitalPlayer == _player)
         {
             CurrentInstructionText.text = "Event - Mobile Hospital \nRemove a cube.";
             return;

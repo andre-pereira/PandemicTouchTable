@@ -21,6 +21,7 @@
     {
         _player.UpdateCurrentCity(newCityID, true);
         _playerGui.eventExecuted = true;
+        _player.playerGui.ChangeToInEvent(Game.EventState.NOTINEVENT, true);
     }
 
 

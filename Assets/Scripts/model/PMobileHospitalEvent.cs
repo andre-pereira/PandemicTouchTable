@@ -30,16 +30,23 @@ public class PMobileHospitalEvent : PlayerEvent
         /*Debug.Log("Player of Mobile Hospital = " + game.CurrentPlayer.Name);
         Debug.Log("In the city :" + game.CurrentPlayer.GetCurrentCity() + " cityID=" + city.city.cityID + " theGame.InEventCard = " + theGame.InEventCard);*/
 
-        if (city.city.cityID == game.CurrentPlayer.GetCurrentCity() && theGame.InEventCard == EventState.EXECUTINGMOBILEHOSPITAL)
+        if (theGame.MobileHospitalInExecution && city.city.cityID == game.CurrentPlayer.GetCurrentCity())
         {
             //Debug.Log("In the city :" + game.CurrentPlayer.GetCurrentCity() + " city.getInstanceID=" + city.GetInstanceID());
             city.incrementNumberOfCubes((VirusName)virusName, -1);
             game.incrementNumberOfCubesOnBoard((VirusName)virusName, 1);
 
-            theGame.MobileHospitalPlayer.playerGui.ChangeToInEvent(EventState.NOTINEVENT);
-            theGame.ChangeToInEvent(EventState.NOTINEVENT);
+            /*theGame.MobileHospitalPlayer.playerGui.ChangeToInEvent(EventState.NOTINEVENT);
+            theGame.ChangeToInEvent(EventState.NOTINEVENT);*/
             theGame.RemovePlayersWait();
-            theGame.CubeClicked(city, virusName);
+            //theGame.CubeClicked(city, virusName);
+            theGame.MobileHospitalInExecution = false;
+
+            if (theGame.MobileHospitalPlayer.playerGui.callToMobilizePending)
+            {
+                //theGame.MobileHospitalPlayer.playerGui.ChangeToInEvent(EventState.CALLTOMOBILIZE);
+                theGame.ChangeToInEvent(EventState.CALLTOMOBILIZE, theGame.MobileHospitalPlayer);
+            }
 
         }
 

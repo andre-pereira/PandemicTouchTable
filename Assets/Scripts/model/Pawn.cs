@@ -64,7 +64,16 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        PlayerGUI pGUI = currentPlayerPad();
+        // TODO : check this => PlayerGUI pGUI = playerPadForPlayer(PlayerModel);
+        PlayerGUI pGUI;
+        if (theGame.MobileHospitalPlayer != null && theGame.MobileHospitalPlayer.playerGui.callToMobilizePending)
+        {
+            pGUI = playerPadForPlayer(theGame.MobileHospitalPlayer);
+        }
+        else
+        {
+            pGUI = currentPlayerPad();
+        }
         
         if (endedInCity != null && endedInCity.city.cityID != PlayerModel.GetCurrentCity())
         {

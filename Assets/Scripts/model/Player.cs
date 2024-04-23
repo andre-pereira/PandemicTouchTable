@@ -62,9 +62,9 @@ public class Player
     public void DecreaseActionsRemaining(int decrement)
     {
         ActionsRemaining -= decrement;
-        if (Game.theGame.CurrentPlayer.ActionsRemaining == 0)
+        if (game.CurrentPlayer.ActionsRemaining == 0 && !game.MobileHospitalInExecution)
         {
-            game.setCurrentGameState(Game.GameState.DRAWPLAYERCARDS);
+            game.setCurrentGameState(GameState.DRAWPLAYERCARDS);
         }
     }
 
@@ -116,12 +116,18 @@ public class Player
             if (Role == Roles.ContainmentSpecialist)
                 Timeline.theTimeline.addEvent(new PContainSpecialistRemoveWhenEntering(cityID));
         }
-        if(theGame.MobileHospitalPlayer != null)
+        if(game.MobileHospitalPlayer != null && this == game.CurrentPlayer)
         {
             if (game.Cities[cityID].cubesInCity())
             {
-                theGame.ChangeToInEvent(EventState.EXECUTINGMOBILEHOSPITAL);
-                theGame.MobileHospitalPlayer.playerGui.ChangeToInEvent(EventState.EXECUTINGMOBILEHOSPITAL);
+                game.MakePlayersWait();
+                game.MobileHospitalInExecution = true;
+                //theGame.ChangeToInEvent(EventState.EXECUTINGMOBILEHOSPITAL);
+                if (game.MobileHospitalPlayer.playerGui.PInEventCard == EventState.CALLTOMOBILIZE)
+                {
+                    game.MobileHospitalPlayer.playerGui.callToMobilizePending = true;
+                }
+                game.MobileHospitalPlayer.playerGui.ChangeToInEvent(EventState.EXECUTINGMOBILEHOSPITAL);
             }
         }
     }

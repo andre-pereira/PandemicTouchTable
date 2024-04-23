@@ -46,7 +46,7 @@ public class Game : MonoBehaviour
         FORECAST,
         RESOURCEPLANNING,
         CALLTOMOBILIZE,
-        EXECUTINGMOBILEHOSPITAL
+        EXECUTINGMOBILEHOSPITAL //Only used for PlayerGUI. The game logic is controlled by the flag MobileHospitalInExecution.
     }
 
     public enum EpidemicGameState
@@ -101,6 +101,7 @@ public class Game : MonoBehaviour
     public EventState InEventCard = EventState.NOTINEVENT;
 
     public City[] Cities { get; internal set; }
+    public bool MobileHospitalInExecution { get; set; }
 
     public void init()
     {
@@ -113,6 +114,7 @@ public class Game : MonoBehaviour
 
         InfectionRate = 0;
         OutbreakCounter = 0;
+        MobileHospitalInExecution = false;
 
     }
 
@@ -316,31 +318,52 @@ public class Game : MonoBehaviour
         else return -1;
     }
 
-    internal void ChangeToInEvent(EventState state)
+    internal void ChangeToInEvent(EventState state, Player callToMobilizePendingPlayer = null)
+    // callToMobilizePendingPlayer is an optional parameter only used when a mobile hospital event occurs during
+    // an ongoing call to mobilize event. This caused the MobileHospitalPlayer to remove a cube thus interrupting
+    // the call to mobilize event for that specific player.
     {
         InEventCard = state;
         if(state == EventState.CALLTOMOBILIZE)
         {
-            foreach (Player player in PlayerList.getAllPlayers())
+            if (callToMobilizePendingPlayer != null)
             {
-                player.playerGui.ChangeToInEvent(state);
+                callToMobilizePendingPlayer.playerGui.DestroyMovingPawn();
+                //callToMobilizePendingPlayer.GetCurrentCityScript().addPawn(callToMobilizePendingPlayer); // The player is added back to the city after being removed by the first call to CreateMovingPawn
+                callToMobilizePendingPlayer.playerGui.ChangeToInEvent(state);
                 int pawnNumber = 0;
-                foreach (var item in player.GetCurrentCityScript().PawnsInCity)
+                foreach (var item in callToMobilizePendingPlayer.GetCurrentCityScript().PawnsInCity)
                 {
                     if (item != null)
                     {
-                        if (item.PlayerModel.Role == player.Role)
+                        if (item.PlayerModel.Role == callToMobilizePendingPlayer.Role)
                             break;
                         pawnNumber++;
                     }
                 }
                 Vector3[] MovingPawnTranslations = new Vector3 [4] { new Vector3(0, 0, 0), new Vector3(0, 0.5f, 0), new Vector3(0, -0.5f, 0), new Vector3(1, 0, 0) }; 
-                player.playerGui.CreateMovingPawn(MovingPawnTranslations[pawnNumber]);            
+                callToMobilizePendingPlayer.playerGui.CreateMovingPawn(MovingPawnTranslations[pawnNumber]);        
             }
-        }
-        else if (state == EventState.EXECUTINGMOBILEHOSPITAL)
-        {
-            MakePlayersWait();
+            else
+            {
+                foreach (Player player in PlayerList.getAllPlayers())
+                {
+                    player.playerGui.ChangeToInEvent(state);
+                    int pawnNumber = 0;
+                    foreach (var item in player.GetCurrentCityScript().PawnsInCity)
+                    {
+                        if (item != null)
+                        {
+                            if (item.PlayerModel.Role == player.Role)
+                                break;
+                            pawnNumber++;
+                        }
+                    }
+                    Vector3[] MovingPawnTranslations = new Vector3 [4] { new Vector3(0, 0, 0), new Vector3(0, 0.5f, 0), new Vector3(0, -0.5f, 0), new Vector3(1, 0, 0) }; 
+                    player.playerGui.CreateMovingPawn(MovingPawnTranslations[pawnNumber]);            
+                } 
+            }
+           
         }
     }
 
@@ -357,7 +380,9 @@ public class Game : MonoBehaviour
         foreach (Player player in PlayerList.getAllPlayers())
         {
             player.playerGui.Waiting = false;
+            player.playerGui.draw();
         }
+        CurrentPlayer.playerGui.ClearSelectedAction();
     }
 
     public GameObject AddPlayerCardToTransform(int cardToAdd, Transform transform, bool withButtonComponent, PlayerGUI pGUI = null, Transform adjustTransform = null)
@@ -403,9 +428,13 @@ public class Game : MonoBehaviour
 
     internal void CubeClicked(City city, VirusName virusName)
     {
-        if(MobileHospitalPlayer != null)
+        if(MobileHospitalPlayer != null && MobileHospitalInExecution)
         {
             Timeline.theTimeline.addEvent(new PMobileHospitalEvent(MobileHospitalPlayer, city, virusName));
+            if (CurrentPlayer.ActionsRemaining == 0)
+            {
+                theGame.setCurrentGameState(GameState.DRAWPLAYERCARDS);
+            }
         }    
         else 
             currentPlayerPad().CubeClicked(city, virusName);
