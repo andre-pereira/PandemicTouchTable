@@ -7,8 +7,11 @@ public class PCallToMobilizeCardPlayed : PlayerEvent
 {
     private float ANIMATIONDURATION = 1f;
 
+    private Player _eventActor;
+    
     public PCallToMobilizeCardPlayed(Player playerThatTriggered) : base(playerThatTriggered)
     {
+        _eventActor = playerThatTriggered;
     }
 
     public override void Do(Timeline timeline)
@@ -27,5 +30,11 @@ public class PCallToMobilizeCardPlayed : PlayerEvent
         };
 
         return base.Act(qUndo);
+    }
+    
+    public override string GetLogInfo()
+    {
+        return $@" ""eventActor"" : ""{_eventActor}"",
+                ";
     }
 }

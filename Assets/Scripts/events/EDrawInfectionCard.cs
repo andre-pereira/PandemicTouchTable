@@ -189,6 +189,12 @@ internal class EDrawInfectionCard : EngineEvent
 
         return sequence.Duration();
     }
+    
+    public override string GetLogInfo()
+    {
+        return $@" ""cityToInfect"" : ""{cityToInfect.city.cityID}"",
+                ";
+    }
 
 }
 

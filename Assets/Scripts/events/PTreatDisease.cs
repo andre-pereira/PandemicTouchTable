@@ -53,4 +53,11 @@ public class PTreatDisease : PlayerEvent
         gameGUI.drawBoard();
         return 0;
     }
+
+    public override string GetLogInfo()
+    {
+        return $@" ""city"" : ""{city.city.cityID}"",
+                    ""virusName"" : ""{virusName}"",
+                ";
+    }
 }

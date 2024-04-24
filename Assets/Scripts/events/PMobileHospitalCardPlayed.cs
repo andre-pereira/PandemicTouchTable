@@ -28,4 +28,11 @@ public class PMobileHospitalCardPlayed : PlayerEvent
 
         return base.Act(qUndo);
     }
+
+    public override string GetLogInfo()
+    {
+        return $@" ""eventInitiator"" : ""{theGame.MobileHospitalPlayer.Role}"",
+                    ""eventTarget"" : ""{theGame.CurrentPlayer.Role}""
+                ";
+    }
 }

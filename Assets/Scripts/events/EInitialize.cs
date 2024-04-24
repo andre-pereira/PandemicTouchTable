@@ -121,4 +121,14 @@ public class EInitialize : EngineEvent
         gui.draw();
         return 0;
     }
+
+    public override string GetLogInfo()
+    {
+        return $@" ""seeds"" : {{
+                        ""playerCards"" : ""{PlayerCardsSeed}"",
+                        ""infectionCards"" : ""{InfectionCardsSeed}"",
+                    }},
+                    ""playerCount"" : ""{PlayerList.Players.Count}""
+                ";
+    }
 }

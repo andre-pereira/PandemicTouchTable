@@ -42,4 +42,11 @@ public class EAddPlayer : EngineEvent
         return 0f;
     }
 
+    public override string GetLogInfo()
+    {
+        return $@" ""tablePositionId"" : ""{TablePositionId}"",
+                    ""playerRole"" : ""{PlayerRole}"",
+                    ""playerName"" : ""{PlayerName}""
+                ";
+    }
 }

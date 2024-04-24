@@ -66,4 +66,11 @@ public class PFlyToCity : PlayerEvent
         }));
         return sequence.Duration();
     }
+
+    public override string GetLogInfo()
+    {
+        return $@" ""flyFrom"" : ""{flyFrom}"",
+                    ""flyTo"" : ""{flyTo}"",
+                ";
+    }
 }
