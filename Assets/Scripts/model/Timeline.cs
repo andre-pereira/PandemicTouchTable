@@ -54,7 +54,11 @@ public class Timeline : MonoBehaviour
                 myEvents.Add(e);
 
                 myQProcessingEvent = true;
-                try { e.Do(this); }
+                try
+                {
+                    e.Do(this);
+                    e.Notify();
+                }
                 catch (Exception exception)
                 {
                     Debug.LogException(exception);

@@ -1,11 +1,14 @@
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using static AnimationTemplates;
 
 [System.Serializable]
 public abstract class TimelineEvent
 {
     public float ANIMATIONDURATION = 1f / GameGUI.gui.AnimationTimingMultiplier;
+
+    private List<EventLogger> _eventLoggers = new List<EventLogger> { new FileLogger()} ;
 
     // These default values are great for Initialize and AddPlayer Events.
     [Flags]
@@ -31,6 +34,23 @@ public abstract class TimelineEvent
     public Attribute Flags = Attribute.None;
     abstract public void Do(Timeline timeline);
     public virtual float Act(bool qUndo = false) { return 0; }
+    public virtual string GetLogInfo() { return ""; }
+    public virtual void Notify()
+    {
+        foreach (EventLogger logger in _eventLoggers)
+        {
+            logger.BroadcastLogs(this);
+        }
+    }
+    public void Subscribe(EventLogger logger)
+    {
+        _eventLoggers.Add(logger); 
+    }
+
+    public void Unsubscribe(EventLogger logger)
+    {
+        _eventLoggers.Remove(logger);
+    }
 }
 
 [System.Serializable]
