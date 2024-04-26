@@ -7,7 +7,7 @@ public abstract class EventLogger
     public string GetEventLog(TimelineEvent timelineEvent)
     {
         string commonLog = $@"
-                    ""timestamp"" : ""{Time.time}"",
+                    ""timestamp"" : ""{Time.time - MainMenu.startTimestamp}"",
                     ""eventType"" : ""{timelineEvent.GetType()}"",
                     {(Game.theGame.CurrentPlayer != null ? (
                         $@" ""currentPlayer"" : {{
