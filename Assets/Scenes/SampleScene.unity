@@ -23218,7 +23218,7 @@ MonoBehaviour:
   BlueCubesOnBoard: 16
   RedCure: 0
   YellowCure: 0
-  BlueCure: 0
+  BlueCure: 1
   InEventCard: 0
 --- !u!114 &1824462351
 MonoBehaviour:

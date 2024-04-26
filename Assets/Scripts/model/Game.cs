@@ -153,30 +153,26 @@ public class Game : MonoBehaviour
         {
             //Debug.Log("No more cards in the deck !");
             //Debug.Log("Cards drawn = " + PlayerCardsDrawn);
-            if (PlayerCardsDrawn == 0 && PlayerCards.Count < 2) 
+            
+            if (!actionsInitiated)
             {
-                setCurrentGameState(GameState.GAME_OVER);
+                actionsInitiated = true;
+                Debug.Log("Draw Player Card: " + CurrentGameState + " Cards available: " + PlayerCards.Count);
+                Timeline.theTimeline.addEvent(new PDealCard(CurrentPlayer));
             }
-            else {
-                if (!actionsInitiated)
+            if (actionCompleted)
+            {
+                actionCompleted = false;
+                if (PlayerCardsDrawn < 2)
                 {
-                    actionsInitiated = true;
-                    Debug.Log("Draw Player Card: " + CurrentGameState + " Cards available: " + PlayerCards.Count);
-                    Timeline.theTimeline.addEvent(new PDealCard(CurrentPlayer));
+                    actionsInitiated = false;
                 }
-                if(actionCompleted)
+                else if (CurrentPlayer.PlayerCardsInHand.Count < 7 && PlayerCardsDrawn == 2)
                 {
-                    actionCompleted = false;
-                    if (PlayerCardsDrawn < 2)
-                    {
-                        actionsInitiated = false;
-                    }
-                    else if (CurrentPlayer.PlayerCardsInHand.Count < 7 && PlayerCardsDrawn == 2)
-                    {
-                        if (CurrentGameState != GameState.EPIDEMIC)
-                            setCurrentGameState(GameState.DRAWINFECTCARDS);
-                    }
+                    if (CurrentGameState != GameState.EPIDEMIC)
+                        setCurrentGameState(GameState.DRAWINFECTCARDS);
                 }
+
             }   
         }
         else if (CurrentGameState == GameState.EPIDEMIC)

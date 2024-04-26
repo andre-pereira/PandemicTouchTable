@@ -66,6 +66,13 @@ internal class PCureDisease : PlayerEvent
 
         _player.DecreaseActionsRemaining(1);
         _playerGui.ActionSelected = ActionTypes.None;
+        // Check if all diseases are cured and if so, end the game
+
+        if (game.BlueCure && game.RedCure && game.YellowCure)
+        {
+            Timeline.theTimeline.clearPendingEvents();
+            timeline.addEvent(new EGameOver(ENUMS.GameOverReasons.PlayersWon));
+        }
     }
 
     public override float Act(bool qUndo = false)

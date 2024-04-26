@@ -7,7 +7,7 @@ using UnityEngine;
 public class ENUMS 
 {
     public enum VirusName { Red, Yellow, Blue};
-    public enum GameOverReasons { PlayersWon, TooManyOutbreaks, NoMoreCubesOfAColor, None};
+    public enum GameOverReasons { PlayersWon, TooManyOutbreaks, NoMoreCubesOfAColor, NoMorePlayerCards, None};
 }
 
 public static class EnumExtensions

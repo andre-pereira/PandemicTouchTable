@@ -17,6 +17,12 @@ public class PDealCard : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
+        if (theGame.PlayerCards.Count == 0)
+        {
+            Timeline.theTimeline.clearPendingEvents();
+            Timeline.theTimeline.addEvent(new EGameOver(ENUMS.GameOverReasons.NoMorePlayerCards));
+            return;
+        }
         cardToAdd = theGame.PlayerCards.Pop();
         if (cardToAdd == 28)
         {
@@ -33,6 +39,9 @@ public class PDealCard : PlayerEvent
 
     public override float Act(bool qUndo = false)
     {
+        if (cardToAdd == -1)
+            return 0f;
+
         if (epidemicPopped)
             return 0f;
 
