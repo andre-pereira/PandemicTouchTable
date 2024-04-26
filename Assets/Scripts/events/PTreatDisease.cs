@@ -16,6 +16,7 @@ public class PTreatDisease : PlayerEvent
     public PTreatDisease(City city) : base(Game.theGame.CurrentPlayer)
     {
         this.city = city;
+        virusName = city.city.virusInfo.virusName;
         defaultClick = false;
     }
 

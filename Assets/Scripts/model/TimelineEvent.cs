@@ -81,6 +81,11 @@ public abstract class PlayerEvent : TimelineEvent
     }
 }
 
+public abstract class GuiEvent : PlayerEvent
+{
+    
+}
+
 [System.Serializable]
 public class EDelay : EngineEvent
 {

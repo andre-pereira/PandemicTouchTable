@@ -10,7 +10,7 @@ public abstract class EventLogger
                     ""timestamp"" : ""{Time.time - MainMenu.startTimestamp}"",
                     ""eventType"" : ""{timelineEvent.GetType()}"",
                     {(Game.theGame.CurrentPlayer != null ? (
-                        $@" ""currentPlayer"" : {{
+                        $@"""currentPlayer"" : {{
                             ""role"" : ""{Game.theGame.CurrentPlayer.Role}"",
                             ""name"" : ""{Game.theGame.CurrentPlayer.Name}""
                         }},") : null )} 
