@@ -708,7 +708,7 @@ public class PlayerGUI : MonoBehaviour
         if (PlayerModel != game.CurrentPlayer) return;
         if (PlayerModel.ActionsRemaining <= 0) return;
 
-        ClearSelectedAction();
+        ClearSelectedAction(!(action == 6));
 
         City currentCity = game.Cities[PlayerModel.GetCurrentCity()];
         switch (action)
@@ -762,9 +762,11 @@ public class PlayerGUI : MonoBehaviour
                 cardsState = CardGUIStates.CardsExpandedCureActionToSelect;
                 draw();
                 break;
-            case 6: //character action
+            case 6: //character actionbv1
+
                 if (_player.Role == Player.Roles.Virologist || _player.Role == Player.Roles.Pilot)
                 {
+                    Debug.Log("Character action clicked: " + _player.Role);
                     bool enableAction = true;
 
                     if (_player.Role == Player.Roles.Virologist)
@@ -1270,7 +1272,7 @@ public class PlayerGUI : MonoBehaviour
         movingPawn.GetComponent<Outline>().enabled = true;
     }
 
-    public void ClearSelectedAction()
+    public void ClearSelectedAction(bool clear = true)
     {
         selectedCards.Clear();
 
@@ -1294,7 +1296,7 @@ public class PlayerGUI : MonoBehaviour
         ActionSelected = ActionTypes.None;
         cardsState = CardGUIStates.None;
 
-        EnableContextButtons(false, false, false, false, false, false);
+        if (clear) EnableContextButtons(false, false, false, false, false, false);
 
         pilotCitySelected = -1;
         if (flyLine != null) Destroy(flyLine);
