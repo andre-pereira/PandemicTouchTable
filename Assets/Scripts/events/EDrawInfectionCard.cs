@@ -192,8 +192,7 @@ internal class EDrawInfectionCard : EngineEvent
     
     public override string GetLogInfo()
     {
-        return $@" ""cityToInfect"" : ""{cityToInfect.city.cityID}"",
-                ";
+        return $@" ""cityToInfect"" : {cityToInfect.city.cityID}";
     }
 
 }

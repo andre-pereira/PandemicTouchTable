@@ -47,7 +47,7 @@ internal class EInitializeFirstPlayer : EngineEvent
 
     public override string GetLogInfo()
     {
-        return $@" ""startPlayer"" : ""{startPlayer}"",
+        return $@" ""startPlayer"" : {startPlayer.Role},
                 ";
     }
 }

@@ -108,9 +108,9 @@ internal class EOutbreak : EngineEvent
     {
         string infectCitiesIds = string.Join(", ", infectCities);
         string quarantineSpecialistExceptionIds = string.Join(", ", quarantineSpecialistExceptions);
-        return $@" ""originOfOutbreak"" : ""{originOfOutbreak.city.cityID}"",
-                   ""infectCities"" : ""{infectCitiesIds}"",
-                   ""quarantineSpecialistException"" : ""{quarantineSpecialistExceptionIds}""
+        return $@" ""originOfOutbreak"" : {originOfOutbreak.city.cityID},
+                   ""infectCities"" : [{infectCitiesIds}],
+                   ""quarantineSpecialistException"" : [{quarantineSpecialistExceptionIds}]
                 ";
     }
 }

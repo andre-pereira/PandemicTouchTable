@@ -29,9 +29,9 @@
 
     public override string GetLogInfo()
     {
-        return $@" ""newCity"" : ""{newCityID}"",
-                    ""oldCity"" : ""{oldCityID}"",
-                    ""numberOfActionsSpent"" : ""{numberOfActionsSpent}""
+        return $@" ""newCity"" : {newCityID},
+                    ""oldCity"" : {oldCityID},
+                    ""numberOfActionsSpent"" : {numberOfActionsSpent}
                 ";
     }
 }

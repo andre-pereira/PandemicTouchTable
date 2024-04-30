@@ -14,8 +14,7 @@ public class GCityCardClicked : GuiEvent
     
     public override string GetLogInfo()
     {
-        return $@"""cityID"" : ""{_cardClicked.cityID}"",
-                  ""cityName"" : ""{_cardClicked.cityName}"",
+        return $@"""cityID"" : {_cardClicked.cityID},
                 ";
     }
 }

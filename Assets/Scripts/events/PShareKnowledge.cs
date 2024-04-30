@@ -52,7 +52,7 @@ public class PShareKnowledge : PlayerEvent
 
     public override string GetLogInfo()
     {
-        return $@" ""cityId"" : ""{cityID}"",
+        return $@" ""cityId"" : {cityID},
                     ""playerFrom"" : ""{playerFrom.PlayerModel.Role}"",
                     ""playerTo"" : ""{playerTo.PlayerModel.Role}""
                 ";

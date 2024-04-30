@@ -52,7 +52,7 @@ internal class PDiscardCard : PlayerEvent
 
     public override string GetLogInfo()
     {
-        return $@" ""cardToDiscard"" : ""{cardToDiscard}""
+        return $@" ""cardToDiscard"" : {cardToDiscard}
                 ";
     }
 }

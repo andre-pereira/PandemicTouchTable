@@ -48,8 +48,8 @@ internal class PCharterEvent : PlayerEvent
 
     public override string GetLogInfo()
     {
-        return $@" ""flyFrom"" : ""{flyFrom}"",
-                    ""flyTo"" : ""{flyTo}"",
+        return $@" ""flyFrom"" : {flyFrom.city.cityID},
+                    ""flyTo"" : {flyTo.city.cityID},
                 ";
     }
 }

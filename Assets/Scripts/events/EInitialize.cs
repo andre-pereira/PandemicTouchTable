@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using static GameGUI;
@@ -124,11 +125,24 @@ public class EInitialize : EngineEvent
 
     public override string GetLogInfo()
     {
+        StringBuilder cityJson = new StringBuilder();
+        cityJson.Append("[\n");
+        foreach (City city in theGame.Cities)
+        {
+            cityJson.Append("\t\t\t\t\t\t\t\t{");
+            cityJson.Append($"\"id\": {city.city.cityID}, \"name\": \"{city.city.cityName}\", \"virusColor\": {city.city.virusInfo.virusName}, \"connectedCities\": [{string.Join(',', city.city.neighbors)}]");
+            cityJson.Append("}, \n");
+        }
+        if (theGame.Cities.Length > 0)
+            cityJson.Remove(cityJson.Length - 2, 2);
+        cityJson.Append("\n\t\t\t\t\t]");
+        
         return $@" ""seeds"" : {{
                         ""playerCards"" : ""{PlayerCardsSeed}"",
                         ""infectionCards"" : ""{InfectionCardsSeed}"",
                     }},
-                    ""playerCount"" : ""{PlayerList.Players.Count}""
+                    ""playerCount"" : ""{PlayerList.Players.Count}"",
+                    ""cities"": {cityJson}
                 ";
     }
 }

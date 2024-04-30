@@ -54,6 +54,6 @@ public class PResourcePlanningCardPlayed : PlayerEvent
     public override string GetLogInfo()
     {
         string cardIds = string.Join(", ", cardsToSort);
-        return $@" ""cardsToSort"" : ""{cardIds}"" ";
+        return $@" ""cardsToSort"" : [{cardIds}]";
     }
 }

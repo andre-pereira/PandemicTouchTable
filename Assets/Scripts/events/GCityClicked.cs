@@ -14,8 +14,7 @@ public class GCityClicked : GuiEvent
 
     public override string GetLogInfo()
     {
-        return $@"""cityID"" : ""{_selectedCity.city.cityID}"",
-                    ""cityName"" : ""{_selectedCity.city.cityName}""
+        return $@"""cityID"" : {_selectedCity.city.cityID},
                 ";
     }
 }

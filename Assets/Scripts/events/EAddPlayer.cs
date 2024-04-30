@@ -44,7 +44,7 @@ public class EAddPlayer : EngineEvent
 
     public override string GetLogInfo()
     {
-        return $@" ""tablePositionId"" : ""{TablePositionId}"",
+        return $@" ""tablePositionId"" : {TablePositionId},
                     ""playerRole"" : ""{PlayerRole}"",
                     ""playerName"" : ""{PlayerName}""
                 ";
