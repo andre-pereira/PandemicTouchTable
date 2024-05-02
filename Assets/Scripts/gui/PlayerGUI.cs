@@ -1044,7 +1044,7 @@ public class PlayerGUI : MonoBehaviour
     {
         foreach (Pawn pawnInCity in PlayerModel.GetCurrentCityScript().PawnsInCity)
         {
-            if(pawnInCity.PawnRole == pawn.PawnRole)
+            if(pawnInCity != null && pawnInCity.PawnRole == pawn.PawnRole)
                 return pawnInCity;
         }
         return null;
