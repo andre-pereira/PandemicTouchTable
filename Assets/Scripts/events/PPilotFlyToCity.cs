@@ -36,7 +36,7 @@
     public override string GetLogInfo()
     {
         return $@" ""pilotCitySelected"" : {pilotCitySelected},
-                    ""otherPlayer"" : ""{otherPlayer.Role}"",
+                    ""otherPlayer"" : {(otherPlayer != null ? $@"""{otherPlayer.Role}""" : "null")},
                 ";
     }
 }
