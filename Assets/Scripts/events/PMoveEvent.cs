@@ -26,4 +26,12 @@
         _playerGui.draw();
         return 0;
     }
+
+    public override string GetLogInfo()
+    {
+        return $@" ""newCity"" : {newCityID},
+                    ""oldCity"" : {oldCityID},
+                    ""numberOfActionsSpent"" : {numberOfActionsSpent}
+                ";
+    }
 }

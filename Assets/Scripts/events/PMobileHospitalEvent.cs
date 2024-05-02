@@ -49,6 +49,11 @@ public class PMobileHospitalEvent : PlayerEvent
             }
 
         }
+    }
 
+    public override string GetLogInfo()
+    {
+        return $@" ""virusName"" : {virusName}
+                ";
     }
 }

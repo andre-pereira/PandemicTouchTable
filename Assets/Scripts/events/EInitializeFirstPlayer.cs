@@ -8,6 +8,8 @@ using static Game;
 internal class EInitializeFirstPlayer : EngineEvent
 {
 
+    private Player startPlayer;
+    
     public EInitializeFirstPlayer()
     {
         QUndoable = true;
@@ -17,7 +19,7 @@ internal class EInitializeFirstPlayer : EngineEvent
     public override void Do(Timeline timeline)
     {
 
-        Player startPlayer = PlayerList.Players.GetRandom();
+        startPlayer = PlayerList.Players.GetRandom();
         int highestPopulation = 0;
         foreach (Player player in PlayerList.Players)
         {
@@ -41,5 +43,11 @@ internal class EInitializeFirstPlayer : EngineEvent
     {
         gui.drawCurrentPlayerArea();
         return 0f;
+    }
+
+    public override string GetLogInfo()
+    {
+        return $@" ""startPlayer"" : {startPlayer.Role},
+                ";
     }
 }

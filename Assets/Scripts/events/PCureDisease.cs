@@ -93,4 +93,10 @@ internal class PCureDisease : PlayerEvent
             }));
         return sequence.Duration();
     }
+
+    public override string GetLogInfo()
+    {
+        return $@" ""curedDisease"" : ""{virusName}""
+                ";
+    }
 }

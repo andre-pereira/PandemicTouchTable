@@ -32,4 +32,11 @@
         _playerGui.draw();
         return 0;
     }
+
+    public override string GetLogInfo()
+    {
+        return $@" ""pilotCitySelected"" : {pilotCitySelected},
+                    ""otherPlayer"" : {(otherPlayer != null ? $@"""{otherPlayer.Role}""" : "null")},
+                ";
+    }
 }

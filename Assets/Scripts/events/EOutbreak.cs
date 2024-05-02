@@ -103,4 +103,14 @@ internal class EOutbreak : EngineEvent
 
         return sequence.Duration();
     }
+
+    public override string GetLogInfo()
+    {
+        string infectCitiesIds = string.Join(", ", infectCities);
+        string quarantineSpecialistExceptionIds = string.Join(", ", quarantineSpecialistExceptions);
+        return $@" ""originOfOutbreak"" : {originOfOutbreak.city.cityID},
+                   ""infectCities"" : [{infectCitiesIds}],
+                   ""quarantineSpecialistException"" : [{quarantineSpecialistExceptionIds}]
+                ";
+    }
 }

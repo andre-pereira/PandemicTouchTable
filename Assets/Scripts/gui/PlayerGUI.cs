@@ -520,6 +520,7 @@ public class PlayerGUI : MonoBehaviour
 
         if (buttonType == 0)
         {
+            Timeline.theTimeline.addEvent(new GContextButtonClicked("CloseButton"));
             CloseButtonClicked();
         }
 
@@ -531,11 +532,13 @@ public class PlayerGUI : MonoBehaviour
 
         if (buttonType == 3)
         {
+            Timeline.theTimeline.addEvent(new GContextButtonClicked("LeftArrowButton"));
             LeftArrowButtonClicked();
         }
 
         if (buttonType == 4)
         {
+            Timeline.theTimeline.addEvent(new GContextButtonClicked("RightArrowButton"));
             RightArrowButtonClicked();
         }
 
@@ -710,7 +713,6 @@ public class PlayerGUI : MonoBehaviour
 
         ClearSelectedAction(!(action == 6));
 
-        City currentCity = game.Cities[PlayerModel.GetCurrentCity()];
         switch (action)
         {
             case 0: //move
@@ -787,6 +789,7 @@ public class PlayerGUI : MonoBehaviour
                 }
                 break;
         }
+        Timeline.theTimeline.addEvent(new GActionButtonClicked(ActionSelected));
         changeContextText();
     }
 
@@ -798,9 +801,16 @@ public class PlayerGUI : MonoBehaviour
         EventCardDisplay eventCardDisplay = null;
 
         if (cardClicked < 24)
+        {
             cardClickedScript = getCardInHand(cardClicked).GetComponent<CityCardDisplay>();
-        else 
+            if (pInEvent == EventState.NOTINEVENT && cardsState == CardGUIStates.CardsExpanded)
+                // not logged if an event card is selected or if the player cards are not expanded
+                Timeline.theTimeline.addEvent(new GCityCardClicked(cardClickedScript.CityCardData));
+        }
+        else
+        {
             eventCardDisplay = getCardInHand(cardClicked).GetComponent<EventCardDisplay>();
+        }
 
         if (cardsState == CardGUIStates.CardsDiscarding)
         {
@@ -885,6 +895,8 @@ public class PlayerGUI : MonoBehaviour
         {
             if (pInEvent == EventState.NOTINEVENT && cardsState != CardGUIStates.CardsDiscarding)
             {
+                Timeline.theTimeline.addEvent(new GEventCardClicked(eventCardDisplay.EventCardData));
+
                 if (cardClicked == 24)      pInEvent = EventState.CONFIRMINGCALLTOMOBILIZE;
                 else if (cardClicked == 25) pInEvent = EventState.CONFIRMINGFORECAST;
                 else if (cardClicked == 26) pInEvent = EventState.CONFIRMINGMOBILEHOSPITAL;
@@ -944,7 +956,9 @@ public class PlayerGUI : MonoBehaviour
             if (distance > 0 && distance < 3)
             {
                 pilotCitySelected = city.city.cityID;
-
+                
+                Timeline.theTimeline.addEvent(new GCityClicked(city)); // Only logging possible options
+                
                 if (flyLine != null) Destroy(flyLine);
                 if (flyLine2 != null) Destroy(flyLine2);
 
@@ -1015,6 +1029,7 @@ public class PlayerGUI : MonoBehaviour
         {
             pawn.GetComponent<Outline>().enabled = true;
             pawnPilotSelected = pawn;
+            Timeline.theTimeline.addEvent(new GPawnClicked(pawnPilotSelected));
             CreateLineBetweenGameObjects(game.Cities[pilotCitySelected].gameObject, getPawnInCurrentCity(pawn).gameObject, gameGui.roleCards[(int)pawn.PawnRole]);
         }
         else

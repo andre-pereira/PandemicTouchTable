@@ -49,4 +49,12 @@ public class PShareKnowledge : PlayerEvent
         
         return sequence.Duration();
     }
+
+    public override string GetLogInfo()
+    {
+        return $@" ""cityId"" : {cityID},
+                    ""playerFrom"" : ""{playerFrom.PlayerModel.Role}"",
+                    ""playerTo"" : ""{playerTo.PlayerModel.Role}""
+                ";
+    }
 }

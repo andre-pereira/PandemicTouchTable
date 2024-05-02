@@ -24,6 +24,8 @@ public class MainMenu : MonoBehaviour
     public PlayerLoginArea[] PlayerLoginAreas;
     public HashSet<Player.Roles> FreeRoles = new HashSet<Player.Roles>();
 
+    public static float startTimestamp;
+
     private void Awake()
     {
         foreach (var canvas in GameCanvases) 
@@ -56,6 +58,9 @@ public class MainMenu : MonoBehaviour
 
     public void OnPlayButton()
     {
+        // Capture the start timestamp (used as an offset for the logs timestamps)
+        startTimestamp = Time.time;
+        
         // Stop playing the intro music
         AudioPlayer.Stop();
         AudioPlayer.PlayClip(AudioPlayer.AudioClipEnum.CLICK);

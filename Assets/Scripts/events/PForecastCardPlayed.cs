@@ -50,4 +50,11 @@ public class PForecastCardPlayed : PlayerEvent
 
         return base.Act(qUndo);
     }
+    
+    public override string GetLogInfo()
+    {
+        string cardIds = string.Join(", ", cardsToSort);
+        return $@" ""cardsToSort"" : [{cardIds}],
+                ";
+    }
 }

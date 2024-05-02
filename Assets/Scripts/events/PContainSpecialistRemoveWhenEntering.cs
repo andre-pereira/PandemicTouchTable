@@ -45,4 +45,10 @@ internal class PContainSpecialistRemoveWhenEntering : PlayerEvent
         gameGUI.drawBoard();
         return 0f;
     }
+    
+    public override string GetLogInfo()
+    {
+        return $@" ""city"" : {city.city.cityID},
+                ";
+    }
 }

@@ -30,6 +30,11 @@ public class EGameOver : EngineEvent
         return 0;
     }
 
+    public override string GetLogInfo()
+    {
+        return $@" ""reason"" : ""{Reason}""
+                ";
+    }
 }
 
 

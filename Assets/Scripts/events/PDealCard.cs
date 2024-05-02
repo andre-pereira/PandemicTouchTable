@@ -57,5 +57,10 @@ public class PDealCard : PlayerEvent
         return sequence.Duration();
     }
 
-
+    public override string GetLogInfo()
+    {
+        return $@" ""epidemicPopped"" : {epidemicPopped},
+                    ""cardToAdd"" : {cardToAdd}
+                ";
+    }
 }

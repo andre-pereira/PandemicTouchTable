@@ -16,6 +16,7 @@ public class PTreatDisease : PlayerEvent
     public PTreatDisease(City city) : base(Game.theGame.CurrentPlayer)
     {
         this.city = city;
+        virusName = city.city.virusInfo.virusName;
         defaultClick = false;
     }
 
@@ -52,5 +53,12 @@ public class PTreatDisease : PlayerEvent
         _playerGui.draw();
         gameGUI.drawBoard();
         return 0;
+    }
+
+    public override string GetLogInfo()
+    {
+        return $@" ""city"" : {city.city.cityID},
+                    ""virusName"" : ""{virusName}"",
+                ";
     }
 }
