@@ -184,17 +184,30 @@ public class PlayerGUI : MonoBehaviour
             }
             changeHorizontalLayout(option: 2);
         }
-        else
+        else 
         {
             changeHorizontalLayout(option: 3);
         }
         
+        // When CallToMobilize is done, disable all the context buttons
+        // Event handling
         if (pInEvent != EventState.NOTINEVENT && _player.PlayerCardsInHand.Count <= 6)
         {
             drawEventHandling();
         }
-            else if (PlayerModel == game.CurrentPlayer) ownTurnActionHandling();
-            else notMyTurnHandling();
+        
+        else if (PlayerModel == game.CurrentPlayer) {
+            if (pInEvent == EventState.NOTINEVENT)
+            {
+                if (cardsState == CardGUIStates.CardsExpanded) EnableContextButtons(true, false, false, false, false, false);
+                else EnableContextButtons(false, false, false, false, false, false);
+            }
+            ownTurnActionHandling(); 
+        }
+        else {
+            if(pInEvent == EventState.NOTINEVENT) EnableContextButtons(false, false, false, false, false, false);
+            notMyTurnHandling();
+        }
 
         changeContextText();
     }
@@ -285,6 +298,8 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (pInEvent == EventState.EXECUTINGMOBILEHOSPITAL)
         {
+            if(theGame.MobileHospitalInExecution && theGame.MobileHospitalPlayer == PlayerModel) enableOwnTurnActions(false);
+            if(!theGame.MobileHospitalInExecution) ownTurnActionHandling(); 
             EnableContextButtons(false, false, false, false, false, false);
         }
         else if (pInEvent == EventState.RESOURCEPLANNING)
@@ -823,7 +838,8 @@ public class PlayerGUI : MonoBehaviour
             if (cardsState == CardGUIStates.None)
             {
                 cardsState = CardGUIStates.CardsExpanded;
-                ContextButtons[0].SetActive(true);
+                //EnableContextButtons(true, false, false, false, false, false);
+                //ContextButtons[0].SetActive(true);
                 draw();
                 return;
             }
@@ -1423,7 +1439,8 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (pInEvent == EventState.CALLTOMOBILIZE)
         {
-            if(movingPawn != null)
+            //if(movingPawn != null)
+            if (!eventExecuted)
                 CurrentInstructionText.text = "Event - Call to Mobilize \nMove 1-2 or accept to stay";
             else
                 CurrentInstructionText.text = "Event - Call to Mobilize \nWaiting";

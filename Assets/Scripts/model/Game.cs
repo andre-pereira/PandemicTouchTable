@@ -198,11 +198,17 @@ public class Game : MonoBehaviour
             if (actionCompleted)
             {
                 OutbreakTracker.Clear();
-                setCurrentGameState(GameState.DRAWINFECTCARDS);
+                if (NumberOfDrawnInfectCards >= InfectionRateValues[InfectionRate] && !turnEnded) 
+                    // In the case where the Outbreak is triggered on the last Draw of Infection Card, end the turn.
+                {
+                    turnEnded = true;
+                    Timeline.theTimeline.addEvent(new PEndTurn());
+                }
+                else setCurrentGameState(GameState.DRAWINFECTCARDS);
             }
         }
 
-            else if (CurrentGameState == GameState.DRAWINFECTCARDS)
+        else if (CurrentGameState == GameState.DRAWINFECTCARDS)
         {
             if (NumberOfDrawnInfectCards < InfectionRateValues[InfectionRate] && !turnEnded)
             {
@@ -219,7 +225,7 @@ public class Game : MonoBehaviour
             }
             else
             {
-                if (!turnEnded)
+                if (!turnEnded && theGame.actionCompleted)
                 {
                     turnEnded = true;
                     Timeline.theTimeline.addEvent(new PEndTurn());

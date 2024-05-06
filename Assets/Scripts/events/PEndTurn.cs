@@ -13,6 +13,7 @@ public class PEndTurn : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
+        theGame.CurrentPlayer.playerGui.ChangeToInEvent(EventState.NOTINEVENT);
         theGame.CurrentPlayer = PlayerList.nextPlayer(_player);
         theGame.CurrentPlayer.ResetTurn();
         theGame.setCurrentGameState(GameState.PLAYERACTIONS);

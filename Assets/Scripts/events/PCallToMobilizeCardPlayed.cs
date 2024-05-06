@@ -24,10 +24,10 @@ public class PCallToMobilizeCardPlayed : PlayerEvent
     {
         //GameObject cardToAddObject = _playerGui.AddPlayerCardToTransform(CALLTOMOBILIZEINDEX, gameGUI.AnimationCanvas.transform, false);
         Sequence sequence = HighlightCardAndMove(_playerGui.getCardInHand(CALLTOMOBILIZEINDEX), gameGUI.PlayerDeckDiscard.transform, 3f, ANIMATIONDURATION);
-        sequence.onComplete += () =>
+        /*sequence.onComplete += () =>
         {
             gameGUI.draw();
-        };
+        };*/
 
         return base.Act(qUndo);
     }
