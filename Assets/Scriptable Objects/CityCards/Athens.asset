@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Athens
   m_EditorClassIdentifier: 
   cityID: 8
-  neighbors: 03000000090000000b0000000c000000
+  neighbors: 03000000090000000c000000
   cityName: Athens
   population: 650.000
   countryName: Greece
