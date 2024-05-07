@@ -205,7 +205,8 @@ public class PlayerGUI : MonoBehaviour
             ownTurnActionHandling(); 
         }
         else {
-            if(pInEvent == EventState.NOTINEVENT) EnableContextButtons(false, false, false, false, false, false);
+            if(cardsState == CardGUIStates.CardsExpandedShareAction) EnableContextButtons(false, true, false, false, false, false);
+            else if(pInEvent == EventState.NOTINEVENT) EnableContextButtons(false, false, false, false, false, false);
             notMyTurnHandling();
         }
 
@@ -218,7 +219,14 @@ public class PlayerGUI : MonoBehaviour
         if (cardsState == CardGUIStates.CardsExpandedShareAction)
         {
             if (PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
+            {
                 getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
+                EnableContextButtons(false, true, false, false, false, false);
+            } else if (_player.PlayerCardsInHand.Contains(PlayerModel.GetCurrentCity()))
+            {
+                getCardInHand(_player.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
+                EnableContextButtons(false, true, false, false, false, false);
+            }
         }
     }
 
@@ -380,14 +388,14 @@ public class PlayerGUI : MonoBehaviour
         }
     }
 
-    public void EnableContextButtons(bool first, bool second, bool third, bool fourth, bool fifth, bool sixth)
+    public void EnableContextButtons(bool accept, bool reject, bool discard, bool left, bool right, bool reject2)
     {
-        ContextButtons[0].SetActive(first);
-        ContextButtons[1].SetActive(second);
-        ContextButtons[2].SetActive(third);
-        ContextButtons[3].SetActive(fourth);
-        ContextButtons[4].SetActive(fifth);
-        ContextButtons[5].SetActive(sixth);
+        ContextButtons[0].SetActive(accept);
+        ContextButtons[1].SetActive(reject);
+        ContextButtons[2].SetActive(discard);
+        ContextButtons[3].SetActive(left);
+        ContextButtons[4].SetActive(right);
+        ContextButtons[5].SetActive(reject2);
     }
 
     private void ownTurnActionHandling()
@@ -446,9 +454,10 @@ public class PlayerGUI : MonoBehaviour
                     || cardsState == CardGUIStates.CardsExpandedCureActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction
                     || cardsState == CardGUIStates.CardsExpandedVirologistAction)
                 {
-                    ContextButtons[0].SetActive(true);
+                    EnableContextButtons(true, false, false, false, false, false);
                     if (cardsState == CardGUIStates.CardsExpandedCharterActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction)
                     {
+                        EnableContextButtons(false, true, false, false, false, false);
                         getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
                     }
                 }
@@ -694,11 +703,15 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (cardsState == CardGUIStates.CardsExpandedShareAction)
         {
-            if (this != GameGUI.currentPlayerPad())
+            if (_player.PlayerCardsInHand.Contains(game.CurrentPlayer.GetCurrentCity()))
             {
-                if (PlayerModel.PlayerCardsInHand.Contains(PlayerModel.GetCurrentCity()))
-                    Timeline.theTimeline.addEvent(new PShareKnowledge(this, GameGUI.currentPlayerPad()));
-                else Timeline.theTimeline.addEvent(new PShareKnowledge(GameGUI.currentPlayerPad(), this));
+                Timeline.theTimeline.addEvent(new PShareKnowledge(this, GameGUI.currentPlayerPad()));
+                draw(); 
+            }
+            else if (game.CurrentPlayer.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
+            {
+                Timeline.theTimeline.addEvent(new PShareKnowledge(GameGUI.currentPlayerPad(), this));
+                draw();
             }
         }
         else if (ActionSelected == ActionTypes.CharacterAction && PlayerModel.Role == Player.Roles.Pilot)
@@ -763,15 +776,22 @@ public class PlayerGUI : MonoBehaviour
                     draw();
                     
                 }
+
+                bool fromCurrentPlayerToOther = false;
                 foreach (PlayerGUI playerGUI in playersToShareGUI)
                 {
                     playerGUI.cardsState = CardGUIStates.CardsExpandedShareAction;
                     playerGUI.EnableContextButtons(true, true, false, false, false, false);
                     if (playerGUI.PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
-                        playerGUI.getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
+                    {
+                        fromCurrentPlayerToOther = true;
+                        playerGUI.getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);  
+                    }
                     playerGUI.changeContextText();
                     playerGUI.draw();
                 }
+                
+                if (!fromCurrentPlayerToOther) _player.playerGui.EnableContextButtons(false, false, false, false, false, false);
                 break;
             case 5: //find cure
                 ActionSelected = ActionTypes.FindCure;
@@ -1463,9 +1483,16 @@ public class PlayerGUI : MonoBehaviour
             }
             else if (cardsState == CardGUIStates.CardsExpandedShareAction)
             {
-                if(_player.PlayerCardsInHand.Contains(game.CurrentPlayer.GetCurrentCity()))
+                if (_player.PlayerCardsInHand.Contains(game.CurrentPlayer.GetCurrentCity()))
+                {
                     CurrentInstructionText.text = "Share your card?";
-                else CurrentInstructionText.text = "Accept card?";
+                } else if (game.CurrentPlayer.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
+                {
+                    if (game.CurrentPlayer == _player)
+                        CurrentInstructionText.text = "Sharing your card, pending approval";
+                    else CurrentInstructionText.text = "Accept card?";
+                }
+                
                 return;
             }
             else
