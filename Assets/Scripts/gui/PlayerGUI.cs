@@ -917,7 +917,7 @@ public class PlayerGUI : MonoBehaviour
 
             if (cardsState == CardGUIStates.CardsExpandedFlyActionToSelect || cardsState == CardGUIStates.CardsExpandedFlyActionSelected)
             {
-                UpdateCardsState(CardGUIStates.CardsExpandedFlyActionToSelect);
+                cardsState = CardGUIStates.CardsExpandedFlyActionSelected; //not calling update to not draw
                 selectedCards.Clear();
                 selectedCards.Add(cardClicked);
 
