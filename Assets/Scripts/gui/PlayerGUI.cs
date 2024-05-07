@@ -10,7 +10,6 @@ public class PlayerGUI : MonoBehaviour
 
     #region Properties and Fields
     internal bool Waiting = false;
-    private const string WaitForYourTurnText = "Wait for your turn.";
     GameGUI gameGui;
     Game game;
 
@@ -21,7 +20,9 @@ public class PlayerGUI : MonoBehaviour
     public List<int> selectedCards;
     private GameObject flyLine;
     private GameObject flyLine2;
-    private List<PlayerGUI> playersToShareGUI;
+    private static List<PlayerGUI> playersToShareGUI;
+    private static bool shareCardFromOtherPlayerToCurrent = false;
+
 
     public int Position;
 
@@ -124,7 +125,7 @@ public class PlayerGUI : MonoBehaviour
         {
             return cardsInHand[0];
         }
-        else return null;
+        return null;
     }
 
     private int pilotCitySelected = -1;
@@ -178,10 +179,6 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (cardsState != CardGUIStates.None || PlayerModel != game.CurrentPlayer)
         {
-            if (cardsState == CardGUIStates.CardsDiscarding)
-            {
-                cardsState = CardGUIStates.None;
-            }
             changeHorizontalLayout(option: 2);
         }
         else 
@@ -197,20 +194,62 @@ public class PlayerGUI : MonoBehaviour
         }
         
         else if (PlayerModel == game.CurrentPlayer) {
-            if (pInEvent == EventState.NOTINEVENT)
-            {
-                if (cardsState == CardGUIStates.CardsExpanded) EnableContextButtons(true, false, false, false, false, false);
-                else EnableContextButtons(false, false, false, false, false, false);
-            }
             ownTurnActionHandling(); 
         }
         else {
-            if(cardsState == CardGUIStates.CardsExpandedShareAction) EnableContextButtons(false, true, false, false, false, false);
-            else if(pInEvent == EventState.NOTINEVENT) EnableContextButtons(false, false, false, false, false, false);
             notMyTurnHandling();
         }
 
+        changeContextButtons();
         changeContextText();
+    }
+
+    private void changeContextButtons()
+    {
+        Debug.Log("Changing context buttons ...");
+        if (cardsState == CardGUIStates.None && pInEvent == EventState.NOTINEVENT)
+        {
+            EnableContextButtons(false, false, false, false, false, false);
+            return;
+        }
+            
+        switch (cardsState)
+        {
+            case CardGUIStates.CardsExpandedShareAction: //Might be redundant with notMyTurnHandling
+                if ((shareCardFromOtherPlayerToCurrent && _player == game.CurrentPlayer) || (_player != game.CurrentPlayer && !shareCardFromOtherPlayerToCurrent))
+                    EnableContextButtons(false, true, false, false, false, false);
+                else EnableContextButtons(false, false, false, false, false, false);
+                break;
+            
+            case CardGUIStates.CardsExpandedCharterActionToSelect:
+                EnableContextButtons(false, true, false, false, false, false);
+                break;
+            
+            case CardGUIStates.CardsExpanded:
+            case CardGUIStates.CardsExpandedFlyActionToSelect:
+            case CardGUIStates.CardsExpandedCureActionToSelect:
+            case CardGUIStates.CardsExpandedVirologistAction:
+                break;
+        }
+
+        switch (pInEvent)
+        {
+            case EventState.CONFIRMINGCALLTOMOBILIZE:
+            case EventState.CONFIRMINGRESOURCEPLANNING:
+            case EventState.CONFIRMINGMOBILEHOSPITAL:
+            case EventState.CONFIRMINGFORECAST:
+                EnableContextButtons(true, true, false, false, false, false);
+                break;
+
+            case EventState.FORECAST:
+            case EventState.RESOURCEPLANNING:
+                EnableContextButtons(false, true, false, true, true, false);
+                break;
+            
+            
+        }
+
+
     }
 
     private void notMyTurnHandling()
@@ -245,10 +284,11 @@ public class PlayerGUI : MonoBehaviour
     private void drawHandleDiscard()
     {
         changeHorizontalLayout(option: 1);
-        cardsState = CardGUIStates.CardsDiscarding;
+        UpdateCardsState(CardGUIStates.CardsDiscarding);
+        EnableContextButtons(false, false, false, false, false, false); //TODO: check this
         if (selectedCards.Count > 0)
         {
-            ContextButtons[1].SetActive(false);
+            //ContextButtons[1].SetActive(false);
             if (selectedCards[0] < 24)
             {
                 getCardInHand(selectedCards[0]).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
@@ -264,15 +304,8 @@ public class PlayerGUI : MonoBehaviour
 
     private void drawEventHandling()
     {
-        if(pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE || pInEvent == EventState.CONFIRMINGRESOURCEPLANNING ||
-            pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL|| pInEvent == EventState.CONFIRMINGFORECAST)
+        if(pInEvent == EventState.FORECAST)
         {
-            EnableContextButtons(true, true, false, false, false, false);
-        }
-        else if(pInEvent == EventState.FORECAST)
-        {
-            EnableContextButtons(false, true, false, true, true, false);
-
             PlayerCards.SetActive(false);
             roleCard.gameObject.SetActive(false);
 
@@ -312,7 +345,6 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (pInEvent == EventState.RESOURCEPLANNING)
         {
-            EnableContextButtons(false, true, false, true, true, false);
 
             PlayerCards.SetActive(false);
             roleCard.gameObject.SetActive(false);
@@ -388,10 +420,10 @@ public class PlayerGUI : MonoBehaviour
         }
     }
 
-    public void EnableContextButtons(bool accept, bool reject, bool discard, bool left, bool right, bool reject2)
+    public void EnableContextButtons(bool reject, bool accept, bool discard, bool left, bool right, bool reject2)
     {
-        ContextButtons[0].SetActive(accept);
-        ContextButtons[1].SetActive(reject);
+        ContextButtons[0].SetActive(reject);
+        ContextButtons[1].SetActive(accept);
         ContextButtons[2].SetActive(discard);
         ContextButtons[3].SetActive(left);
         ContextButtons[4].SetActive(right);
@@ -432,7 +464,13 @@ public class PlayerGUI : MonoBehaviour
                     if (PlayerModel.GetCurrentCity() == game.InitialCityID)
                         findCureAction = true;
 
-                playersToShareGUI.Clear();
+                if (playersToShareGUI.Count > 0)
+                { 
+                    foreach (PlayerGUI playerGUI in playersToShareGUI) playerGUI.UpdateCardsState(CardGUIStates.None);
+                                    /*playersToShareGUI.Clear();*/
+                    playersToShareGUI.Clear();
+                }
+                
 
                 int countOtherPlayerInCity = 0;
                 foreach (Player player in PlayerModel.GetCurrentCityScript().PlayersInCity)
@@ -440,7 +478,9 @@ public class PlayerGUI : MonoBehaviour
                     if (player != _player)
                     {
                         countOtherPlayerInCity++;
-                        if (player.PlayerCardsInHand.Contains(_player.GetCurrentCity()) || _player.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
+                        shareCardFromOtherPlayerToCurrent = player.PlayerCardsInHand.Contains(_player.GetCurrentCity());
+                        
+                        if (shareCardFromOtherPlayerToCurrent || _player.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
                         {
                             shareAction = true;
                             playersToShareGUI.Add(GameGUI.playerPadForPosition(player.Position));
@@ -450,16 +490,19 @@ public class PlayerGUI : MonoBehaviour
             }
             else
             {
-                if (cardsState == CardGUIStates.CardsExpandedFlyActionToSelect || cardsState == CardGUIStates.CardsExpandedCharterActionToSelect
-                    || cardsState == CardGUIStates.CardsExpandedCureActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction
-                    || cardsState == CardGUIStates.CardsExpandedVirologistAction)
+                if (cardsState == CardGUIStates.CardsExpandedCharterActionToSelect)
                 {
-                    EnableContextButtons(true, false, false, false, false, false);
-                    if (cardsState == CardGUIStates.CardsExpandedCharterActionToSelect || cardsState == CardGUIStates.CardsExpandedShareAction)
-                    {
-                        EnableContextButtons(false, true, false, false, false, false);
+                    getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
+                }
+                
+                if (cardsState == CardGUIStates.CardsExpandedShareAction)
+                {
+                    // Case 1: this (PlayerGui) sends the card to someone else.
+                    if (PlayerModel.CityCardsInHand.Contains(_player.GetCurrentCity())) 
                         getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
-                    }
+                    
+                    // Case 2: PlayerGUI != this sends the card to this
+                    else playersToShareGUI[0].getCardInHand(playersToShareGUI[0].PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);
                 }
             }
         }
@@ -533,19 +576,26 @@ public class PlayerGUI : MonoBehaviour
 
     public void ContextButtonClicked(int buttonType)
     {
-        if(buttonType == 2)
+        switch (buttonType)
         {
-            DiscardButtonClicked();
-        }
-        if (buttonType == 1)
-        {
-            AcceptButtonClicked();
-        }
-
-        if (buttonType == 0)
-        {
-            Timeline.theTimeline.addEvent(new GContextButtonClicked("CloseButton"));
-            CloseButtonClicked();
+            case 0:
+                Timeline.theTimeline.addEvent(new GContextButtonClicked("CloseButton"));
+                CloseButtonClicked();
+                break;
+            case 1:
+                AcceptButtonClicked();
+                break;
+            case 2:
+                DiscardButtonClicked();
+                break;
+            case 3:
+                Timeline.theTimeline.addEvent(new GContextButtonClicked("LeftArrowButton"));
+                LeftArrowButtonClicked();
+                break;
+            case 4:
+                Timeline.theTimeline.addEvent(new GContextButtonClicked("RightArrowButton"));
+                RightArrowButtonClicked();
+                break;
         }
 
         if (this != GameGUI.currentPlayerPad() && pInEvent == EventState.NOTINEVENT)
@@ -554,21 +604,8 @@ public class PlayerGUI : MonoBehaviour
             GameGUI.currentPlayerPad().draw();
         }
 
-        if (buttonType == 3)
-        {
-            Timeline.theTimeline.addEvent(new GContextButtonClicked("LeftArrowButton"));
-            LeftArrowButtonClicked();
-        }
-
-        if (buttonType == 4)
-        {
-            Timeline.theTimeline.addEvent(new GContextButtonClicked("RightArrowButton"));
-            RightArrowButtonClicked();
-        }
-
-        cardsState = CardGUIStates.None;
+        UpdateCardsState(CardGUIStates.None);
         ClearSelectedAction();
-        draw();
     }
 
     private void RightArrowButtonClicked()
@@ -703,16 +740,21 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (cardsState == CardGUIStates.CardsExpandedShareAction)
         {
-            if (_player.PlayerCardsInHand.Contains(game.CurrentPlayer.GetCurrentCity()))
+            if (shareCardFromOtherPlayerToCurrent)
             {
-                Timeline.theTimeline.addEvent(new PShareKnowledge(this, GameGUI.currentPlayerPad()));
+                // From other player to current player
+                shareCardFromOtherPlayerToCurrent = false;
+                Timeline.theTimeline.addEvent(new PShareKnowledge(playersToShareGUI[0], GameGUI.currentPlayerPad()));
                 draw(); 
             }
-            else if (game.CurrentPlayer.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
+            else
             {
+                // From current player to other player
                 Timeline.theTimeline.addEvent(new PShareKnowledge(GameGUI.currentPlayerPad(), this));
                 draw();
             }
+            //foreach (PlayerGUI playerGUI in playersToShareGUI) playerGUI.UpdateCardsState(CardGUIStates.None);
+            /*playersToShareGUI.Clear();*/
         }
         else if (ActionSelected == ActionTypes.CharacterAction && PlayerModel.Role == Player.Roles.Pilot)
         {
@@ -730,6 +772,7 @@ public class PlayerGUI : MonoBehaviour
     private void DiscardButtonClicked()
     {
         Timeline.theTimeline.addEvent(new PDiscardCard(selectedCards[0], this));
+        UpdateCardsState(CardGUIStates.None);
     }
 
     public void ActionButtonClicked(int action)
@@ -747,57 +790,51 @@ public class PlayerGUI : MonoBehaviour
                 ActionSelected = ActionTypes.Move;
                 MoveActionBackground.color = new Color(1f, 1f, 1f, .25f);
                 CreateMovingPawn();
+                draw();
                 break;
             case 1: //fly
                 ActionSelected = ActionTypes.Fly;
                 FlyActionBackground.color = new Color(1f, 1f, 1f, .25f);
-                cardsState = CardGUIStates.CardsExpandedFlyActionToSelect;
-                draw();
+                UpdateCardsState(CardGUIStates.CardsExpandedFlyActionToSelect); // calls draw
                 break;
             case 2: //charter
                 ActionSelected = ActionTypes.Charter;
                 CharterActionBackground.color = new Color(1f, 1f, 1f, .25f);
-                cardsState = CardGUIStates.CardsExpandedCharterActionToSelect;
+                UpdateCardsState(CardGUIStates.CardsExpandedCharterActionToSelect); // calls draw
                 CreateMovingPawn();
-                draw();
                 break;
             case 3: //treat
                 ActionSelected = ActionTypes.Treat;
                 TreatActionBackground.color = new Color(1f, 1f, 1f, .25f);
+                draw();
                 break;
             case 4: //share
                 ActionSelected = ActionTypes.Share;
                 ShareActionBackground.color = new Color(1f, 1f, 1f, .25f);
-                cardsState = CardGUIStates.CardsExpandedShareAction;
+                UpdateCardsState(CardGUIStates.CardsExpandedShareAction); //calls draw
 
-                if (PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
+                
+                /*if (PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
                 {
-                    cardsState = CardGUIStates.CardsExpandedShareAction;
-                    draw();
+                    UpdateCardsState(CardGUIStates.CardsExpandedShareAction);
                     
-                }
+                }*/ // Redundant with ownTurnActionHandling check for share
 
-                bool fromCurrentPlayerToOther = false;
                 foreach (PlayerGUI playerGUI in playersToShareGUI)
                 {
-                    playerGUI.cardsState = CardGUIStates.CardsExpandedShareAction;
-                    playerGUI.EnableContextButtons(true, true, false, false, false, false);
+                    playerGUI.UpdateCardsState(CardGUIStates.CardsExpandedShareAction); // calls draw
                     if (playerGUI.PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
                     {
-                        fromCurrentPlayerToOther = true;
                         playerGUI.getCardInHand(PlayerModel.GetCurrentCity()).GetComponent<CityCardDisplay>().border.gameObject.SetActive(true);  
                     }
-                    playerGUI.changeContextText();
-                    playerGUI.draw();
                 }
                 
-                if (!fromCurrentPlayerToOther) _player.playerGui.EnableContextButtons(false, false, false, false, false, false);
+                //if (!fromCurrentPlayerToOther) _player.playerGui.EnableContextButtons(false, false, false, false, false, false);
                 break;
             case 5: //find cure
                 ActionSelected = ActionTypes.FindCure;
                 FindCureActionBackground.color = new Color(1f, 1f, 1f, .25f);
-                cardsState = CardGUIStates.CardsExpandedCureActionToSelect;
-                draw();
+                UpdateCardsState(CardGUIStates.CardsExpandedCureActionToSelect); // calls draw
                 break;
             case 6: //character actionbv1
 
@@ -811,8 +848,7 @@ public class PlayerGUI : MonoBehaviour
                         if (PlayerModel.CityCardsInHand.Count == 0 || PlayerModel.roleActionUsed) enableAction = false;
                         else
                         {
-                            cardsState = CardGUIStates.CardsExpandedVirologistAction;
-                            draw();
+                            UpdateCardsState(CardGUIStates.CardsExpandedVirologistAction); // calls draw
                         }
                     }
 
@@ -825,7 +861,6 @@ public class PlayerGUI : MonoBehaviour
                 break;
         }
         Timeline.theTimeline.addEvent(new GActionButtonClicked(ActionSelected));
-        changeContextText();
     }
 
     public void CardInHandClicked(int cardClicked)
@@ -857,10 +892,9 @@ public class PlayerGUI : MonoBehaviour
         {
             if (cardsState == CardGUIStates.None)
             {
-                cardsState = CardGUIStates.CardsExpanded;
+                UpdateCardsState(CardGUIStates.CardsExpanded);
                 //EnableContextButtons(true, false, false, false, false, false);
                 //ContextButtons[0].SetActive(true);
-                draw();
                 return;
             }
         }
@@ -885,7 +919,7 @@ public class PlayerGUI : MonoBehaviour
 
             if (cardsState == CardGUIStates.CardsExpandedFlyActionToSelect || cardsState == CardGUIStates.CardsExpandedFlyActionSelected)
             {
-                cardsState = CardGUIStates.CardsExpandedFlyActionSelected;
+                UpdateCardsState(CardGUIStates.CardsExpandedFlyActionToSelect);
                 selectedCards.Clear();
                 selectedCards.Add(cardClicked);
 
@@ -920,7 +954,7 @@ public class PlayerGUI : MonoBehaviour
                     if (AddCardAndTestForCure(cardClickedScript)) //TODO: check how this works
                     { 
                             Debug.Log("You can now cure the disease!");
-                            cardsState = CardGUIStates.CardsExpandedCureActionSelected;
+                            UpdateCardsState(CardGUIStates.CardsExpandedCureActionSelected);
                             ContextButtons[1].SetActive(true);
                     }
 
@@ -1488,9 +1522,7 @@ public class PlayerGUI : MonoBehaviour
                     CurrentInstructionText.text = "Share your card?";
                 } else if (game.CurrentPlayer.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
                 {
-                    if (game.CurrentPlayer == _player)
-                        CurrentInstructionText.text = "Sharing your card, pending approval";
-                    else CurrentInstructionText.text = "Accept card?";
+                    CurrentInstructionText.text = "Accept card?";
                 }
                 
                 return;
@@ -1550,10 +1582,12 @@ public class PlayerGUI : MonoBehaviour
             if (cardsState == CardGUIStates.CardsExpandedShareAction)
             {
 
-                if (PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
-                    additionalMessage += "Share you card?";
+                //if (PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
+                if(shareCardFromOtherPlayerToCurrent)
+                    additionalMessage += "Share your card ?";
                 else
-                    additionalMessage += "Wait for response...";
+                    additionalMessage = "Waiting for approval";
+
             }
         }
         else if (ActionSelected == ActionTypes.FindCure)
@@ -1608,6 +1642,12 @@ public class PlayerGUI : MonoBehaviour
             draw();
         //else
         //    ClearContextButtons();
+    }
+
+    private void UpdateCardsState(CardGUIStates newCardState)
+    {
+        cardsState = newCardState;
+        draw();
     }
 
 }
