@@ -229,6 +229,7 @@ public class PlayerGUI : MonoBehaviour
             case CardGUIStates.CardsExpandedFlyActionToSelect:
             case CardGUIStates.CardsExpandedCureActionToSelect:
             case CardGUIStates.CardsExpandedVirologistAction:
+                EnableContextButtons(true, false, false, false, false, false);
                 break;
         }
 
@@ -245,8 +246,6 @@ public class PlayerGUI : MonoBehaviour
             case EventState.RESOURCEPLANNING:
                 EnableContextButtons(false, true, false, true, true, false);
                 break;
-            
-            
         }
 
 
@@ -467,7 +466,6 @@ public class PlayerGUI : MonoBehaviour
                 if (playersToShareGUI.Count > 0)
                 { 
                     foreach (PlayerGUI playerGUI in playersToShareGUI) playerGUI.UpdateCardsState(CardGUIStates.None);
-                                    /*playersToShareGUI.Clear();*/
                     playersToShareGUI.Clear();
                 }
                 
@@ -591,11 +589,11 @@ public class PlayerGUI : MonoBehaviour
             case 3:
                 Timeline.theTimeline.addEvent(new GContextButtonClicked("LeftArrowButton"));
                 LeftArrowButtonClicked();
-                break;
+                return;
             case 4:
                 Timeline.theTimeline.addEvent(new GContextButtonClicked("RightArrowButton"));
                 RightArrowButtonClicked();
-                break;
+                return;
         }
 
         if (this != GameGUI.currentPlayerPad() && pInEvent == EventState.NOTINEVENT)
