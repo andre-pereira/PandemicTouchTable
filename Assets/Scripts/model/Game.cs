@@ -50,7 +50,6 @@ public class Game : MonoBehaviour
 
     public enum EpidemicGameState
     {
-
         EPIDEMICINCREASE,
         EPIDEMICINFECT,
         EPIDEMICINTENSIFY

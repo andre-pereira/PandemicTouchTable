@@ -52,7 +52,6 @@ public class PlayerGUI : MonoBehaviour
     private Image FindCureActionBackground;
 
     public GameObject[] ContextButtons;
-    private ContextButtonStates contextButtonState;
 
     public GameObject [] ForeCastEventCards;
     internal List<int> ForeCastEventCardsIDs = new List<int>();
@@ -1416,37 +1415,18 @@ public class PlayerGUI : MonoBehaviour
 
     private void changeContextText()
     {
+        // This first check is for events
         if (Waiting && pInEvent != EventState.EXECUTINGMOBILEHOSPITAL)
         {
             CurrentInstructionText.text = "Waiting...";
             return;
         }
-        else if (pInEvent == EventState.CONFIRMINGCALLTOMOBILIZE || pInEvent == EventState.CONFIRMINGRESOURCEPLANNING ||
-            pInEvent == EventState.CONFIRMINGMOBILEHOSPITAL || pInEvent == EventState.CONFIRMINGFORECAST)
+        else if (pInEvent != EventState.NOTINEVENT)
         {
-            CurrentInstructionText.text = "Playing Event Card\nDo you confirm?";
+            EventText();
             return;
         }
-        else if (pInEvent == EventState.FORECAST)
-        {
-            CurrentInstructionText.text = "Event - Forecasting \nSelect any card.\nUse arrows to move";
-            return;
-        }
-        else if (pInEvent == EventState.RESOURCEPLANNING)
-        {
-            CurrentInstructionText.text = "Event - Resource Planning \nSelect any card.\nUse arrows to move";
-            return;
-        }
-        else if (pInEvent == EventState.CALLTOMOBILIZE)
-        {
-            //if(movingPawn != null)
-            if (!eventExecuted)
-                CurrentInstructionText.text = "Event - Call to Mobilize \nMove 1-2 or accept to stay";
-            else
-                CurrentInstructionText.text = "Event - Call to Mobilize \nWaiting";
-            
-            return;
-        }
+
         if (theGame.MobileHospitalInExecution && theGame.MobileHospitalPlayer == _player)
         {
             CurrentInstructionText.text = "Event - Mobile Hospital \nRemove a cube.";
@@ -1474,8 +1454,8 @@ public class PlayerGUI : MonoBehaviour
                 return;
             }
         }
+        // This is when there is no event
         string textToreturn = PlayerModel.ActionsRemaining + " actions left."; 
-
         string additionalMessage = "";
 
         if(cardsState == CardGUIStates.CardsDiscarding)
@@ -1492,65 +1472,9 @@ public class PlayerGUI : MonoBehaviour
                     additionalMessage += "Discard city";
             }   
         }
-        else if(ActionSelected == ActionTypes.Move)
+        else if(ActionSelected != ActionTypes.None)
         {
-            additionalMessage += "Move your pawn";
-        }
-        else if(ActionSelected == ActionTypes.Fly)
-        {
-            if(cardsState == CardGUIStates.CardsExpandedFlyActionToSelect)
-            {
-                additionalMessage += "Pick a card to fly to";
-            }
-            else if(cardsState == CardGUIStates.CardsExpandedFlyActionSelected)
-            {
-                additionalMessage += "Complete action?";
-            }
-        }
-        else if (ActionSelected == ActionTypes.Charter)
-        {
-            if (cardsState == CardGUIStates.CardsExpandedCharterActionToSelect)
-            {
-                additionalMessage += "Move to any city";
-            }
-        }
-        else if (ActionSelected == ActionTypes.Treat)
-        {
-            additionalMessage += "Pick a cube";
-        }
-        else if (ActionSelected == ActionTypes.Share)
-        {
-            if (cardsState == CardGUIStates.CardsExpandedShareAction)
-            {
-
-                if (PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
-                    additionalMessage += "Share you card?";
-                else
-                    additionalMessage += "Wait for response...";
-            }
-        }
-        else if (ActionSelected == ActionTypes.FindCure)
-        {
-            additionalMessage += "Complete action?";
-        }
-        else if (ActionSelected == ActionTypes.CharacterAction)
-        {
-            if (PlayerModel.Role == Player.Roles.Virologist)
-                additionalMessage += "Remove a cube";
-            else if (PlayerModel.Role == Player.Roles.Pilot)
-            {
-                if (pilotCitySelected == -1)
-                    additionalMessage += "Touch city within 2";
-                else
-                {
-                    if (pawnPilotSelected != null)
-                        additionalMessage += "Bring pawn along?";
-                    else
-                    {
-                        additionalMessage += "Complete move?";
-                    }
-                }
-            }
+            additionalMessage = ActionText(additionalMessage);
         }
 
         if (additionalMessage != "")
@@ -1561,7 +1485,104 @@ public class PlayerGUI : MonoBehaviour
         CurrentInstructionText.text = textToreturn;
     }
 
-    public void drawLater(float time)
+    internal string ActionText(string additionalMessage)
+    {
+        switch (ActionSelected)
+        {
+            case ActionTypes.Move:
+                additionalMessage += "Move your pawn";
+                break;
+            case ActionTypes.Fly:
+                if (cardsState == CardGUIStates.CardsExpandedFlyActionToSelect)
+                {
+                    additionalMessage += "Pick a card to fly to";
+                }
+                else if (cardsState == CardGUIStates.CardsExpandedFlyActionSelected)
+                {
+                    additionalMessage += "Complete action?";
+                }
+                break;
+            case ActionTypes.Charter:
+                if (cardsState == CardGUIStates.CardsExpandedCharterActionToSelect)
+                {
+                    additionalMessage += "Move to any city";
+                }
+                break;
+            case ActionTypes.Treat:
+                additionalMessage += "Pick a cube";
+                break;
+            case ActionTypes.Share:
+                if (cardsState == CardGUIStates.CardsExpandedShareAction)
+                {
+
+                    if (PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
+                        additionalMessage += "Share you card?";
+                    else
+                        additionalMessage += "Wait for response...";
+                }
+                break;
+            case ActionTypes.FindCure:
+                additionalMessage += "Complete action?";
+                break;
+            case ActionTypes.CharacterAction:
+                if (PlayerModel.Role == Player.Roles.Virologist)
+                    additionalMessage += "Remove a cube";
+                else if (PlayerModel.Role == Player.Roles.Pilot)
+                {
+                    if (pilotCitySelected == -1)
+                        additionalMessage += "Touch city within 2";
+                    else
+                    {
+                        if (pawnPilotSelected != null)
+                            additionalMessage += "Bring pawn along?";
+                        else
+                        {
+                            additionalMessage += "Complete move?";
+                        }
+                    }
+                }
+                break;
+        }
+        return additionalMessage;
+    }
+
+    internal void EventText()
+    {
+        switch (pInEvent)
+        {
+            case EventState.NOTINEVENT:
+                CurrentInstructionText.text = PlayerModel.ActionsRemaining + " actions left.";
+                break;
+            case EventState.CONFIRMINGCALLTOMOBILIZE:
+                CurrentInstructionText.text = "Playing Event Card\nDo you confirm?";
+                break;
+            case EventState.CONFIRMINGRESOURCEPLANNING:
+                CurrentInstructionText.text = "Playing Event Card\nDo you confirm?";
+                break;
+            case EventState.CONFIRMINGMOBILEHOSPITAL:
+                CurrentInstructionText.text = "Playing Event Card\nDo you confirm?";
+                break;
+            case EventState.CONFIRMINGFORECAST:
+                CurrentInstructionText.text = "Playing Event Card\nDo you confirm?";
+                break;
+            case EventState.FORECAST:
+                CurrentInstructionText.text = "Event - Forecasting \nSelect any card.\nUse arrows to move";
+                break;
+            case EventState.RESOURCEPLANNING:
+                CurrentInstructionText.text = "Event - Resource Planning \nSelect any card.\nUse arrows to move";
+                break;
+            case EventState.CALLTOMOBILIZE:
+                //if(movingPawn != null)
+                if (!eventExecuted)
+                    CurrentInstructionText.text = "Event - Call to Mobilize \nMove 1-2 or accept to stay";
+                else
+                    CurrentInstructionText.text = "Event - Call to Mobilize \nWaiting";
+                break;
+        }
+        return;
+    }
+
+public void drawLater(float time)
     {
         _isAnimating = true;
         this.ExecuteLater(time, doneAnimating);
@@ -1572,7 +1593,6 @@ public class PlayerGUI : MonoBehaviour
         _isAnimating = false;
         draw();
     }
-
 
     internal void ChangeToInEvent(EventState state, bool shouldDraw = true)
     {
@@ -1609,11 +1629,4 @@ public enum CardGUIStates
     CardsExpandedCureActionToSelect,
     CardsExpandedCureActionSelected,
     CardsDiscarding
-}
-
-public enum ContextButtonStates
-{
-    Reject,
-    Accept,
-    None
 }
