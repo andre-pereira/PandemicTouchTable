@@ -221,6 +221,13 @@ public class PlayerGUI : MonoBehaviour
             case CardGUIStates.CardsExpandedVirologistAction:
                 EnableContextButtons(true, false, false, false, false, false);
                 break;
+            
+            case CardGUIStates.CardsDiscarding:
+                if(selectedCards.Count == 0) 
+                    EnableContextButtons(false, false, false, false, false, false);
+                else
+                    EnableContextButtons(false, selectedCards[0] > 23, true, false, false, false);
+                break;
         }
 
         switch (pInEvent)
@@ -273,8 +280,8 @@ public class PlayerGUI : MonoBehaviour
     private void drawHandleDiscard()
     {
         changeHorizontalLayout(option: 1);
-        UpdateCardsState(CardGUIStates.CardsDiscarding);
-        EnableContextButtons(false, false, false, false, false, false); //TODO: check this
+        UpdateCardsState(CardGUIStates.CardsDiscarding, false); // Not redrawing : infinite loop
+        
         if (selectedCards.Count > 0)
         {
             //ContextButtons[1].SetActive(false);
@@ -743,7 +750,7 @@ public class PlayerGUI : MonoBehaviour
                 // From other player to current player
                 shareCardFromOtherPlayerToCurrent = false;
                 Timeline.theTimeline.addEvent(new PShareKnowledge(playersToShareGUI[0], GameGUI.currentPlayerPad()));
-                draw(); 
+                draw();
             }
             else
             {
@@ -917,7 +924,7 @@ public class PlayerGUI : MonoBehaviour
 
             if (cardsState == CardGUIStates.CardsExpandedFlyActionToSelect || cardsState == CardGUIStates.CardsExpandedFlyActionSelected)
             {
-                cardsState = CardGUIStates.CardsExpandedFlyActionSelected; //not calling update to not draw
+                UpdateCardsState(CardGUIStates.CardsExpandedFlyActionSelected, false); 
                 selectedCards.Clear();
                 selectedCards.Add(cardClicked);
 
@@ -1642,10 +1649,11 @@ public class PlayerGUI : MonoBehaviour
         //    ClearContextButtons();
     }
 
-    private void UpdateCardsState(CardGUIStates newCardState)
+    public void UpdateCardsState(CardGUIStates newCardState, bool redraw = true)
     {
         cardsState = newCardState;
-        draw();
+        if(redraw) 
+            draw();
     }
 
 }
