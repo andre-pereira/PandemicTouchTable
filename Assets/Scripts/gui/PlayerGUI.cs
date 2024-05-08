@@ -841,7 +841,7 @@ public class PlayerGUI : MonoBehaviour
                 FindCureActionBackground.color = new Color(1f, 1f, 1f, .25f);
                 UpdateCardsState(CardGUIStates.CardsExpandedCureActionToSelect); // calls draw
                 break;
-            case 6: //character actionbv1
+            case 6: //character action
 
                 if (_player.Role == Player.Roles.Virologist || _player.Role == Player.Roles.Pilot)
                 {
@@ -860,6 +860,7 @@ public class PlayerGUI : MonoBehaviour
                     if (enableAction)
                     {
                         ActionSelected = ActionTypes.CharacterAction;
+                        UpdateCardsState(CardGUIStates.None);
                         roleCardBackground.GetComponent<Outline>().enabled = true;
                     }
                 }
@@ -897,6 +898,7 @@ public class PlayerGUI : MonoBehaviour
         {
             if (cardsState == CardGUIStates.None)
             {
+                ClearSelectedAction();
                 UpdateCardsState(CardGUIStates.CardsExpanded);
                 //EnableContextButtons(true, false, false, false, false, false);
                 //ContextButtons[0].SetActive(true);
@@ -1364,6 +1366,15 @@ public class PlayerGUI : MonoBehaviour
 
     public void ClearSelectedAction(bool clear = true)
     {
+        foreach(int card in selectedCards)
+        {
+            if (card < 23) 
+                getCardInHand(card).GetComponent<CityCardDisplay>().border.gameObject.SetActive(false);
+            else 
+                getCardInHand(card).GetComponent<EventCardDisplay>().border.gameObject.SetActive(false);
+                
+        }
+        
         selectedCards.Clear();
 
         if (flyLine != null)
@@ -1384,7 +1395,7 @@ public class PlayerGUI : MonoBehaviour
         roleCardBackground.GetComponent<Outline>().enabled = false;
 
         ActionSelected = ActionTypes.None;
-        cardsState = CardGUIStates.None;
+        UpdateCardsState(CardGUIStates.None, false);
 
         if (clear) EnableContextButtons(false, false, false, false, false, false);
 
