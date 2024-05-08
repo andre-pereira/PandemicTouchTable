@@ -66,22 +66,13 @@ public class PlayerGUI : MonoBehaviour
     internal List<int> ResourcePlanningEventCardsIDs = new List<int>();
     internal int ResourcePlanningEventCardSelected = -1;
 
-    private EventState pInEvent = EventState.NOTINEVENT;
+    public EventState pInEvent = EventState.NOTINEVENT;
     
     private const int MAX_CARDS = 5;
     private const int MAX_SAME_COLOR_CARDS = 4;
 
     public bool callToMobilizePending = false;
-    public EventState PInEventCard
-    {
-        get { return pInEvent; }
-        set 
-        {
-            pInEvent = value;
-            eventExecuted = false;
-        }
-    }
-    internal bool eventExecuted = false;
+    internal bool callToMobilizeExecuted = false;
 
     public Player PlayerModel
     {
@@ -206,7 +197,6 @@ public class PlayerGUI : MonoBehaviour
 
     private void changeContextButtons()
     {
-        Debug.Log("Changing context buttons ...");
         if (cardsState == CardGUIStates.None && pInEvent == EventState.NOTINEVENT)
         {
             EnableContextButtons(false, false, false, false, false, false);
@@ -334,7 +324,16 @@ public class PlayerGUI : MonoBehaviour
         }
         else if (pInEvent == EventState.CALLTOMOBILIZE)
         {
-            EnableContextButtons(false, !eventExecuted, false, false, false, false);
+            EnableContextButtons(false, !callToMobilizeExecuted, false, false, false, false);
+            if (!callToMobilizeExecuted)
+            {
+                MoveAction.SetActive(false);
+                FlyAction.SetActive(false);
+                CharterAction.SetActive(false);
+                TreatAction.SetActive(false);
+                FindCureAction.SetActive(false);
+                ShareAction.SetActive(false);
+            }
         }
         else if (pInEvent == EventState.EXECUTINGMOBILEHOSPITAL)
         {
@@ -693,7 +692,7 @@ public class PlayerGUI : MonoBehaviour
 
             }
         }
-        PInEventCard = EventState.NOTINEVENT;
+        pInEvent = EventState.NOTINEVENT;
     }
 
     private void AcceptButtonClicked()
@@ -713,8 +712,9 @@ public class PlayerGUI : MonoBehaviour
         
         else if (pInEvent == EventState.CALLTOMOBILIZE)
         {
-            eventExecuted = true;
+            callToMobilizeExecuted = true;
             DestroyMovingPawn();
+            Timeline.theTimeline.addEvent(new PMobilizeEvent(PlayerModel, PlayerModel.GetCurrentCity()));
             draw();
         }
         else if (pInEvent == EventState.FORECAST)
@@ -1492,7 +1492,7 @@ public class PlayerGUI : MonoBehaviour
         else if (pInEvent == EventState.CALLTOMOBILIZE)
         {
             //if(movingPawn != null)
-            if (!eventExecuted)
+            if (!callToMobilizeExecuted)
                 CurrentInstructionText.text = "Event - Call to Mobilize \nMove 1-2 or accept to stay";
             else
                 CurrentInstructionText.text = "Event - Call to Mobilize \nWaiting";
@@ -1635,7 +1635,7 @@ public class PlayerGUI : MonoBehaviour
 
     internal void ChangeToInEvent(EventState state, bool shouldDraw = true)
     {
-        PInEventCard = state;
+        pInEvent = state;
         if (shouldDraw)
             draw();
         //else

@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static GameGUI;
 using static Game;
-using System;
 
 public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandler, IPointerClickHandler
 {
@@ -72,7 +71,7 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
         }
         else
         {
-            pGUI = currentPlayerPad();
+            pGUI = playerPadForPlayer(PlayerModel);
         }
         
         if (endedInCity != null && endedInCity.city.cityID != PlayerModel.GetCurrentCity())
@@ -85,7 +84,7 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
             else
             {
                 int distance = theGame.DistanceFromCity(PlayerModel.GetCurrentCity(), endedInCity.city.cityID);
-                if (pGUI.PInEventCard == EventState.CALLTOMOBILIZE)
+                if (pGUI.pInEvent == EventState.CALLTOMOBILIZE)
                 {
                     if(distance > 0 && distance <= 2)
                     {

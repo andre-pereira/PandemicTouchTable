@@ -16,14 +16,13 @@
     {
         Game.theGame.Cities[newCityID].draw();
         Game.theGame.Cities[oldCityID].draw();
-        _playerGui.draw();
         return 0;
     }
 
     public override void Do(Timeline timeline)
     {
         _player.UpdateCurrentCity(newCityID, true);
-        _playerGui.eventExecuted = true;
+        _playerGui.callToMobilizeExecuted = true;
         _player.playerGui.ChangeToInEvent(Game.EventState.NOTINEVENT, true);
     }
     
