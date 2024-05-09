@@ -471,7 +471,7 @@ public class PlayerGUI : MonoBehaviour
 
                 if (playersToShareGUI.Count > 0)
                 { 
-                    foreach (PlayerGUI playerGUI in playersToShareGUI) playerGUI.UpdateCardsState(CardGUIStates.None);
+                    foreach (PlayerGUI playerGUI in playersToShareGUI) playerGUI.UpdateCardsState(CardGUIStates.None, false);
                     playersToShareGUI.Clear();
                 }
                 
@@ -958,10 +958,9 @@ public class PlayerGUI : MonoBehaviour
                 }
                 else
                 {
-                    if (AddCardAndTestForCure(cardClickedScript)) //TODO: check how this works
+                    if (AddCardAndTestForCure(cardClickedScript))
                     { 
-                            Debug.Log("You can now cure the disease!");
-                            UpdateCardsState(CardGUIStates.CardsExpandedCureActionSelected);
+                            UpdateCardsState(CardGUIStates.CardsExpandedCureActionSelected, false);
                             ContextButtons[1].SetActive(true);
                     }
 
