@@ -452,9 +452,10 @@ public class PlayerGUI : MonoBehaviour
         //changeContextText(true);
         if (PlayerModel.ActionsRemaining > 0 && !Waiting)
         {
-            endTurnAction = true;
             if (cardsState == CardGUIStates.None)
             {
+                endTurnAction = true;
+
                 moveAction = true;
                 List<int>[] cardsOfEachColor = new List<int>[3];
                 foreach (int card in PlayerModel.CityCardsInHand)
@@ -876,9 +877,8 @@ public class PlayerGUI : MonoBehaviour
             case 7: // End turn
                 ActionSelected = ActionTypes.EndTurn;
                 EndTurnActionBackground.color = new Color(1f, 1f, 1f, .25f);
-                // Set the remaining action to 0
+                // Set the remaining actions to 0
                 PlayerModel.DecreaseActionsRemaining(PlayerModel.ActionsRemaining);
-                // Call updateCardStates with draw = true
                 break;
         }
         Timeline.theTimeline.addEvent(new GActionButtonClicked(ActionSelected));
