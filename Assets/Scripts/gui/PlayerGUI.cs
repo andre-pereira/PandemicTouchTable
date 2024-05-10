@@ -51,6 +51,8 @@ public class PlayerGUI : MonoBehaviour
     private Image ShareActionBackground;
     public GameObject FindCureAction;
     private Image FindCureActionBackground;
+    public GameObject EndTurnAction;
+    private Image EndTurnActionBackground;
 
     public GameObject[] ContextButtons;
     private ContextButtonStates contextButtonState;
@@ -139,6 +141,7 @@ public class PlayerGUI : MonoBehaviour
         TreatActionBackground = TreatAction.transform.Find("highlight").GetComponent<Image>();
         ShareActionBackground = ShareAction.transform.Find("highlight").GetComponent<Image>();
         FindCureActionBackground = FindCureAction.transform.Find("highlight").GetComponent<Image>();
+        EndTurnActionBackground = EndTurnAction.transform.Find("highlight").GetComponent<Image>();
         roleCardBackground = roleCard.transform.Find("background").GetComponent<Image>();
 
         _player = null;
@@ -340,6 +343,7 @@ public class PlayerGUI : MonoBehaviour
                 TreatAction.SetActive(false);
                 FindCureAction.SetActive(false);
                 ShareAction.SetActive(false);
+                EndTurnAction.SetActive(false);
             }
         }
         else if (pInEvent == EventState.EXECUTINGMOBILEHOSPITAL)
@@ -443,10 +447,12 @@ public class PlayerGUI : MonoBehaviour
         bool findCureAction = false;
         bool treatAction = false;
         bool shareAction = false;
+        bool endTurnAction = false;
 
         //changeContextText(true);
         if (PlayerModel.ActionsRemaining > 0 && !Waiting)
         {
+            endTurnAction = true;
             if (cardsState == CardGUIStates.None)
             {
                 moveAction = true;
@@ -517,6 +523,7 @@ public class PlayerGUI : MonoBehaviour
         CharterAction.SetActive(charterAction);
         FindCureAction.SetActive(findCureAction);
         ShareAction.SetActive(shareAction);
+        EndTurnAction.SetActive(endTurnAction);
     }
 
     private void changeHorizontalLayout(int option)
@@ -864,6 +871,14 @@ public class PlayerGUI : MonoBehaviour
                         roleCardBackground.GetComponent<Outline>().enabled = true;
                     }
                 }
+                break;
+            
+            case 7: // End turn
+                ActionSelected = ActionTypes.EndTurn;
+                EndTurnActionBackground.color = new Color(1f, 1f, 1f, .25f);
+                // Set the remaining action to 0
+                PlayerModel.DecreaseActionsRemaining(PlayerModel.ActionsRemaining);
+                // Call updateCardStates with draw = true
                 break;
         }
         Timeline.theTimeline.addEvent(new GActionButtonClicked(ActionSelected));
@@ -1347,6 +1362,7 @@ public class PlayerGUI : MonoBehaviour
         TreatAction.SetActive(enabled);
         ShareAction.SetActive(enabled);
         FindCureAction.SetActive(enabled);
+        EndTurnAction.SetActive(enabled); //TODO : check interference with events
     }
 
     public void CreateMovingPawn(Vector3? translation = null)
@@ -1391,6 +1407,7 @@ public class PlayerGUI : MonoBehaviour
         TreatActionBackground.color = new Color(.2f, .2f, .2f, .2f);
         ShareActionBackground.color = new Color(.2f, .2f, .2f, .2f);
         FindCureActionBackground.color = new Color(.2f, .2f, .2f, .2f);
+        EndTurnActionBackground.color = new Color(.2f, .2f, .2f, .2f);
         roleCardBackground.GetComponent<Outline>().enabled = false;
 
         ActionSelected = ActionTypes.None;
@@ -1677,6 +1694,7 @@ public enum ActionTypes
     Share,
     FindCure,
     CharacterAction,
+    EndTurn,
     None
 }
 
