@@ -486,7 +486,7 @@ public class PlayerGUI : MonoBehaviour
                 int countOtherPlayerInCity = 0;
                 foreach (Player player in PlayerModel.GetCurrentCityScript().PlayersInCity)
                 {
-                    if (player != _player)
+                    if (player != PlayerModel)
                     {
                         countOtherPlayerInCity++;
                         shareCardFromOtherPlayerToCurrent = player.PlayerCardsInHand.Contains(_player.GetCurrentCity());
@@ -495,6 +495,8 @@ public class PlayerGUI : MonoBehaviour
                         {
                             shareAction = true;
                             playersToShareGUI.Add(GameGUI.playerPadForPosition(player.Position));
+                            
+                            if (shareCardFromOtherPlayerToCurrent) break;
                         }
                     }
                 }
@@ -758,15 +760,15 @@ public class PlayerGUI : MonoBehaviour
                 // From other player to current player
                 shareCardFromOtherPlayerToCurrent = false;
                 Timeline.theTimeline.addEvent(new PShareKnowledge(playersToShareGUI[0], GameGUI.currentPlayerPad()));
-                draw();
             }
             else
             {
                 // From current player to other player
                 Timeline.theTimeline.addEvent(new PShareKnowledge(GameGUI.currentPlayerPad(), this));
-                draw();
             }
-            //foreach (PlayerGUI playerGUI in playersToShareGUI) playerGUI.UpdateCardsState(CardGUIStates.None);
+            foreach (PlayerGUI playerGUI in playersToShareGUI) playerGUI.UpdateCardsState(CardGUIStates.None);
+            draw();
+
             /*playersToShareGUI.Clear();*/
         }
         else if (ActionSelected == ActionTypes.CharacterAction && PlayerModel.Role == Player.Roles.Pilot)
@@ -1551,7 +1553,7 @@ public class PlayerGUI : MonoBehaviour
             {
                 if (_player.PlayerCardsInHand.Contains(game.CurrentPlayer.GetCurrentCity()))
                 {
-                    CurrentInstructionText.text = "Share your card?";
+                    CurrentInstructionText.text = "Waiting for approval";
                 } else if (game.CurrentPlayer.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
                 {
                     CurrentInstructionText.text = "Accept card?";
@@ -1565,7 +1567,7 @@ public class PlayerGUI : MonoBehaviour
                 return;
             }
         }
-        string textToreturn = PlayerModel.ActionsRemaining + " actions left."; 
+        string textToreturn = $"<b>{PlayerModel.ActionsRemaining}</b> actions left."; 
 
         string additionalMessage = "";
 
@@ -1613,13 +1615,10 @@ public class PlayerGUI : MonoBehaviour
         {
             if (cardsState == CardGUIStates.CardsExpandedShareAction)
             {
-
-                //if (PlayerModel.PlayerCardsInHand.Contains(_player.GetCurrentCity()))
                 if(shareCardFromOtherPlayerToCurrent)
-                    additionalMessage += "Share your card ?";
+                    additionalMessage += "Accept card ?";
                 else
                     additionalMessage = "Waiting for approval";
-
             }
         }
         else if (ActionSelected == ActionTypes.FindCure)
@@ -1637,10 +1636,14 @@ public class PlayerGUI : MonoBehaviour
                 else
                 {
                     if (pawnPilotSelected != null)
-                        additionalMessage += "Bring pawn along?";
+                    {
+                        string playerRole = pawnPilotSelected.PlayerModel.Role.GetDescription();
+                        
+                        additionalMessage += $"<size=11>Travel with the <size=12><b>{playerRole}</b>?</size></size>";
+                    }
                     else
                     {
-                        additionalMessage += "Complete move?";
+                        additionalMessage += "Travel <b>alone</b>?";
                     }
                 }
             }
