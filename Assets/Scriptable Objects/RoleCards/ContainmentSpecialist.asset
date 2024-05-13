@@ -16,4 +16,4 @@ MonoBehaviour:
   roleText: When you enter a city with 2 or more cubes of the same color, remove
     1 of them.
   roleColor: {r: 1, g: 0.45360184, b: 0, a: 1}
-  mainArtwork: {fileID: 21300000, guid: f0d60a6608a77e849bce96868ca8f972, type: 3}
+  mainArtwork: {fileID: 21300000, guid: 8ad9d7acd389148688d4f8fe8a0abf65, type: 3}

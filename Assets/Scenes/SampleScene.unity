@@ -23260,7 +23260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bae47974ec1bff44b256317b1ed4168, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AnimationTimingMultiplier: 1
+  AnimationTimingMultiplier: 10
   BigTextMessage: {fileID: 956547152}
   ContextButtonTextures:
   - {fileID: 21300000, guid: fae8314865b5ea14f8303979dfc96c9c, type: 3}
@@ -23433,10 +23433,10 @@ MonoBehaviour:
   PlayButton: {fileID: 777358220}
   ResumeButton: {fileID: 649916575}
   PlayerNames:
-  - "Andr\xE9"
-  - Jura
-  - Master
-  - Joe Bot
+  - Alpha
+  - Beta
+  - Charlie
+  - Delta
   PlayerLoginAreas:
   - {fileID: 2035197671}
   - {fileID: 1628066717}
@@ -27154,6 +27154,10 @@ PrefabInstance:
     - target: {fileID: 8516675296625599029, guid: f3b6a2a62f81ff04fb83464c0ae0a8f2, type: 3}
       propertyPath: m_Name
       value: Player1Area
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516675296625599029, guid: f3b6a2a62f81ff04fb83464c0ae0a8f2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8516675296625599030, guid: f3b6a2a62f81ff04fb83464c0ae0a8f2, type: 3}
       propertyPath: m_Pivot.x

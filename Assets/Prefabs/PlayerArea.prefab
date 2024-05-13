@@ -6351,7 +6351,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Andre
+  m_text: Player
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8007,6 +8007,10 @@ PrefabInstance:
       propertyPath: m_EffectDistance.y
       value: -5
       objectReference: {fileID: 0}
+    - target: {fileID: 4754815904852591515, guid: 7a0055f01ee16194d927128cc62ac82c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 8ad9d7acd389148688d4f8fe8a0abf65, type: 3}
     - target: {fileID: 4754815906164770026, guid: 7a0055f01ee16194d927128cc62ac82c, type: 3}
       propertyPath: m_Name
       value: Role Card
