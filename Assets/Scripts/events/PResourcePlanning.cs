@@ -1,7 +1,12 @@
-﻿using static Game;
+﻿using System.Collections.Generic;
+using System.Linq;
+using static Game;
 
 internal class PResourcePlanning : PlayerEvent
 {
+    
+    private List<int> topPlayerCards;
+
     public PResourcePlanning(Player playerModel) : base(playerModel){}
 
     public override float Act(bool qUndo = false)
@@ -14,7 +19,7 @@ internal class PResourcePlanning : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
-        
+        topPlayerCards = _playerGui.ResourcePlanningEventCardsIDs.ToList();
         _playerGui.ResourcePlanningEventCardsIDs.Reverse();
         foreach (var item in _playerGui.ResourcePlanningEventCardsIDs)
         {
@@ -24,5 +29,12 @@ internal class PResourcePlanning : PlayerEvent
         _playerGui.ResourcePlanningEventCardsIDs.Clear();
         _playerGui.ResourcePlanningEventCardSelected = -1;
         _playerGui.ChangeToInEvent(EventState.NOTINEVENT, false);
+    }
+    
+    public override string GetLogInfo()
+    {
+        string cardIds = string.Join(", ", topPlayerCards);
+        return $@" ""topPlayerCards"" : [{cardIds}],
+                ";
     }
 }

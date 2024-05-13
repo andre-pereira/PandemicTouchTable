@@ -8,7 +8,7 @@ public abstract class TimelineEvent
 {
     public float ANIMATIONDURATION = 1f / GameGUI.gui.AnimationTimingMultiplier;
 
-    private List<EventLogger> _eventLoggers = new List<EventLogger> { new FileLogger()} ;
+    private static List<EventLogger> _eventLoggers = new List<EventLogger> { new FileLogger()} ;
 
     // These default values are great for Initialize and AddPlayer Events.
     [Flags]
