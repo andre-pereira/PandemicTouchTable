@@ -110,7 +110,15 @@ public class Player
         if (updateRoles)
         {
             if (Role == Roles.ContainmentSpecialist)
-                Timeline.theTimeline.addEvent(new PContainSpecialistRemoveWhenEntering(cityID));
+            {
+                City city = game.Cities[cityID].GetComponent<City>();
+                int redCount = city.getNumberOfCubes(ENUMS.VirusName.Red);
+                int yellowCount = city.getNumberOfCubes(ENUMS.VirusName.Yellow);
+                int blueCount = city.getNumberOfCubes(ENUMS.VirusName.Blue);
+                if (redCount >= 2 || yellowCount >=2 || blueCount >= 2) 
+                    Timeline.theTimeline.addEvent(new PContainSpecialistRemoveWhenEntering(city, redCount, yellowCount, blueCount));
+
+            }
         }
         if(game.MobileHospitalPlayer != null && this == game.CurrentPlayer)
         {
