@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
 using System.Collections.Generic;
