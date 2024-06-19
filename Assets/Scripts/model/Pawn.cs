@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static GameGUI;
 using static Game;
-using System;
 
 public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandler, IPointerClickHandler
 {
@@ -64,16 +63,15 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // TODO : check this => PlayerGUI pGUI = playerPadForPlayer(PlayerModel);
-        PlayerGUI pGUI;
-        if (theGame.MobileHospitalPlayer != null && theGame.MobileHospitalPlayer.playerGui.callToMobilizePending)
+        PlayerGUI pGUI = playerPadForPlayer(PlayerModel); // TODO: check that this solved the issue
+        /*if (theGame.MobileHospitalPlayer != null && theGame.MobileHospitalPlayer.playerGui.callToMobilizePending)
         {
             pGUI = playerPadForPlayer(theGame.MobileHospitalPlayer);
         }
         else
         {
-            pGUI = currentPlayerPad();
-        }
+            pGUI = playerPadForPlayer(PlayerModel);
+        }*/
         
         if (endedInCity != null && endedInCity.city.cityID != PlayerModel.GetCurrentCity())
         {
@@ -85,7 +83,7 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
             else
             {
                 int distance = theGame.DistanceFromCity(PlayerModel.GetCurrentCity(), endedInCity.city.cityID);
-                if (pGUI.PInEventCard == EventState.CALLTOMOBILIZE)
+                if (pGUI.pInEvent == EventState.CALLTOMOBILIZE)
                 {
                     if(distance > 0 && distance <= 2)
                     {

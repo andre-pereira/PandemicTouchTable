@@ -1,9 +1,5 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
-using System;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using JetBrains.Annotations;
 using static Game;
 
 public class Player
@@ -114,7 +110,15 @@ public class Player
         if (updateRoles)
         {
             if (Role == Roles.ContainmentSpecialist)
-                Timeline.theTimeline.addEvent(new PContainSpecialistRemoveWhenEntering(cityID));
+            {
+                City city = game.Cities[cityID].GetComponent<City>();
+                int redCount = city.getNumberOfCubes(ENUMS.VirusName.Red);
+                int yellowCount = city.getNumberOfCubes(ENUMS.VirusName.Yellow);
+                int blueCount = city.getNumberOfCubes(ENUMS.VirusName.Blue);
+                if (redCount >= 2 || yellowCount >=2 || blueCount >= 2) 
+                    Timeline.theTimeline.addEvent(new PContainSpecialistRemoveWhenEntering(city, redCount, yellowCount, blueCount));
+
+            }
         }
         if(game.MobileHospitalPlayer != null && this == game.CurrentPlayer)
         {
@@ -123,7 +127,7 @@ public class Player
                 game.MakePlayersWait();
                 game.MobileHospitalInExecution = true;
                 //theGame.ChangeToInEvent(EventState.EXECUTINGMOBILEHOSPITAL);
-                if (game.MobileHospitalPlayer.playerGui.PInEventCard == EventState.CALLTOMOBILIZE)
+                if (game.MobileHospitalPlayer.playerGui.pInEvent == EventState.CALLTOMOBILIZE)
                 {
                     game.MobileHospitalPlayer.playerGui.callToMobilizePending = true;
                 }

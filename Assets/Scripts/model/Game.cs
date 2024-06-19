@@ -134,14 +134,16 @@ public class Game : MonoBehaviour
         if (InEventCard == EventState.CALLTOMOBILIZE)
         {
             //for all players check if they are done with this event
-            if (PlayerList.getAllPlayers().All(player => player.playerGui.eventExecuted == true))
+            if (PlayerList.getAllPlayers().All(player => player.playerGui.callToMobilizeExecuted == true))
             {
                 InEventCard = EventState.NOTINEVENT;
-                foreach (Player player in PlayerList.getAllPlayers())
+                //Redundant with PMobilizeEvent Do
+                /*foreach (Player player in PlayerList.getAllPlayers())
                 {
                     player.playerGui.ChangeToInEvent(EventState.NOTINEVENT);
-                }
-            }
+                }*/
+            } else return; // This return prevents from ending the turn of the current player if not
+                           // all other players are done with the callToMobilize event.
         }
         else if (InEventCard != EventState.NOTINEVENT) return;
 
@@ -326,6 +328,13 @@ public class Game : MonoBehaviour
         InEventCard = state;
         if(state == EventState.CALLTOMOBILIZE)
         {
+            List<Vector3> MovingPawnTranslations = new List<Vector3>
+            {
+                new Vector3(0, 0, 0),
+                new Vector3(-0.8f, 0.8f, 0),
+                new Vector3(0.8f, -0.8f, 0),
+                new Vector3(0.8f, 0.8f, 0)
+            };
             if (callToMobilizePendingPlayer != null)
             {
                 callToMobilizePendingPlayer.playerGui.DestroyMovingPawn();
@@ -341,16 +350,43 @@ public class Game : MonoBehaviour
                         pawnNumber++;
                     }
                 }
-                Vector3[] MovingPawnTranslations = new Vector3 [4] { new Vector3(0, 0, 0), new Vector3(0, 0.5f, 0), new Vector3(0, -0.5f, 0), new Vector3(1, 0, 0) }; 
                 callToMobilizePendingPlayer.playerGui.CreateMovingPawn(MovingPawnTranslations[pawnNumber]);        
             }
             else
             {
+                // Steps to display the moving pawns appropriately
+                // 1- Get all the cities where the players are
+                // 2- Iterate over those cities
+                // 3- For each player in this city, translate by index
+                HashSet<City> cities = new HashSet<City>();
+                
                 foreach (Player player in PlayerList.getAllPlayers())
                 {
                     player.playerGui.ChangeToInEvent(state);
-                    int pawnNumber = 0;
-                    foreach (var item in player.GetCurrentCityScript().PawnsInCity)
+                    cities.Add(player.GetCurrentCityScript());
+                }
+
+                foreach (City city in cities)
+                {
+                    int index = 0; // To bypass the null indexes caused by MissingReferenceException
+                                   // (due to CreateMovingPawn removing the pawn from the city model)
+                    for (int i = 0; i < city.PawnsInCity.Length; i++)
+                    {
+                        if (city.PawnsInCity[i])
+                        {                           
+                            city.PawnsInCity[i].PlayerModel.playerGui.CreateMovingPawn(MovingPawnTranslations[index]);
+                            index++;
+                        }
+                    }
+
+                }
+
+                    /*List<Pawn> pawnsInCity = player.GetCurrentCityScript().PawnsInCity.ToList();
+                    pawnsInCity.RemoveAll(p => p == null);
+                    
+                    int index = pawnsInCity.FindIndex(item => item.PlayerModel.Role == player.Role);
+
+                    /*foreach (var item in player.GetCurrentCityScript().PawnsInCity)
                     {
                         if (item != null)
                         {
@@ -358,10 +394,9 @@ public class Game : MonoBehaviour
                                 break;
                             pawnNumber++;
                         }
-                    }
-                    Vector3[] MovingPawnTranslations = new Vector3 [4] { new Vector3(0, 0, 0), new Vector3(0, 0.5f, 0), new Vector3(0, -0.5f, 0), new Vector3(1, 0, 0) }; 
-                    player.playerGui.CreateMovingPawn(MovingPawnTranslations[pawnNumber]);            
-                } 
+                    }*/
+                    //player.playerGui.CreateMovingPawn(MovingPawnTranslations[index]);           
+                //} 
             }
            
         }

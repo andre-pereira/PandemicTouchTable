@@ -1,7 +1,10 @@
-﻿using static Game;
+﻿using System.Collections.Generic;
+using System.Linq;
+using static Game;
 
 internal class PForecast : PlayerEvent
 {
+    private List<int> topInfectionCards;
     public PForecast(Player playerModel): base(playerModel){}
 
     public override float Act(bool qUndo = false)
@@ -14,6 +17,7 @@ internal class PForecast : PlayerEvent
 
     public override void Do(Timeline timeline)
     {
+        topInfectionCards = _playerGui.ForeCastEventCardsIDs.ToList();
         _playerGui.ForeCastEventCardsIDs.Reverse();
         foreach (var item in _playerGui.ForeCastEventCardsIDs)
         {
@@ -24,5 +28,12 @@ internal class PForecast : PlayerEvent
         _playerGui.ForeCastEventCardsIDs.Clear();
         _playerGui.ForeCastEventCardSelected = -1;
         _playerGui.ChangeToInEvent(EventState.NOTINEVENT, false);
+    }
+    
+    public override string GetLogInfo()
+    {
+        string cardIds = string.Join(", ", topInfectionCards);
+        return $@" ""topInfectionCards"" : [{cardIds}],
+                ";
     }
 }

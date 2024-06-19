@@ -27,6 +27,8 @@ public class PShareKnowledge : PlayerEvent
     {
         playerFrom.PlayerModel.RemoveCardInHand(cityID);
         playerTo.PlayerModel.AddCardToHand(cityID);
+        playerTo.UpdateCardsState(CardGUIStates.None);
+        playerFrom.UpdateCardsState(CardGUIStates.None);
         _player.DecreaseActionsRemaining(1);
     }
 

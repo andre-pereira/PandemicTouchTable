@@ -33,17 +33,26 @@ public abstract class EventLogger
 public class FileLogger : EventLogger
 {
     private static string fileName = $"log_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.txt";
-    private string filePath;
+    private static string filePath = "";
 
     public FileLogger()
     {
-        string logsFolderPath = Path.Combine(Application.dataPath, "Logs");
-
-        if (!Directory.Exists(logsFolderPath))
+        if (filePath == "")
         {
-            Directory.CreateDirectory(logsFolderPath);
+            string logsFolderPath;
+
+            if (Application.isEditor) // Dev mode
+                logsFolderPath = Path.Combine(Application.dataPath, "Logs");
+            else // Prod (build) mode
+                logsFolderPath = Path.Combine(Application.persistentDataPath, "Logs");
+        
+            Debug.Log(logsFolderPath);
+            if (!Directory.Exists(logsFolderPath))
+            {
+                Directory.CreateDirectory(logsFolderPath);
+            }
+            filePath = Path.Combine(logsFolderPath, fileName);
         }
-        filePath = Path.Combine(logsFolderPath, fileName);
     }
 
     public override void BroadcastLogs(TimelineEvent timelineEvent)
