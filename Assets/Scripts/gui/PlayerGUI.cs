@@ -1628,7 +1628,7 @@ public class PlayerGUI : MonoBehaviour
         else if (ActionSelected == ActionTypes.CharacterAction)
         {
             if (PlayerModel.Role == Player.Roles.Virologist)
-                additionalMessage += "Remove a cube";
+                additionalMessage += "If available, touch Treat";
             else if (PlayerModel.Role == Player.Roles.Pilot)
             {
                 if (pilotCitySelected == -1)

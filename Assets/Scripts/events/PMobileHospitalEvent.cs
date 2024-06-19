@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using static ENUMS;
+﻿using static ENUMS;
 using static Game;
 
 public class PMobileHospitalEvent : PlayerEvent
@@ -42,7 +41,7 @@ public class PMobileHospitalEvent : PlayerEvent
             //theGame.CubeClicked(city, virusName);
             theGame.MobileHospitalInExecution = false;
 
-            if (theGame.MobileHospitalPlayer.playerGui.callToMobilizePending)
+            if (theGame.MobileHospitalPlayer.playerGui.callToMobilizePending && !theGame.MobileHospitalPlayer.playerGui.callToMobilizeExecuted )
             {
                 //theGame.MobileHospitalPlayer.playerGui.ChangeToInEvent(EventState.CALLTOMOBILIZE);
                 theGame.ChangeToInEvent(EventState.CALLTOMOBILIZE, theGame.MobileHospitalPlayer);

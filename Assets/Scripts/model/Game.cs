@@ -336,7 +336,6 @@ public class Game : MonoBehaviour
                 new Vector3(0.8f, -0.8f, 0),
                 new Vector3(0.8f, 0.8f, 0)
             };
-            
             if (callToMobilizePendingPlayer != null)
             {
                 callToMobilizePendingPlayer.playerGui.DestroyMovingPawn();

@@ -23434,7 +23434,7 @@ MonoBehaviour:
   ResumeButton: {fileID: 649916575}
   PlayerNames:
   - Alpha
-  - Beta
+  - Bravo
   - Charlie
   - Delta
   PlayerLoginAreas:
@@ -23466,8 +23466,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d03db93b515772046b2289a443dfe2f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerCardsSeed: -1
-  InfectionCardsSeed: -1
+  PlayerCardsSeed: 324877408
+  InfectionCardsSeed: 324877408
   playerCardsRandomGeneratorState:
     s0: 0
     s1: 0

@@ -63,16 +63,15 @@ public class Pawn : MonoBehaviour, IDragHandler,IBeginDragHandler, IEndDragHandl
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // TODO : check this => PlayerGUI pGUI = playerPadForPlayer(PlayerModel);
-        PlayerGUI pGUI;
-        if (theGame.MobileHospitalPlayer != null && theGame.MobileHospitalPlayer.playerGui.callToMobilizePending)
+        PlayerGUI pGUI = playerPadForPlayer(PlayerModel); // TODO: check that this solved the issue
+        /*if (theGame.MobileHospitalPlayer != null && theGame.MobileHospitalPlayer.playerGui.callToMobilizePending)
         {
             pGUI = playerPadForPlayer(theGame.MobileHospitalPlayer);
         }
         else
         {
             pGUI = playerPadForPlayer(PlayerModel);
-        }
+        }*/
         
         if (endedInCity != null && endedInCity.city.cityID != PlayerModel.GetCurrentCity())
         {
