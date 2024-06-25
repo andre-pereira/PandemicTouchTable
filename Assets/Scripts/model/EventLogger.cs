@@ -6,23 +6,23 @@ public abstract class EventLogger
 {
     public string GetEventLog(TimelineEvent timelineEvent)
     {
-        string commonLog = $@"
-                    ""timestamp"" : ""{Time.time - MainMenu.startTimestamp}"",
-                    ""eventType"" : ""{timelineEvent.GetType()}"",
-                    {(Game.theGame.CurrentPlayer != null ? (
-                        $@"""currentPlayer"" : {{
+        string currentPlayerLog = Game.theGame.CurrentPlayer != null
+            ? $@"                   ""currentPlayer"" : {{
                             ""role"" : ""{Game.theGame.CurrentPlayer.Role}"",
                             ""name"" : ""{Game.theGame.CurrentPlayer.Name}""
-                        }},") : null )} 
-                ";
+                        }}"
+            : null;
+        
+        string commonLog = 
+            $@"""timestamp"" : ""{Time.time - MainMenu.startTimestamp}"",
+                    ""eventType"" : ""{timelineEvent.GetType()}""{(currentPlayerLog != null ? $", \n {currentPlayerLog}" : "")}";
         
         
         string eventLog = timelineEvent.GetLogInfo();
         
-        return 
-            $@"{{ 
-                    {commonLog}
-                    {eventLog} 
+        return
+            $@"{{
+                    {commonLog}{(eventLog != null ? $",\n\t\t\t\t   {eventLog}" : "")}
             }},";
     }
 
@@ -34,7 +34,7 @@ public class FileLogger : EventLogger
 {
     private static string fileName = $"log_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.txt";
     private static string filePath = "";
-
+    
     public FileLogger()
     {
         if (filePath == "")
@@ -46,7 +46,6 @@ public class FileLogger : EventLogger
             else // Prod (build) mode
                 logsFolderPath = Path.Combine(Application.persistentDataPath, "Logs");
         
-            Debug.Log(logsFolderPath);
             if (!Directory.Exists(logsFolderPath))
             {
                 Directory.CreateDirectory(logsFolderPath);

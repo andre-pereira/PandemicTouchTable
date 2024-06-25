@@ -14,7 +14,7 @@ public class GPawnClicked : GuiEvent
 
     public override string GetLogInfo()
     {
-        return $@"""playerSelected"" : ""{_playerSelected.PlayerModel.Role}"",
+        return $@"""playerSelected"" : ""{_playerSelected.PlayerModel.Role}""
                 ";
     }
 }

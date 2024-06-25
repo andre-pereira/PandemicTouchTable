@@ -58,7 +58,7 @@ public class PTreatDisease : PlayerEvent
     public override string GetLogInfo()
     {
         return $@" ""city"" : {city.city.cityID},
-                    ""virusName"" : ""{virusName}"",
+                    ""virusName"" : ""{virusName}""
                 ";
     }
 }

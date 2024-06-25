@@ -34,7 +34,7 @@ public abstract class TimelineEvent
     public Attribute Flags = Attribute.None;
     abstract public void Do(Timeline timeline);
     public virtual float Act(bool qUndo = false) { return 0; }
-    public virtual string GetLogInfo() { return ""; }
+    public virtual string GetLogInfo() { return null; }
     public virtual void Notify()
     {
         foreach (EventLogger logger in _eventLoggers)

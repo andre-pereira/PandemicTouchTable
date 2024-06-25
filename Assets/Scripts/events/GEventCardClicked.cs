@@ -15,7 +15,7 @@ public class GEventCardClicked : GuiEvent
     public override string GetLogInfo()
     {
         return $@"""eventName"" : ""{_eventSelected.eventName}"",
-                    ""eventID"" : ""{_eventSelected.eventID}"",
+                    ""eventID"" : ""{_eventSelected.eventID}""
                 ";
     }
 }

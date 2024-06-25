@@ -54,7 +54,7 @@ internal class PContainSpecialistRemoveWhenEntering : PlayerEvent
     public override string GetLogInfo()
     {
         return $@" ""city"" : {city.city.cityID},
-                     ""cubeRemoved"" : {cubeRemoved}
+                     ""cubeRemoved"" : ""{cubeRemoved}""
                 ";
     }
 }

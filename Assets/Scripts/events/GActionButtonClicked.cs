@@ -14,7 +14,7 @@ public class GActionButtonClicked : GuiEvent
     
     public override string GetLogInfo()
     {
-        return $@"""actionSelected"" : ""{_actionSelected}"",
+        return $@"""actionSelected"" : ""{_actionSelected}""
                 ";
     }
 }

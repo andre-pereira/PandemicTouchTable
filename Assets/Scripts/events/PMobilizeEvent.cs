@@ -28,9 +28,9 @@
     
     public override string GetLogInfo()
     {
-        return $@" ""player"" : {_targetPlayer.Role}
+        return $@" ""player"" : ""{_targetPlayer.Role}"",
                     ""newCity"" : {newCityID},
-                    ""oldCity"" : {_targetPlayer.GetCurrentCity()},
+                    ""oldCity"" : {_targetPlayer.GetCurrentCity()}
                 ";
     }
 

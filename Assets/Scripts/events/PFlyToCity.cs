@@ -70,7 +70,7 @@ public class PFlyToCity : PlayerEvent
     public override string GetLogInfo()
     {
         return $@" ""flyFrom"" : {flyFrom},
-                    ""flyTo"" : {flyTo},
+                    ""flyTo"" : {flyTo}
                 ";
     }
 }

@@ -59,7 +59,7 @@ public class PDealCard : PlayerEvent
 
     public override string GetLogInfo()
     {
-        return $@" ""epidemicPopped"" : {epidemicPopped},
+        return $@" ""epidemicPopped"" : {epidemicPopped.ToString().ToLower()},
                     ""cardToAdd"" : {cardToAdd}
                 ";
     }

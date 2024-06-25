@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting.FullSerializer;
-using UnityEngine;
-using static GameGUI;
+﻿using static GameGUI;
 using static Game;
 
 internal class EInitializeFirstPlayer : EngineEvent
@@ -47,7 +43,7 @@ internal class EInitializeFirstPlayer : EngineEvent
 
     public override string GetLogInfo()
     {
-        return $@" ""startPlayer"" : {startPlayer.Role},
+        return $@" ""startPlayer"" : ""{startPlayer.Role}""
                 ";
     }
 }

@@ -127,19 +127,21 @@ public class EInitialize : EngineEvent
     {
         StringBuilder cityJson = new StringBuilder();
         cityJson.Append("[\n");
-        foreach (City city in theGame.Cities)
+        for (int i = 0; i < theGame.Cities.Length; i++)
         {
+            City city = theGame.Cities[i];
             cityJson.Append("\t\t\t\t\t\t\t\t{");
-            cityJson.Append($"\"id\": {city.city.cityID}, \"name\": \"{city.city.cityName}\", \"virusColor\": {city.city.virusInfo.virusName}, \"connectedCities\": [{string.Join(',', city.city.neighbors)}]");
-            cityJson.Append("}, \n");
+            cityJson.Append($"\"id\": {city.city.cityID}, \"name\": \"{city.city.cityName}\", \"virusColor\": \"{city.city.virusInfo.virusName}\", \"connectedCities\": [{string.Join(',', city.city.neighbors)}]");
+            cityJson.Append("}");
+            
+            if (i < theGame.Cities.Length - 1)
+                cityJson.Append(", \n");
         }
-        if (theGame.Cities.Length > 0)
-            cityJson.Remove(cityJson.Length - 2, 2);
         cityJson.Append("\n\t\t\t\t\t]");
         
         return $@" ""seeds"" : {{
                         ""playerCards"" : ""{PlayerCardsSeed}"",
-                        ""infectionCards"" : ""{InfectionCardsSeed}"",
+                        ""infectionCards"" : ""{InfectionCardsSeed}""
                     }},
                     ""playerCount"" : ""{PlayerList.Players.Count}"",
                     ""cities"": {cityJson}

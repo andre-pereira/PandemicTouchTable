@@ -34,7 +34,7 @@ internal class PResourcePlanning : PlayerEvent
     public override string GetLogInfo()
     {
         string cardIds = string.Join(", ", topPlayerCards);
-        return $@" ""topPlayerCards"" : [{cardIds}],
+        return $@" ""topPlayerCards"" : [{cardIds}]
                 ";
     }
 }

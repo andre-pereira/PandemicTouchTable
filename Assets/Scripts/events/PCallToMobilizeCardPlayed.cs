@@ -34,7 +34,7 @@ public class PCallToMobilizeCardPlayed : PlayerEvent
     
     public override string GetLogInfo()
     {
-        return $@" ""eventActor"" : ""{_eventActor}"",
+        return $@" ""eventActor"" : ""{_eventActor.Role}""
                 ";
     }
 }

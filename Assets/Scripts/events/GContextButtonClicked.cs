@@ -14,7 +14,7 @@ public class GContextButtonClicked : GuiEvent
 
     public override string GetLogInfo()
     {
-        return $@"""contextButtonSelected"" : ""{_contextButtonSelected}"",
+        return $@"""contextButtonSelected"" : ""{_contextButtonSelected}""
                 ";
     }
 }

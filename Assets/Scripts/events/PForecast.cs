@@ -33,7 +33,7 @@ internal class PForecast : PlayerEvent
     public override string GetLogInfo()
     {
         string cardIds = string.Join(", ", topInfectionCards);
-        return $@" ""topInfectionCards"" : [{cardIds}],
+        return $@" ""topInfectionCards"" : [{cardIds}]
                 ";
     }
 }
